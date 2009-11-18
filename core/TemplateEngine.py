@@ -10,7 +10,7 @@ Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 import sys
 import os
 import unittest
-# import core
+
 import project
 from mako.template import Template
 from mako.lookup import TemplateLookup
