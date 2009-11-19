@@ -24,6 +24,7 @@ class NotFound(Exception):
 class StoredObject:
     '''A generic stored object superclass. This object defines methods for save, load, delete and update. (Basic CRUD).'''
     NotFound = NotFound
+    IntegrityError = DbStore.IntegrityError
     def __init__(self,key=None,table=None):
         self._new = True
 
@@ -67,19 +68,26 @@ class StoredObject:
         '''Update an object in the store.'''
         data = {}
         for key in self.__class__.table_map:
-            if self[key]:
-                data[key] = self[key]
-            elif key == 'date_created':
+            # print '''key %s value %s''' % (key, data[key])
+            if key == 'date_created':
                 # special case, date created requires a null insertion
-                # to populate due to weird mysql implementation
+                # to populate due to weird mysql implementation. So if we don't
+                # have one in the data structure, we're somehow new, so force NULL
                 try:
-                    if data[key]:
+                    if self[key]:
                         pass
+                # no created date? Is it a new object? Set to none.
                 except KeyError:
                     data[key] = None
-            else:
+            elif key == 'date_modified':                
+                # special case, date modified shouldn't be echoed
+                # back to the server (so it can reflect update changes)
                 pass
-                # data[key] = None
+            # elif self[key] == 0 or self[key]:
+            #     data[key] = self[key]
+            else:
+                data[key] = self[key]
+
         store.update(self.__class__.table, self.__class__.key, self.__dict__[self.__class__.key], data)
         return self
 

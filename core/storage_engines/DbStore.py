@@ -17,10 +17,10 @@ import app
 import project
 
 from pybald.core.pyboxdb.pyboxdb import pdb
-#Pyboxdb
 import re
 
 class DbStore:
+    IntegrityError = pdb.IntegrityError
     def __init__(self):
         #pdb = Pyboxdb()
         pdb.set_connection_string(project.get_db_connection_string())

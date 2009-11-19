@@ -13,14 +13,13 @@ import unittest
 
 import pickle
 import app
+import project
 
+file_store_path = project.path+'/filestore'
 
 class FileStore:
     def __init__(self):
-        self.file_store_path = '/var/tmp/filestore'
-
-    def set_file_path(self,path):
-        self.file_store_path = path
+        pass
 
     def save(self,obj):
         '''Save object to the filesystem.'''
@@ -44,7 +43,7 @@ class FileStore:
 
     def get_file_path(self,table,keyname,key):
         '''Create the path for an object in the filestore dir.'''
-        table_path = os.path.join(self.file_store_path,table)
+        table_path = os.path.join(file_store_path,table)
         # check the table, no? create
         if not os.path.exists(table_path):
             os.mkdir(table_path) 
