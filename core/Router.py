@@ -21,9 +21,9 @@ from mako import exceptions
 import pybald.core
 import app.controllers
 
-import logging
-LOG_FILENAME = '/tmp/logging_example.out'
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
+# import logging
+# LOG_FILENAME = '/tmp/logging_example.out'
+# logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
 # extract the package path for controllers
 controller_path = app.controllers.__path__[0]
