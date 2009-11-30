@@ -43,7 +43,6 @@ def action(func):
 
         # run the controllers "pre" code
         resp = self._pre(req)
-        
         # If the pre code returned a response, return that
         if not resp:
             try:
@@ -62,6 +61,7 @@ def action(func):
 
         # run the controllers post code
         self._post(req,resp)
+
         return resp
     return replacement
 

@@ -43,9 +43,6 @@ class ActionLogManager:
 
         log.save()
         
-        # for key in environ.keys():
-        #     print '''%s --- %s''' % (key, environ[key])
-
         return self.application(environ, start_response)
 
 class ActionLogManagerTests(unittest.TestCase):

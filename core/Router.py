@@ -90,7 +90,8 @@ class Router:
                 # print 'Controller: '+controller+' Action: '+action
                 #methods starting with underspybald.core can't be used as actions
                 if re.match('^\_',action):
-                    return exc.HTTPNotFound('invalid action')(environ, start_response)
+                    return exc.HTTPNotFound('invalid action')
+                #(environ, start_response)
                 # create controller instance from controllers dictionary
                 # using routes 'controller' returned from the match
                 controller = getattr(self.controllers[controller]['module'], self.controllers[controller]['name'])()
@@ -111,8 +112,9 @@ class Router:
         try:
             # call the action we determined from the mapper
             # alm = ActionLogManager(handler).process_log
-            resp = handler(environ,start_response)
-            return resp(environ,start_response)
+            # resp = handler(environ,start_response)
+            return handler(environ,start_response)
+            #resp(environ,start_response)
             # SessionManager(alm).process_session(environ,start_response)
             # resp = SessionManager(handler).process_session(environ,start_response)
             # return resp(environ,start_response)
@@ -121,8 +123,10 @@ class Router:
             controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
             handler = getattr(controller,'not_found')
             # resp = SessionManager(handler).process_session(environ,start_response)
-            resp = handler(environ,start_response)
-            return resp(environ,start_response)        
+            # resp = handler(environ,start_response)
+            # resp(environ,start_response)        
+            return handler(environ,start_response)
+            
         except:
             # # other program error
             # # 500
@@ -133,9 +137,9 @@ class Router:
 
             # Debug version, this is the nice mako stack display in html format
             # This should be turned off for production
-            resp = Response(body=exceptions.html_error_template().render())
-            return resp(environ, start_response)
-            
+            # resp = Response(body=exceptions.html_error_template().render())
+            # return resp(environ, start_response)
+            return Response(body=exceptions.html_error_template().render())
 
 class routerTests(unittest.TestCase):
     def setUp(self):
