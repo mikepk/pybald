@@ -17,10 +17,13 @@ from pybald.core.TemplateEngine import TemplateEngine
 
 from webob import Request, Response
 from webob import exc
-from SessionManager import SessionManager
 import re
 
 # action / method decorator
+# This decorator takes in the action method and adds some syntactic sugar around it.
+# Allows the actions to work with WebOb request respons objects, and handles default
+# behaviors, such as displaying the view when nothing is returned, or plain text
+# if a string is returned.
 def action(func):
     def replacement(self, environ, start_response):
         req = Request(environ)
@@ -66,33 +69,39 @@ def action(func):
 class BaseController():
     '''Base controller that includes the view and a default index method.'''
     def __init__(self):
+        '''Initialize the base controller with a page object. Page dictionary controls title, headers, etc...'''
         self.page = {'title':None,'metas':[],'headers':[]}
                 
     @action
     def index(self,req):
         '''default index action'''
-        return self._view()
+        pass
         
     def _pre(self,req):
         '''Code to run before any action.'''
-        # set the session
-        self.session = req.environ['session']
-
-        # set the user
         try:
-            self.user = self.session.cachestore['user']
+            # set the session and user
+            # This will except in all cases where the session manager is not used
+            self.session = req.environ['session']
+            try:
+                self.user = self.session.cachestore['user']
+            except KeyError:
+                self.user = None
+
+            # check and clear the session error state.
+            # The next handler should handle the error or it's lost.
+            try:
+                if self.session.cachestore["error"]:
+                    self.error = self.session.cachestore["error"]
+                    self.session.cachestore["error"] = None
+                    self.session.save()
+            except KeyError:
+                self.error = None
+
         except KeyError:
+            self.session = None
             self.user = None
-
-        #set the error if one occured
-        try:
-            if self.session.cachestore["error"]:
-                self.error = self.session.cachestore["error"]
-                self.session.cachestore["error"] = None
-                self.session.save()
-        except KeyError:
             self.error = None
-        
 
     def _post(self,req,resp):
         '''Code to run after any action.'''
@@ -106,8 +115,8 @@ class BaseController():
         if user_dict:
             user_dict['template_id'] = self.template_id
             return view(user_dict)
-        # Is passing the internal object dictionary OK here?
-        # view then has access to all the internal attributes
+        # View has access to all the internal attributes
+        # inside the view (for Mako at least) the dictionary is copied
         else:
             return view(self.__dict__)
         

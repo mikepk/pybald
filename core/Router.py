@@ -18,10 +18,7 @@ from webob import exc
 from routes import Mapper, request_config, url_for
 from mako import exceptions
 
-from SessionManager import SessionManager
-
 import pybald.core
-import app
 import app.controllers
 
 import logging
@@ -88,7 +85,9 @@ class Router:
             try:
                 controller = urlvars["controller"]
                 action = urlvars["action"]
-                print 'Controller: '+controller+' Action: '+action
+                for key in urlvars.keys():
+                    print '''%s: %s''' % (key, urlvars[key])
+                # print 'Controller: '+controller+' Action: '+action
                 #methods starting with underspybald.core can't be used as actions
                 if re.match('^\_',action):
                     return exc.HTTPNotFound('invalid action')(environ, start_response)
@@ -111,25 +110,29 @@ class Router:
 
         try:
             # call the action we determined from the mapper
-            # this runs the session manager as part of the WSGI
-            # pipeline (pre process, then hands to handler, then modifies
-            # the response adding the session cookie)
-            resp = SessionManager(handler).process_session(environ,start_response)
+            # alm = ActionLogManager(handler).process_log
+            resp = handler(environ,start_response)
             return resp(environ,start_response)
+            # SessionManager(alm).process_session(environ,start_response)
+            # resp = SessionManager(handler).process_session(environ,start_response)
+            # return resp(environ,start_response)
         # This is a mako 'missing template' exception
         except exceptions.TopLevelLookupException:
             controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
             handler = getattr(controller,'not_found')
-            resp = SessionManager(handler).process_session(environ,start_response)
+            # resp = SessionManager(handler).process_session(environ,start_response)
+            resp = handler(environ,start_response)
             return resp(environ,start_response)        
         except:
-            # other program error
-            # 500
+            # # other program error
+            # # 500
             # controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
             # handler = getattr(controller,'index')
-            # return SessionManager(handler).process_session(environ,start_response)(environ,start_response)
+            # return handler(environ,start_response)(environ,start_response)
+            # # return SessionManager(handler).process_session(environ,start_response)(environ,start_response)
 
             # Debug version, this is the nice mako stack display in html format
+            # This should be turned off for production
             resp = Response(body=exceptions.html_error_template().render())
             return resp(environ, start_response)
             
