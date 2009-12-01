@@ -20,6 +20,7 @@ from mako import exceptions
 
 import pybald.core
 import app.controllers
+import project
 
 # import logging
 # LOG_FILENAME = '/tmp/logging_example.out'
@@ -59,10 +60,6 @@ class Router:
         '''WSGI app, Router is called directly to actually route the url to the target'''
         req = Request(environ)
 
-        # TODO: remove the debug content before publishing
-        # debug, does this work?
-        sys.stdout = environ['wsgi.errors']
-
         # routes config object, this must be done on every request.
         # sets the mapper and allows link_to and redirect_to to
         # function on routes
@@ -72,8 +69,8 @@ class Router:
         config.redirect = lambda url: Response(location=url,status=302)
         
         # debug print messages
-        # TODO: remove these debug messages before publishing this
         print '============= '+req.path+' =============='
+
         # use routes to match the url to a path
         # urlvars will contain controller + other non query
         # URL data
@@ -87,8 +84,8 @@ class Router:
                 action = urlvars["action"]
                 for key in urlvars.keys():
                     print '''%s: %s''' % (key, urlvars[key])
-                # print 'Controller: '+controller+' Action: '+action
-                #methods starting with underspybald.core can't be used as actions
+
+                #methods starting with underscore can't be used as actions
                 if re.match('^\_',action):
                     return exc.HTTPNotFound('invalid action')
                 #(environ, start_response)

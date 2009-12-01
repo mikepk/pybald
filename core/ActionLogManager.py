@@ -28,9 +28,12 @@ class ActionLogManager:
         # check if the browser has a cookie with a session_id
         # load the session from the session_id
         try:
-            session_id = req.cookies['session_id']
+            session_id = environ['session'].session_id
         except (KeyError, IOError):
             session_id = 0
+
+        # for key in environ.keys():
+        #     print '''%-30s %-30s''' % (key, environ[key])
 
         log = LogEntry()
         log.session_id = session_id
