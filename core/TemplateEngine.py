@@ -18,11 +18,17 @@ from mako.lookup import TemplateLookup
 class TemplateEngine:
     '''The basic template engine, looks up templates and renders them. Uses the mako template system'''
     def __init__(self): #,project_path=project.path): #'/usr/share/enerd/template_project'):
-        pass
+        self.path = project.get_path()
         
     def __call__(self,data,format="html"):
-        path = project.get_path()
-        mylookup = TemplateLookup(directories=[path+'/app/views'], module_directory=path+'/viewscache',
+        '''Callable method that executes the template.'''
+
+        try:
+            format = data["format"]
+        except:
+            pass
+
+        mylookup = TemplateLookup(directories=[self.path+'/app/views'], module_directory=self.path+'/viewscache',
         imports=['from routes import url_for','from pybald.core.helpers import link_to','from pybald.core.helpers import link_img_to'],input_encoding='utf-8',output_encoding='utf-8')
         mytemplate = mylookup.get_template("/"+data['template_id'].lower()+"."+format.lower()+".template")
         return mytemplate.render(**data)

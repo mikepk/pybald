@@ -34,6 +34,11 @@ class Router:
     def __init__(self):
         self.controllers = {}
         self.map = Mapper()
+        
+        try:
+            self.debug = project.debug
+        except AttributeError:
+            self.debug = False
 
     def load(self):
         '''Scans the controllers path and imports all controllers with a canonical pybald name.'''
@@ -43,11 +48,14 @@ class Router:
             imp_modname = 'app.controllers.'+modname
             controller_name = re.search('(\w+)Controller',modname).group(1).lower()
             controller_names.append(controller_name)
+            # Use the python built in __import__ method to import the Controllers
+            # at runtime based on their presence in the controllers directory. This method is used
+            # because the names of the controllers is only known at runtime.
+            # Syntactically this is equivalent to "from app.controllers.modname import modname"
             try:
                 module = __import__(imp_modname, globals(), locals(), [modname], -1)
             except (ImportError, SyntaxError),e:
                 module = __import__('app.controllers.ErrorController', globals(), locals(), ['ErrorController'], -1)
-
                 raise
             # add the module name to the list of urls
             self.controllers[controller_name]={'name':modname,'module':module}
@@ -66,10 +74,14 @@ class Router:
         config = request_config()
         config.mapper = self.map
         config.environ = environ
+        # defines the redirect method. In this case it generates a
+        # Webob Response object with the location and status headers
+        # set
         config.redirect = lambda url: Response(location=url,status=302)
         
         # debug print messages
-        print '============= '+req.path+' =============='
+        if self.debug:
+            print '============= '+req.path+' =============='
 
         # use routes to match the url to a path
         # urlvars will contain controller + other non query
@@ -82,8 +94,9 @@ class Router:
             try:
                 controller = urlvars["controller"]
                 action = urlvars["action"]
-                for key in urlvars.keys():
-                    print '''%s: %s''' % (key, urlvars[key])
+                if self.debug:
+                    for key in urlvars.keys():
+                        print '''%s: %s''' % (key, urlvars[key])
 
                 #methods starting with underscore can't be used as actions
                 if re.match('^\_',action):
@@ -108,36 +121,26 @@ class Router:
 
         try:
             # call the action we determined from the mapper
-            # alm = ActionLogManager(handler).process_log
-            # resp = handler(environ,start_response)
             return handler(environ,start_response)
-            #resp(environ,start_response)
-            # SessionManager(alm).process_session(environ,start_response)
-            # resp = SessionManager(handler).process_session(environ,start_response)
-            # return resp(environ,start_response)
+
         # This is a mako 'missing template' exception
         except exceptions.TopLevelLookupException:
             controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
             handler = getattr(controller,'not_found')
-            # resp = SessionManager(handler).process_session(environ,start_response)
-            # resp = handler(environ,start_response)
-            # resp(environ,start_response)        
             return handler(environ,start_response)
             
         except:
-            # # other program error
-            # # 500
-            # controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
-            # handler = getattr(controller,'index')
-            # return handler(environ,start_response)(environ,start_response)
-            # # return SessionManager(handler).process_session(environ,start_response)(environ,start_response)
+            # other program error
+            # 500 server error
+            # if debug is set, use the mako stack display
+            if self.debug:
+                return Response(body=exceptions.html_error_template().render())
+            else:
+                controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
+                handler = getattr(controller,'index')
+                return handler(environ,start_response)
 
-            # Debug version, this is the nice mako stack display in html format
-            # This should be turned off for production
-            # resp = Response(body=exceptions.html_error_template().render())
-            # return resp(environ, start_response)
-            return Response(body=exceptions.html_error_template().render())
-
+                
 class routerTests(unittest.TestCase):
     def setUp(self):
         pass
