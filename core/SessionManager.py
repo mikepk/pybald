@@ -31,18 +31,18 @@ class SessionManager:
         # load the session from the session_id
         try:
             session_id = req.cookies['session_id']
-            environ['session'] = Session().load(session_id)                    
-            resp = self.application(environ, start_response)
+            environ['session'] = Session().load(session_id) 
+            resp = req.get_response(self.application) #(environ, start_response)
         # no session_id cookie set, either no session
         # or create anon session
         except (KeyError, IOError, Session.NotFound):
             session_id = self.create_session()
             environ['session'] = self.session
-            resp = self.application(environ, start_response)
+            resp = req.get_response(self.application) #(environ, start_response)
             # modify the response object to add the cookie response
             self.create_session_cookie(resp)
 
-        return resp
+        return resp(environ,start_response)
 
     def create_session(self):
         '''Create a new anonymous session.'''

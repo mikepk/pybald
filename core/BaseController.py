@@ -62,7 +62,7 @@ def action(func):
         # run the controllers post code
         self._post(req,resp)
 
-        return resp
+        return resp(environ, start_response)
     return replacement
 
 

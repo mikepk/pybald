@@ -35,10 +35,10 @@ class Router:
         self.controllers = {}
         self.map = Mapper()
         
-        try:
-            self.debug = project.debug
-        except AttributeError:
-            self.debug = False
+        # try:
+        self.debug = project.debug
+        # except AttributeError:
+        #     self.debug = False
 
     def load(self):
         '''Scans the controllers path and imports all controllers with a canonical pybald name.'''
@@ -67,7 +67,6 @@ class Router:
     def __call__(self,environ,start_response):
         '''WSGI app, Router is called directly to actually route the url to the target'''
         req = Request(environ)
-
         # routes config object, this must be done on every request.
         # sets the mapper and allows link_to and redirect_to to
         # function on routes
@@ -134,7 +133,7 @@ class Router:
             # 500 server error
             # if debug is set, use the mako stack display
             if self.debug:
-                return Response(body=exceptions.html_error_template().render())
+                return Response(body=exceptions.html_error_template().render())(environ,start_response)
             else:
                 controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
                 handler = getattr(controller,'index')

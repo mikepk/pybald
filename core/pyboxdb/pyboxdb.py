@@ -129,9 +129,9 @@ class Pyboxdb:
     @queryTracer
     def sqlExecute(self, statement, values=None, cursor_type=None):
         '''Execute a sql statement + values'''
-
         # sometimes mysql 'goes away' so this retries the statment several times
         # to try reconnecting
+        # if project.debug:
         # print '''Statement: %s   Values: %s''' % (statement,values)
         retry = 3
         while retry > 0:
@@ -144,16 +144,21 @@ class Pyboxdb:
                 cursor.execute(statement, values)
                 retry = 0
             # retry the statement
-            except mysqldb.OperationalError,e:
-                self.connect()
+            except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
+                # self.db.commit()
+                cursor.close()
+                self.close()
                 retry = retry -1
                 if retry == 0:
                     raise
-        
-        self.db.commit()
-        rows = cursor.fetchall()
-        cursor.close()
-        return list(rows)
+                self.connect()
+            else:  
+                self.db.commit()
+                rows = cursor.fetchall()
+                cursor.close()
+                # self.close()
+                return list(rows)
+
        
     def gen_where_list(self,where):
         '''Take a where dictionary and create a where clause as well as a list of fields and placeholders'''

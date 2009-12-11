@@ -37,16 +37,21 @@ class ActionLogManager:
 
         log = LogEntry()
         log.session_id = session_id
-        log.request_uri = environ['REQUEST_URI']
-        log.ip_address = environ['REMOTE_ADDR']
-        if req.params:
-            log.form_vars = str(req.params)
-        else:
-            log.form_vars = ''
+        try:
+            # log.request_uri = environ['REQUEST_URI']
+            log.request_uri = environ['PATH_INFO']
+            log.ip_address = environ['REMOTE_ADDR']
+            if req.params:
+                log.form_vars = str(req.params)
+            else:
+                log.form_vars = ''
 
-        log.save()
-        
-        return self.application(environ, start_response)
+            log.save()
+        except KeyError:
+            pass
+        resp = req.get_response(self.application)
+
+        return resp(environ, start_response)
 
 class ActionLogManagerTests(unittest.TestCase):
     def setUp(self):
