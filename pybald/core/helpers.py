@@ -21,6 +21,61 @@ Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 
 from routes import url_for
 
+class Img_Object():
+    def __init__(self,src='', alt=''):
+        self.img_src = src
+        self.attribs = ['''alt="%s"''' % alt]
+
+    def __repr__(self):
+        '''Return the img markup.'''
+        attr = " ".join(self.attribs)
+        return '''<img src="%s" %s />''' % (self.img_src,attr)
+
+    def attr(self,**kargs):
+        for key in kargs:
+            if key == "css_class":
+                akey = "class"
+            else:
+                akey = key
+            self.attribs.append('''%s="%s"''' % (akey,kargs[key]))
+        return self
+
+
+class Link_Object():
+    def __init__(self,link_text=''):
+        self.link_text = link_text
+        self.attribs = []
+    
+    def to(self,route):
+        self.url = url_for(route)
+        return self
+    
+    def __repr__(self):
+        '''Return the link in string form.'''
+        attr = " ".join(self.attribs)
+        return '''<a href="%s" %s>%s</a>''' % (self.url,attr,self.link_text)
+
+    def attr(self,**kargs):
+        for key in kargs:
+            if key == "css_class":
+                akey = "class"
+            else:
+                akey = key
+            self.attribs.append('''%s="%s"''' % (akey,kargs[key]))
+        return self
+
+def link(link_text='',img=None):
+    lk = Link_Object(link_text)
+    return lk
+
+def img(src=None,alt=None):
+    if not src:
+        return ''
+    if not alt:
+        alt = src
+
+    img = Img_Object(src,alt)
+    return img
 
 def url_route(*pargs,**kargs):
     '''Why doesn t url_for work?'''

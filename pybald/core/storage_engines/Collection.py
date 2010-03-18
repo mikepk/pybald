@@ -18,7 +18,7 @@ class Collection:
     def __init__(self):
         self.store = DbStore()
         self.orders = []
-        self.limit = ''
+        self.limit_count = ''
 
     def load(self,obj_class,**where):
         options = self.parse_options()
@@ -64,6 +64,8 @@ class Collection:
         option = ''
         if self.orders:
             option += ' ORDER BY '+', '.join(self.orders)
+        if self.limit_count:
+            option += ' LIMIT '+str(self.limit_count)
         return option
     
     def order_by(self,member,direction=None):
@@ -71,9 +73,12 @@ class Collection:
             self.orders.append(str(member)+' '+str(direction))
         else:
             self.orders.append(str(member))
+        return self
     
-    def limit(self,limit):
-        pass
+    def limit(self,count):
+        self.limit_count = count
+        return self
+
 
 class CollectionTests(unittest.TestCase):
     def setUp(self):

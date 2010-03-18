@@ -29,7 +29,13 @@ class TemplateEngine:
             pass
 
         mylookup = TemplateLookup(directories=[self.path+'/app/views'], module_directory=self.path+'/viewscache',
-        imports=['from routes import url_for','from pybald.core.helpers import link_to','from pybald.core.helpers import link_img_to'],input_encoding='utf-8',output_encoding='utf-8')
+        imports=['from routes import url_for',
+        'from pybald.core.helpers import link',
+        'from pybald.core.helpers import img',
+        'from pybald.core.helpers import link_to',
+        'from pybald.core.helpers import link_img_to',
+        ],
+        input_encoding='utf-8',output_encoding='utf-8')
         mytemplate = mylookup.get_template("/"+data['template_id'].lower()+"."+format.lower()+".template")
         return mytemplate.render(**data)
 
