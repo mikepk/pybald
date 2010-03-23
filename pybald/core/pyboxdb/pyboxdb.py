@@ -133,9 +133,10 @@ class Pyboxdb:
         # to try reconnecting
         # if project.debug:
         # print '''Statement: %s   Values: %s''' % (statement,values)
-        retry = 3
+        retry = 20
         while retry > 0:
             try:
+                #self.connect()
                 if cursor_type:
                     cursor = self.db.cursor(cursor_type)
                 else:
@@ -156,7 +157,7 @@ class Pyboxdb:
                 self.db.commit()
                 rows = cursor.fetchall()
                 cursor.close()
-                # self.close()
+                #self.close()
                 return list(rows)
 
        
