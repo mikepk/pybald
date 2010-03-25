@@ -132,7 +132,7 @@ class Pyboxdb:
         # sometimes mysql 'goes away' so this retries the statment several times
         # to try reconnecting
         # if project.debug:
-        # print '''Statement: %s   Values: %s''' % (statement,values)
+        #print '''Statement: %s   Values: %s''' % (statement,values)
         retry = 20
         while retry > 0:
             try:
@@ -141,9 +141,8 @@ class Pyboxdb:
                     cursor = self.db.cursor(cursor_type)
                 else:
                     cursor = self.db.cursor()
-
                 cursor.execute(statement, values)
-                retry = 0
+                
             # retry the statement
             except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
                 # self.db.commit()
@@ -157,6 +156,7 @@ class Pyboxdb:
                 self.db.commit()
                 rows = cursor.fetchall()
                 cursor.close()
+                retry = 0
                 #self.close()
                 return list(rows)
 
