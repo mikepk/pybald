@@ -14,7 +14,7 @@ Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 import sys
 import os
 import unittest
-
+import time
 
 import sqlalchemy.pool as pool
 # from MySQLdb import OperationalError
@@ -145,15 +145,17 @@ class Pyboxdb:
                 
             # retry the statement
             except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
-                retry = retry -1
                 try:
+                    print "Retrying %d..." % (retry)
                     cursor.close()
                     self.close()
+                    self.connect()
+                    retry = retry -1
                 except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
-                    pass
+                    time.sleep(0.1)
+                    print "Retry failed..."
                 if retry == 0:
                     raise
-                self.connect()
             else:  
                 self.db.commit()
                 rows = cursor.fetchall()
