@@ -145,10 +145,12 @@ class Pyboxdb:
                 
             # retry the statement
             except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
-                # self.db.commit()
-                cursor.close()
-                self.close()
                 retry = retry -1
+                try:
+                    cursor.close()
+                    self.close()
+                except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
+                    pass
                 if retry == 0:
                     raise
                 self.connect()
