@@ -147,9 +147,9 @@ class Pyboxdb:
             except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
                 try:
                     print "Retrying %d..." % (retry)
-                    time.sleep(0.1)
                     cursor.close()
                     self.close()
+                    time.sleep(0.1)
                     self.connect()
                     retry = retry -1
                 except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
