@@ -146,17 +146,15 @@ class Pyboxdb:
             # retry the statement
             except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
                 try:
-                    print "Retrying %d..." % (retry)
+                    # print "Retrying %d..." % (retry)
                     # invalidate this pool connection
+                    #self.db.commit()
+                    #self.db.close()
                     self.db.invalidate()
-                    self.db.commit()
-                    self.db.close()
-                    time.sleep(0.1)
                     self.connect()
                     retry = retry -1
                 except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
                     time.sleep(0.1)
-                    print "Retry failed..."
                 if retry == 0:
                     raise
             else:  
