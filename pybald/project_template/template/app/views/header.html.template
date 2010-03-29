@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>\
+	%if page['title']: 
+${page['title']} &mdash; PyBald\
+	%else: 
+PyBald\
+	%endif
+</title>
+<link rel="stylesheet" type="text/css" media="screen" href="/css/site.css" />
+<script type="text/javascript" src="/js/jquery-1.3.2.min.js"></script>
+%if page['headers']:
+%for head in page['headers']:
+${head}
+%endfor
+%endif
+</head>
+<body>
+<div id="main_content">
+<div id="banner">
+${link_img_to('/images/pybald.png','home', alt="PyBald", style_id="logo")}
+<div class="clear"><!-- --></div>
+</div>
