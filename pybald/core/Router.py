@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-router.py
+Router.py
 
 Created by mikepk on 2009-06-28.
 Copyright (c) 2009 Michael Kowalchik. All rights reserved.
@@ -12,22 +12,14 @@ import os, glob
 import unittest
 import re
 
-from webob import Request, Response
-from webob import exc
+from webob import Request, Response, exc
 
-from routes import Mapper, request_config, url_for
+from routes import Mapper, request_config
 from mako import exceptions
 
-import pybald.core
 import app.controllers
 import project
 
-# import logging
-# LOG_FILENAME = '/tmp/logging_example.out'
-# logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
-
-# extract the package path for controllers
-controller_path = app.controllers.__path__[0]
 
 class Router:
     '''router class for connecting controllers to URLs'''
@@ -35,19 +27,23 @@ class Router:
         self.controllers = {}
         self.map = Mapper()
         
-        # try:
         self.debug = project.debug
-        # except AttributeError:
-        #     self.debug = False
+
+        # extract the package path for controllers
+        self.controller_path = app.controllers.__path__[0]
 
     def load(self):
-        '''Scans the controllers path and imports all controllers with a canonical pybald name.'''
+        '''Scans the controllers path and imports all controllers with a pybald name.'''
         controller_names = []
-        for modulefile in glob.iglob( os.path.join(controller_path,"*Controller.py") ):
+        for modulefile in glob.iglob( os.path.join(self.controller_path,"*Controller.py") ):
             modname = re.search('(\w+Controller)\.py',modulefile).group(1)
             imp_modname = 'app.controllers.'+modname
+            
+            # the controller name is whats mapped to the URLs. For ExampleController.py
+            # the controller name becomes example
             controller_name = re.search('(\w+)Controller',modname).group(1).lower()
             controller_names.append(controller_name)
+
             # Use the python built in __import__ method to import the Controllers
             # at runtime based on their presence in the controllers directory. This method is used
             # because the names of the controllers is only known at runtime.
@@ -56,7 +52,7 @@ class Router:
                 module = __import__(imp_modname, globals(), locals(), [modname], -1)
             except (ImportError, SyntaxError),e:
                 module = __import__('app.controllers.ErrorController', globals(), locals(), ['ErrorController'], -1)
-                raise
+                #raise
             # add the module name to the list of urls
             self.controllers[controller_name]={'name':modname,'module':module}
         # register the controller module names
@@ -99,8 +95,8 @@ class Router:
 
                 #methods starting with underscore can't be used as actions
                 if re.match('^\_',action):
-                    return exc.HTTPNotFound('invalid action')
-                #(environ, start_response)
+                    raise exc.HTTPNotFound("Invalid Action")
+                    
                 # create controller instance from controllers dictionary
                 # using routes 'controller' returned from the match
                 controller = getattr(self.controllers[controller]['module'], self.controllers[controller]['name'])()
@@ -108,15 +104,11 @@ class Router:
                 
             # only catch the KeyError/AttributeError for the controller/action search
             except (KeyError, AttributeError):
-                # 404 error
-                controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
-                handler = getattr(controller,'not_found')
+                raise exc.HTTPNotFound("Missing Controller or Action")
 
         # No URL vars means nothing matched in the mapper function
         else:
-            controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
-            handler = getattr(controller,'not_found')
-
+            raise exc.HTTPNotFound("No URL match")
 
         try:
             # call the action we determined from the mapper
@@ -124,20 +116,12 @@ class Router:
 
         # This is a mako 'missing template' exception
         except exceptions.TopLevelLookupException:
-            controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
-            handler = getattr(controller,'not_found')
-            return handler(environ,start_response)
+            raise exc.HTTPNotFound("Missing Template")
             
         except:
-            # other program error
+            # All other program errors get passed along
             # 500 server error
-            # if debug is set, use the mako stack display
-            if self.debug:
-                return Response(body=exceptions.html_error_template().render())(environ,start_response)
-            else:
-                controller = getattr(self.controllers['error']['module'], self.controllers['error']['name'])()
-                handler = getattr(controller,'index')
-                return handler(environ,start_response)
+            raise
 
                 
 class routerTests(unittest.TestCase):

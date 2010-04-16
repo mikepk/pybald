@@ -21,7 +21,7 @@ import re
 
 # action / method decorator
 # This decorator takes in the action method and adds some syntactic sugar around it.
-# Allows the actions to work with WebOb request respons objects, and handles default
+# Allows the actions to work with WebOb request / response objects, and handles default
 # behaviors, such as displaying the view when nothing is returned, or plain text
 # if a string is returned.
 def action(func):
@@ -31,14 +31,16 @@ def action(func):
         # template path = controller name + '/' + action name (except in the case of)
         # index
         self.template_id = re.search('(\w+)Controller',self.__module__).group(1).lower()
-        if not re.search('index',func.__name__):
+        # 'index' is a special name. The index action maps to the controller name (no action view)
+        if not re.search(r'index|__call__',func.__name__):
             self.template_id += '/'+str(func.__name__)
 
         # add any url variables as members of the controller
         if req.urlvars:
             ignore = ['controller','action']
             for key in req.urlvars.keys(): # and not in ignore:
-                #if key not in ignore:
+                #Set the controller object to contain the url variables
+                # parsed from the dispatcher / router
                 setattr(self,key,req.urlvars[key])
 
         # run the controllers "pre" code
