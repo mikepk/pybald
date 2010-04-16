@@ -116,10 +116,14 @@ class Pyboxdb:
             stack = inspect.stack()
             # get the calling frame for the method/function calling
             # the sql command (taking into account the sql+execute functions)
-            frame = stack[4][0]
-            frame_info = inspect.getframeinfo(frame)
-            debug = 'method:'+str(frame_info[2])+' file:'+str(frame_info[0])+' line:'+str(frame_info[1])
-            statement += ' -- '+debug
+            #max_stack = len(stack) - 1
+            try:
+                frame = stack[4][0]
+                frame_info = inspect.getframeinfo(frame)
+                debug = 'method:'+str(frame_info[2])+' file:'+str(frame_info[0])+' line:'+str(frame_info[1])
+                statement += ' -- '+debug
+            except IndexError:
+                pass
             return func(self, statement, values, cursor_type)
         return replacement
 

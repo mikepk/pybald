@@ -30,7 +30,7 @@ class Img_Object():
         '''Return the img markup.'''
         attr = " ".join(self.attribs)
         return '''<img src="%s" %s />''' % (self.img_src,attr)
-
+    
     def attr(self,**kargs):
         for key in kargs:
             if key == "css_class":
@@ -44,25 +44,35 @@ class Img_Object():
 class Link_Object():
     def __init__(self,link_text=''):
         self.link_text = link_text
+        self.url = "#"
         self.attribs = []
     
     def to(self,route):
         self.url = url_for(route)
         return self
     
-    def __repr__(self):
-        '''Return the link in string form.'''
-        attr = " ".join(self.attribs)
-        return '''<a href="%s" %s>%s</a>''' % (self.url,attr,self.link_text)
-
-    def attr(self,**kargs):
+    def set(self,**kargs):
         for key in kargs:
-            if key == "css_class":
-                akey = "class"
-            else:
-                akey = key
+            akey = key.lstrip('_')
             self.attribs.append('''%s="%s"''' % (akey,kargs[key]))
         return self
+    
+    def __repr__(self):
+        '''Return the link in string form.'''
+        attr = " ".join(self.attribs) #[key,value for x in self.attribs])
+        return '''<a href="%s" %s>%s</a>''' % (self.url,attr,self.link_text)
+
+    # def attr(self,**kargs):
+    #     for key in kargs:
+    #         try:        
+    #             if key == "css_class":
+    #                 akey = "class"
+    #             else:
+    #                 akey = key
+    #             self.attribs.append('''%s="%s"''' % (akey,kargs[key]))
+    #         except:
+    #             
+    #     return self
 
 def link(link_text='',img=None):
     lk = Link_Object(link_text)

@@ -28,7 +28,7 @@ class TemplateEngine:
         except:
             pass
 
-        mylookup = TemplateLookup(directories=[self.path+'/app/views'], module_directory=self.path+'/viewscache',
+        mylookup = TemplateLookup(directories=[os.path.join(self.path,'app/views')], module_directory=os.path.join(self.path,'viewscache'),
         imports=['from routes import url_for',
         'from pybald.core.helpers import link',
         'from pybald.core.helpers import img',
@@ -38,6 +38,18 @@ class TemplateEngine:
         input_encoding='utf-8',output_encoding='utf-8')
         mytemplate = mylookup.get_template("/"+data['template_id'].lower()+"."+format.lower()+".template")
         return mytemplate.render(**data)
+
+    
+    def clear_viewscache(self):
+        '''Clears out the viewscache. This isn't being used at the moment.'''
+        folder = os.path.join(self.path,'viewscache')
+        for the_file in os.listdir(folder):
+            file_path = os.path.join(folder, the_file)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception, e:
+                print e
 
 class TemplateEngineTests(unittest.TestCase):
     def setUp(self):
