@@ -1,6 +1,0 @@
-<%include file="header.html.template"/>
-<div id="main_page">
-<h1>Congratulations, PyBald appears to be working properly.</h1>
-<h2>${message}</h2>
-</div>
-<%include file="footer.html.template"/>

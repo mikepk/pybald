@@ -1,4 +1,0 @@
-<%include file="/header.html.template"/>
-<h1>Sorry, we can't find what you're looking for.</h1>
-<h2>You can always return to the ${link_to("home page", 'home')} and try something else.</h2>
-<%include file="/footer.html.template"/>

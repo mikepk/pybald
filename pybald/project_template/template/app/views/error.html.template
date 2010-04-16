@@ -1,3 +1,0 @@
-<%include file="/header.html.template"/>
-<h1>We've encountered an error. Please try again.</h1>
-<%include file="/footer.html.template"/>
