@@ -21,25 +21,23 @@ Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 
 from routes import url_for
 
+
 class Img_Object():
-    def __init__(self,src='', alt=''):
+    def __init__(self,src=''):
         self.img_src = src
-        self.attribs = ['''alt="%s"''' % alt]
+        self.attribs = []
 
     def __repr__(self):
-        '''Return the img markup.'''
-        attr = " ".join(self.attribs)
+        '''Return the link in string form.'''
+        attr = " ".join(self.attribs) #[key,value for x in self.attribs])
         return '''<img src="%s" %s />''' % (self.img_src,attr)
-    
-    def attr(self,**kargs):
+
+    def set(self,**kargs):
         for key in kargs:
-            if key == "css_class":
-                akey = "class"
-            else:
-                akey = key
+            akey = key.lstrip('_')
             self.attribs.append('''%s="%s"''' % (akey,kargs[key]))
         return self
-
+    
 
 class Link_Object():
     def __init__(self,link_text=''):
@@ -47,8 +45,8 @@ class Link_Object():
         self.url = "#"
         self.attribs = []
     
-    def to(self,route):
-        self.url = url_for(route)
+    def to(self,route,**kargs):
+        self.url = url_for(route,**kargs)
         return self
     
     def set(self,**kargs):
@@ -78,13 +76,10 @@ def link(link_text='',img=None):
     lk = Link_Object(link_text)
     return lk
 
-def img(src=None,alt=None):
+def img(src=None):
     if not src:
         return ''
-    if not alt:
-        alt = src
-
-    img = Img_Object(src,alt)
+    img = Img_Object(src)
     return img
 
 def url_route(*pargs,**kargs):
