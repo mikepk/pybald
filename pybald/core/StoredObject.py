@@ -24,7 +24,18 @@ Base = declarative_base(bind=engine)
 
 class StoredObject:
     def __init__(self):
-        pass
+        self.session = None
+    
+    def save(self):
+        if not self.session:
+            self.session = Session()
+        self.session.add(self)
+
+    @classmethod
+    def load(cls,**where):
+        session = Session()
+        return session.query(cls).filter_by(**where)
+
 
 class StoredObjectTests(unittest.TestCase):
     def setUp(self):
