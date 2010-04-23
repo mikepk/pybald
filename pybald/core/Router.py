@@ -50,19 +50,29 @@ class Router:
             # Syntactically this is equivalent to "from app.controllers.modname import modname"
             try:
                 module = __import__(imp_modname, globals(), locals(), [modname], -1)
-            except (ImportError, SyntaxError),e:
+            except (ImportError, SyntaxError):
                 module = __import__('app.controllers.ErrorController', globals(), locals(), ['ErrorController'], -1)
-                #raise
+                # store the exception in a closure, redefine the __call__
+                # method of the router to display this deferred error
+                self.__call__ = self.deferred_exception(self.__call__, sys.exc_info())
             # add the module name to the list of urls
             self.controllers[controller_name]={'name':modname,'module':module}
         # register the controller module names
         # with the mapper, creates the internal regular
         # expressions
         self.map.create_regs(controller_names)
-        
+
+    def deferred_exception(self, func, exc_info):
+        '''Function wrapper / closure to re-raise exceptions that occur too early to be displayed.'''
+        def raise_deferred(environ,start_response):
+            raise exc_info[0], exc_info[1], exc_info[2]
+        return raise_deferred
+
+
     def __call__(self,environ,start_response):
         '''WSGI app, Router is called directly to actually route the url to the target'''
         req = Request(environ)
+
         # routes config object, this must be done on every request.
         # sets the mapper and allows link_to and redirect_to to
         # function on routes
@@ -119,7 +129,7 @@ class Router:
             raise exc.HTTPNotFound("Missing Template")
             
         except:
-            # All other program errors get passed along
+            # All other program errors get re-raised
             # 500 server error
             raise
 

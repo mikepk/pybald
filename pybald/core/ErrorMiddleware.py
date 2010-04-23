@@ -41,6 +41,7 @@ class ErrorMiddleware:
                     handler = getattr(controller,action)
                     return handler(environ,start_response)
                 except (KeyError, AttributeError):
+                    controller = self.error_controller()
                     handler = controller
                     return handler(environ,start_response)
                 except:

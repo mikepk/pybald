@@ -16,7 +16,7 @@ import project
 import sqlalchemy as sa
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-engine = sa.create_engine(project.get_engine(),echo=True)
+engine = sa.create_engine(project.get_engine(),**project.get_engine_args())
 Session = scoped_session(sessionmaker(bind=engine))
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -36,6 +36,8 @@ class StoredObject:
         session = Session()
         return session.query(cls).filter_by(**where)
 
+    class NotFound(Exception):
+        pass
 
 class StoredObjectTests(unittest.TestCase):
     def setUp(self):
