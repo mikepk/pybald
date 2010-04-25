@@ -6,6 +6,8 @@ PyBald is a extremely light weight, python, `MVC <http://en.wikipedia.org/wiki/M
   * `Routes <http://routes.groovie.org/>`_ for dispatching and URL parsing
   * `Mako <http://www.makotemplates.org/>`_ as the template engine.
   * A very thin MySQL interface and python object to database table mapper
+  * `SqlAlchemy <http://www.sqlalchemy.org/>`_ integration
+  * Automated forms using `FormAlchemy <http://code.google.com/p/formalchemy/>`_
   * A slightly more complex WSGI decorator
   * An Apache configuration template
   * Session Management, Simple Logging, and some template helper functions
@@ -13,4 +15,4 @@ PyBald is a extremely light weight, python, `MVC <http://en.wikipedia.org/wiki/M
 License
 =======
 
-PyBald is distributed under the `MIT license <http://www.opensource.org/licenses/mit-license.php>`_.
+PyBald is distributed under the `MIT license <http://www.opensource.org/licenses/mit-license.php>`_. See LICENSE.
