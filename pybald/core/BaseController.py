@@ -19,6 +19,8 @@ from webob import Request, Response
 from webob import exc
 import re
 
+from routes import redirect_to
+
 # action / method decorator
 # This decorator takes in the action method and adds some syntactic sugar around it.
 # Allows the actions to work with WebOb request / response objects, and handles default
@@ -108,6 +110,10 @@ class BaseController():
     def _post(self,req,resp):
         '''Code to run after any action.'''
         pass
+
+    def _redirect_to(self,url):
+        '''Redirect the controller'''
+        return redirect_to(url)
 
     def _view(self,user_dict=None):
         '''Method to invoke the template engine and display a view'''
