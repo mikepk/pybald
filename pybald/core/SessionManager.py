@@ -16,8 +16,11 @@ import datetime
 from webob import Request, Response
 from app.models.Session import Session
 
+# from sqlalchemy.orm import orm_exc
+from sqlalchemy.orm.exc import NoResultFound
 class SessionManager:
     '''Code to handle anonymous and user sessions, implemented as WSGI middleware.'''
+
     def __init__(self,application=None):
         if application:
             self.application = application
@@ -25,17 +28,17 @@ class SessionManager:
             # no pipeline so just generate a generic response
             self.applicaion = Response()
 
-    def process_session(self,environ,start_response):
+    def __call__(self,environ,start_response):
         req = Request(environ)
         # check if the browser has a cookie with a session_id
         # load the session from the session_id
         try:
             session_id = req.cookies['session_id']
-            environ['session'] = Session().load(session_id) 
+            environ['session'] = Session.load(session_id = session_id).one() 
             resp = req.get_response(self.application)
         # no session_id cookie set, either no session
         # or create anon session
-        except (KeyError, IOError, Session.NotFound):
+        except (KeyError, IOError, Session.NotFound, NoResultFound):
             session_id = self.create_session()
             environ['session'] = self.session
             resp = req.get_response(self.application)
@@ -47,8 +50,7 @@ class SessionManager:
     def create_session(self):
         '''Create a new anonymous session.'''
         self.session = Session()
-        self.session.generate_id()
-        self.session.save()
+        self.session.save(True)
         return self.session.session_id
 
     def create_session_cookie(self,resp):

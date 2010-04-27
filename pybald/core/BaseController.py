@@ -13,7 +13,7 @@ import sys
 import os
 import unittest
 
-from pybald.core.TemplateEngine import TemplateEngine
+from pybald.core.TemplateEngine import engine
 
 from webob import Request, Response
 from webob import exc
@@ -88,17 +88,20 @@ class BaseController():
             # This will except in all cases where the session manager is not used
             self.session = req.environ['session']
             try:
-                self.user = self.session.cachestore['user']
-            except KeyError:
+                self.user = self.session.user
+            except (AttributeError,KeyError):
                 self.user = None
 
             # check and clear the session error state.
             # The next handler should handle the error or it's lost.
             try:
-                if self.session.cachestore["error"]:
-                    self.error = self.session.cachestore["error"]
-                    self.session.cachestore["error"] = None
-                    self.session.save()
+                if self.session.cache:
+                    if self.session.cache["error"]:
+                        self.error = self.session.cache["error"]
+                        self.session.cache["error"] = None
+                        self.session.save(True)
+                else:
+                    self.error = None
             except KeyError:
                 self.error = None
 
@@ -117,7 +120,7 @@ class BaseController():
 
     def _view(self,user_dict=None):
         '''Method to invoke the template engine and display a view'''
-        view = TemplateEngine()
+        view = engine
         # user supplied dictionary, otherwise create a dictionary
         # from the controller
         if user_dict:

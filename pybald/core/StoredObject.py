@@ -23,13 +23,24 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base(bind=engine)
 
 class StoredObject:
+    '''Generic StoredObject all models inherit from.'''
     def __init__(self):
-        self.session = None
-    
-    def save(self):
+        self.session = None       
+
+    def save(self,commit=False):
         if not self.session:
             self.session = Session()
         self.session.add(self)
+        if commit:
+            self.commit()
+        return self
+
+    def commit(self):
+        '''Call the commit for the entire session (includes anything else pending)'''
+        if not self.session:
+            self.session = Session()
+        self.session.commit()
+        
 
     @classmethod
     def load(cls,**where):
