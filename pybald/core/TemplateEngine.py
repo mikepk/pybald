@@ -28,7 +28,8 @@ class TemplateEngine:
                 'from pybald.core.helpers import link_to',
                 'from pybald.core.helpers import link_img_to',
                 ],
-                input_encoding='utf-8',output_encoding='utf-8')
+                input_encoding='utf-8',output_encoding='utf-8',
+                filesystem_checks=False)
 
 
     def form_render(self,template_name=None,**kargs):
@@ -36,7 +37,7 @@ class TemplateEngine:
         data = kargs
         try:
             data['template_id'] = kargs['fieldset'].template_id
-        except KeyError, AttributeError:
+        except (KeyError, AttributeError):
             data['template_id'] = 'forms/%s' % template_name
         return self.__call__(data,format="form")
 

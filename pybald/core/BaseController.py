@@ -19,6 +19,8 @@ from webob import Request, Response
 from webob import exc
 import re
 
+from pybald.core.StoredObject import Session
+
 from routes import redirect_to
 
 # action / method decorator
@@ -112,7 +114,7 @@ class BaseController():
 
     def _post(self,req,resp):
         '''Code to run after any action.'''
-        pass
+        Session.remove()
 
     def _redirect_to(self,url):
         '''Redirect the controller'''

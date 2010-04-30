@@ -15,7 +15,7 @@ import pickle
 import app
 import project
 
-file_store_path = project.path+'/filestore'
+file_store_path = project.get_path()+'/filestore'
 
 class FileStore:
     def __init__(self):

@@ -14,7 +14,8 @@ import unittest
 import project
 
 import sqlalchemy as sa
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, reconstructor
+from sqlalchemy import orm
 
 engine = sa.create_engine(project.get_engine(),**project.get_engine_args())
 Session = scoped_session(sessionmaker(bind=engine))
@@ -24,10 +25,17 @@ Base = declarative_base(bind=engine)
 
 class StoredObject:
     '''Generic StoredObject all models inherit from.'''
+        
+    @reconstructor
+    def __orm_init__(self):
+        '''Called when objects are loaded from db by sqlalchemy. Initializes non db and transient values.'''
+        self.session = None
+
     def __init__(self):
-        self.session = None       
+        pass
 
     def save(self,commit=False):
+        '''Save this instance. When commit is False, stages data for later commit.'''
         if not self.session:
             self.session = Session()
         self.session.add(self)
@@ -44,6 +52,7 @@ class StoredObject:
 
     @classmethod
     def load(cls,**where):
+        '''Builds a sqlalchemy load query to return stored objects. Must execute the query to retrieve.'''
         session = Session()
         return session.query(cls).filter_by(**where)
 

@@ -15,11 +15,11 @@ from formalchemy import FieldSet
 
 import project
 from formalchemy import templates, config
-from pybald.core.TemplateEngine import engine
+from pybald.core.TemplateEngine import TemplateEngine
 
 # set the Pybald Mako engine to be the main
 # form template engine
-config.engine = engine.form_render
+config.engine = TemplateEngine().form_render
 
 class BaseForm(FieldSet):
     def __init__(self,instance=None, data=None):

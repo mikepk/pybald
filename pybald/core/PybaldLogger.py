@@ -39,8 +39,8 @@ class PybaldLogger:
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         # add formatter to handler
         handler.setFormatter(formatter)
-
         self.my_logger.addHandler(handler)
+        self.write("Logger Started")
         
 
     def __call__(self,environ,start_response):

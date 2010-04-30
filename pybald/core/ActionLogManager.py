@@ -23,7 +23,7 @@ class ActionLogManager:
             # no pipeline so just generate a generic response
             self.applicaion = Response()
 
-    def process_log(self,environ,start_response):
+    def __call__(self,environ,start_response):
         req = Request(environ)
         # check if the browser has a cookie with a session_id
         # load the session from the session_id
