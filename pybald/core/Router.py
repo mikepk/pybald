@@ -93,9 +93,12 @@ class Router:
         # urlvars will contain controller + other non query
         # URL data
         urlvars = self.map.match(req.path)
-        
-        environ['REQUEST_METHOD'] = old_method
         if not urlvars: urlvars = {}
+        
+        # restore the original method if it was modified for REST purposes
+        if old_method:
+            environ['REQUEST_METHOD'] = old_method
+
 
         req.urlvars = urlvars
         environ['urlvars'] = urlvars
