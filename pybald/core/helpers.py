@@ -60,17 +60,6 @@ class Link_Object():
         attr = " ".join(self.attribs) #[key,value for x in self.attribs])
         return '''<a href="%s" %s>%s</a>''' % (self.url,attr,self.link_text)
 
-    # def attr(self,**kargs):
-    #     for key in kargs:
-    #         try:        
-    #             if key == "css_class":
-    #                 akey = "class"
-    #             else:
-    #                 akey = key
-    #             self.attribs.append('''%s="%s"''' % (akey,kargs[key]))
-    #         except:
-    #             
-    #     return self
 
 def link(link_text='',img=None):
     lk = Link_Object(link_text)

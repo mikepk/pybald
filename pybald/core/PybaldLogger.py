@@ -46,6 +46,7 @@ class PybaldLogger:
     def __call__(self,environ,start_response):
         req = Request(environ)
         sys.stdout = self
+        sys.stderr = self
         #environ['wsgi.errors'] =
         #pass through if no exceptions occur
         resp = req.get_response(self.application)

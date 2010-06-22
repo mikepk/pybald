@@ -33,7 +33,7 @@ class ErrorMiddleware:
             resp = req.get_response(self.application)
             return resp(environ,start_response)
         # handle HTTP errors
-        except exc.HTTPError, err:
+        except exc.HTTPException, err:
             if self.error_controller:
                 try:
                     controller = self.error_controller()
@@ -44,7 +44,7 @@ class ErrorMiddleware:
                     controller = self.error_controller()
                     handler = controller
                     return handler(environ,start_response)
-                except:
+                except Exception, ex:
                     return err(environ,start_response)
             else:
                 return err(environ,start_response)
@@ -58,7 +58,8 @@ class ErrorMiddleware:
             else:
                 # create a generic HTTP server Error webob exception
                 return exc.HTTPServerError()(environ,start_response)
-        
+        # finally:
+        #     sys.stderr.write(str(err))
 
 class ErrorMiddlewareTests(unittest.TestCase):
     def setUp(self):

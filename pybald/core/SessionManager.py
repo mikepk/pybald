@@ -17,7 +17,7 @@ from webob import Request, Response
 from app.models.Session import Session
 
 # from sqlalchemy.orm import orm_exc
-from sqlalchemy.orm.exc import NoResultFound
+
 class SessionManager:
     '''Code to handle anonymous and user sessions, implemented as WSGI middleware.'''
 
@@ -34,11 +34,11 @@ class SessionManager:
         # load the session from the session_id
         try:
             session_id = req.cookies['session_id']
-            environ['session'] = Session.load(session_id = session_id).one() 
+            environ['session'] = Session.get_session(session_id)
             resp = req.get_response(self.application)
         # no session_id cookie set, either no session
         # or create anon session
-        except (KeyError, IOError, Session.NotFound, NoResultFound):
+        except (KeyError, IOError, Session.NotFound):
             session_id = self.create_session()
             environ['session'] = self.session
             resp = req.get_response(self.application)

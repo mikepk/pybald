@@ -19,7 +19,8 @@ from webob import Request, Response
 from webob import exc
 import re
 
-from pybald.core.StoredObject import Session
+# The context / threadlocal db session
+from app.models import DbSession as db
 
 from routes import redirect_to
 
@@ -114,7 +115,9 @@ class BaseController():
 
     def _post(self,req,resp):
         '''Code to run after any action.'''
-        Session.remove()
+        # Closes the db Session object. Required to avoid holding sessions
+        # indefinitely and overruning the sqlalchemy pool
+        db.remove()
 
     def _redirect_to(self,url):
         '''Redirect the controller'''

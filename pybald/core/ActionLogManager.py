@@ -38,7 +38,6 @@ class ActionLogManager:
         log = LogEntry()
         log.session_id = session_id
         try:
-            # log.request_uri = environ['REQUEST_URI']
             log.request_uri = environ['PATH_INFO']
             log.ip_address = environ['REMOTE_ADDR']
             if req.params:
