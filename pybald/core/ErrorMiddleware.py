@@ -39,13 +39,18 @@ class ErrorMiddleware:
                     controller = self.error_controller()
                     action = self.error_controller.error_map[err.code]
                     handler = getattr(controller,action)
-                    return handler(environ,start_response)
+                    #return handler(environ,start_response)
                 except (KeyError, AttributeError):
                     controller = self.error_controller()
                     handler = controller
-                    return handler(environ,start_response)
                 except Exception, ex:
-                    return err(environ,start_response)
+                    handler = err
+                    #return err(environ,start_response)
+                
+                try:
+                    return handler(environ,start_response)
+                except Exception:
+                    raise
             else:
                 return err(environ,start_response)
                 
