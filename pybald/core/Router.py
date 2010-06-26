@@ -14,7 +14,7 @@ import re
 
 from webob import Request, Response, exc
 
-from routes import Mapper, request_config
+from routes import Mapper, request_config, URLGenerator
 # handle Mako's top level lookup
 from mako import exceptions
 
@@ -26,8 +26,12 @@ class Router:
     '''router class for connecting controllers to URLs'''
     def __init__(self,application=None,routes=None):
         self.controllers = {}
-        self.map = Mapper()
+        # default mapper was switched to explicit
+        # explains all the mapper weirdness I was seeing
+        # explicit turns off route memory and 'index' for
+        # default action
         # initialize Router
+        self.map = Mapper(explicit=False)
         if not routes:
             raise Exception("Route mapping required, please pass in a routing function to Router init.")
         routes(self.map)
@@ -78,6 +82,16 @@ class Router:
         config = request_config()
         config.mapper = self.map
         config.environ = environ
+
+        match = config.mapper_dict
+	route = config.route
+        url = URLGenerator(self.map, environ)
+        environ['wsgiorg.routing_args'] = ((url), match)
+        environ['routes.route'] = route
+        environ['routes.url'] = url
+
+
+
         # defines the redirect method. In this case it generates a
         # Webob Response object with the location and status headers
         # set
@@ -87,7 +101,7 @@ class Router:
         # debug print messages
         if project.debug:
             print '============= '+req.path+' =============='
-
+            print 'Method: %s' % req.method
 
         # use routes to match the url to a path
         # urlvars will contain controller + other non query
