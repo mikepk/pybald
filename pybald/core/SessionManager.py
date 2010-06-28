@@ -34,13 +34,13 @@ class SessionManager:
         # load the session from the session_id
         try:
             session_id = req.cookies['session_id']
-            environ['session'] = Session.get_session(session_id)
+            environ['pybald.session'] = Session.get_session(session_id)
             resp = req.get_response(self.application)
         # no session_id cookie set, either no session
         # or create anon session
         except (KeyError, IOError, Session.NotFound):
             session_id = self.create_session()
-            environ['session'] = self.session
+            environ['pybald.session'] = self.session
             resp = req.get_response(self.application)
             # modify the response object to add the cookie response
             self.create_session_cookie(resp)
