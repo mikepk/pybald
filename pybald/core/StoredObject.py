@@ -35,10 +35,11 @@ class StoredObject:
     @reconstructor
     def __orm_init__(self):
         '''Called when objects are loaded from db by sqlalchemy. Initializes non db and transient values.'''
-        self.session = db
+        self.__db_init__()
 
-    def __init__(self):
-        pass
+    def __db_init__(self):
+        self.session = db
+    
 
     def save(self,commit=False):
         '''Save this instance. When commit is False, stages data for later commit.'''
