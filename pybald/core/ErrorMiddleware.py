@@ -30,8 +30,7 @@ class ErrorMiddleware:
         req = Request(environ)
         #pass through if no exceptions occur
         try:
-            resp = req.get_response(self.application)
-            return resp(environ,start_response)
+            return req.get_response(self.application)(environ,start_response)
         # handle HTTP errors
         except exc.HTTPException, err:
             if self.error_controller:

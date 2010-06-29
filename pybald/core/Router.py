@@ -62,7 +62,6 @@ class Router:
     def __call__(self,environ,start_response):
         '''WSGI app, Router is called directly to actually route the url to the target'''
         req = Request(environ)
-
         #method override
         # for REST architecture, this allows a POST parameter of _method
         # to be used to override POST with alternate HTTP verbs (PUT,DELETE)
@@ -144,7 +143,6 @@ class Router:
         try:
             # call the action we determined from the mapper
             return handler(environ,start_response)
-
         # This is a mako 'missing template' exception
         except exceptions.TopLevelLookupException:
             raise exc.HTTPNotFound("Missing Template")

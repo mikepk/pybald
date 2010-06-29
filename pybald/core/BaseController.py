@@ -41,21 +41,18 @@ def action(func):
             self.template_id += '/'+str(func.__name__)
 
         # add any url variables as members of the controller
+        # TODO: setup a way to avoid collisions with existing members (data overriding view, 
+        # possible sec hole)
         if req.urlvars:
-            ignore = ['controller','action']
-            for key in req.urlvars.keys(): # and not in ignore:
+            for key in req.urlvars.keys():
                 #Set the controller object to contain the url variables
                 # parsed from the dispatcher / router
                 setattr(self,key,req.urlvars[key])
-
         # run the controllers "pre" code
-        resp = self._pre(req)
-        # If the pre code returned a response, return that
-        if not resp:
-            try:
-                resp = func(self,req)
-            except exc.HTTPException, e:
-                resp = e
+        # resp = self._pre(req)
+        # # If the pre code returned a response, return that
+        # if not resp:
+        resp = self._pre(req) or func(self,req)
 
         # if there's no return, call the view method
         if not resp:
@@ -78,6 +75,9 @@ class BaseController():
     def __init__(self):
         '''Initialize the base controller with a page object. Page dictionary controls title, headers, etc...'''
         self.page = {'title':None,'metas':[],'headers':[]}
+        self.error = None
+        self.user = None
+        self.session = None
                 
     @action
     def index(self,req):
@@ -89,7 +89,7 @@ class BaseController():
         try:
             # set the session and user
             # This will except in all cases where the session manager is not used
-            self.session = req.environ['session']
+            self.session = req.environ['pybald.session']
             try:
                 self.user = self.session.user
             except (AttributeError,KeyError):
