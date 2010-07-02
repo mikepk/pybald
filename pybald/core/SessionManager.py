@@ -21,7 +21,8 @@ from app.models.Session import Session
 class SessionManager:
     '''Code to handle anonymous and user sessions, implemented as WSGI middleware.'''
 
-    def __init__(self,application=None):
+    def __init__(self,application=None,days=14):
+        self.days = days
         if application:
             self.application = application
         else:
@@ -57,9 +58,11 @@ class SessionManager:
         '''create the cookie for session storage, adds to a webob resp object'''
         # set cookies for testing
         #domain='' path, max_age, max_age=360 secure=True # https only
-        expires = datetime.datetime.utcnow() + datetime.timedelta(days=14)
-        resp.set_cookie('session_id', self.session.session_id, expires=expires.strftime('%a, %d %b %Y %H:%M:%S UTC'), path='/') 
-        resp.headers['Set-Cookie']
+        expires=None
+        if self.days:
+            expires = datetime.timedelta(days=self.days)
+        # resp.set_cookie('session_id', self.session.session_id, expires=expires.strftime('%a, %d %b %Y %H:%M:%S UTC'), path='/') 
+        resp.set_cookie('session_id', self.session.session_id, max_age=expires, path='/') 
         return resp
         
 

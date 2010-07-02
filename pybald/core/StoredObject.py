@@ -12,17 +12,7 @@ import os
 import unittest
 
 import project
-
-# import sqlalchemy as sa
-# from sqlalchemy.orm import scoped_session, sessionmaker, 
 from sqlalchemy.orm import reconstructor
-# from sqlalchemy import orm
-# 
-# engine = sa.create_engine(project.get_engine(),**project.get_engine_args())
-# Session = scoped_session(sessionmaker(bind=engine))
-# 
-# from sqlalchemy.ext.declarative import declarative_base
-# Base = declarative_base(bind=engine)
 
 from app.models import DbSession as db
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
@@ -31,6 +21,10 @@ class StoredObject:
     '''Generic StoredObject all models inherit from.'''
     NoResultFound = NoResultFound
     MultipleResultsFound = MultipleResultsFound
+
+    def __init__(self):
+        self.__db_init__()
+        pass
     
     @reconstructor
     def __orm_init__(self):
@@ -38,15 +32,15 @@ class StoredObject:
         self.__db_init__()
 
     def __db_init__(self):
-        self.session = db
-    
+        self.db_session = db
 
+    
     def save(self,commit=False):
         '''Save this instance. When commit is False, stages data for later commit.'''
         # if not self.session:
         #     self.session = Session()
         db.add(self)
-        # self.session.add(self)
+        
         if commit:
             self.commit()
         return self
@@ -57,13 +51,17 @@ class StoredObject:
         #     self.session = Session()
         db.commit()
         # self.session.commit()
-        
+
 
     @classmethod
     def load(cls,**where):
         '''Builds a sqlalchemy load query to return stored objects. Must execute the query to retrieve.'''
         # session = Session()
         return db.query(cls).filter_by(**where)
+
+    @classmethod
+    def query(cls):
+        return db.query(cls)
 
     @classmethod
     def load_list(cls,arg):
