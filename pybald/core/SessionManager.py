@@ -33,26 +33,40 @@ class SessionManager:
         req = Request(environ)
         # check if the browser has a cookie with a session_id
         # load the session from the session_id
+        new_session = False
         try:
             session_id = req.cookies['session_id']
             environ['pybald.session'] = Session.get_session(session_id)
-            resp = req.get_response(self.application)
         # no session_id cookie set, either no session
         # or create anon session
         except (KeyError, IOError, Session.NotFound):
-            session_id = self.create_session()
-            environ['pybald.session'] = self.session
-            resp = req.get_response(self.application)
+            self.create_session(environ)
+            new_session = True
+
+
+        # execute any pre-processing code for the session
+        # this includes copying environ variables etc...
+        environ['pybald.session']._pre(req)
+
+        # call the next part of the pipeline
+        resp = req.get_response(self.application)
+
+        if new_session:
             # modify the response object to add the cookie response
             self.create_session_cookie(resp)
 
+        # execute any post-processing code for the session
+        # this includes saving the session if necessary.
+        environ['pybald.session']._post(req,resp)
+
         return resp(environ,start_response)
 
-    def create_session(self):
+    def create_session(self,environ):
         '''Create a new anonymous session.'''
-        self.session = Session()
-        self.session.save(True)
-        return self.session.session_id
+        environ['pybald.session'] = Session()
+        environ['pybald.session'].dirty = True
+        # environ['pybald.session'].save(True)
+        return environ['pybald.session'].session_id
 
     def create_session_cookie(self,resp):
         '''create the cookie for session storage, adds to a webob resp object'''
@@ -62,7 +76,7 @@ class SessionManager:
         if self.days:
             expires = datetime.timedelta(days=self.days)
         # resp.set_cookie('session_id', self.session.session_id, expires=expires.strftime('%a, %d %b %Y %H:%M:%S UTC'), path='/') 
-        resp.set_cookie('session_id', self.session.session_id, max_age=expires, path='/') 
+        resp.set_cookie('session_id', resp.environ['pybald.session'].session_id, max_age=expires, path='/') 
         return resp
         
 

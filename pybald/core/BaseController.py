@@ -35,6 +35,7 @@ def action(func):
         # this code defines the template id to match against
         # template path = controller name + '/' + action name (except in the case of)
         # index
+
         self.template_id = re.search('(\w+)Controller',self.__module__).group(1).lower()
         # 'index' is a special name. The index action maps to the controller name (no action view)
         if not re.search(r'index|__call__',func.__name__):
@@ -67,6 +68,7 @@ def action(func):
         self._post(req,resp)
 
         return resp(environ, start_response)
+    replacement.__name__ = func.__name__
     return replacement
 
 
@@ -86,38 +88,39 @@ class BaseController():
         
     def _pre(self,req):
         '''Code to run before any action.'''
-        try:
-            # set the session and user
-            # This will except in all cases where the session manager is not used
-            self.session = req.environ['pybald.session']
-            try:
-                self.user = self.session.user
-            except (AttributeError,KeyError):
-                self.user = None
-
-            # check and clear the session error state.
-            # The next handler should handle the error or it's lost.
-            try:
-                if self.session.cache:
-                    if self.session.cache["error"]:
-                        self.error = self.session.cache["error"]
-                        self.session.cache["error"] = None
-                        self.session.save(True)
-                else:
-                    self.error = None
-            except KeyError:
-                self.error = None
-
-        except KeyError:
-            self.session = None
-            self.user = None
-            self.error = None
+        pass
+        # try:
+        #     # set the session and user
+        #     # This will except in all cases where the session manager is not used
+        #     self.session = req.environ['pybald.session']
+        #     try:
+        #         self.user = self.session.user
+        #     except (AttributeError,KeyError):
+        #         self.user = None
+        # 
+        #     # # check and clear the session error state.
+        #     # # The next handler should handle the error or it's lost.
+        #     # try:
+        #     #     if self.session.cache:
+        #     #         if self.session.cache["error"]:
+        #     #             self.error = self.session.cache["error"]
+        #     #             self.session.cache["error"] = None
+        #     #             self.session.save(True)
+        #     #     else:
+        #     #         self.error = None
+        #     # except KeyError:
+        #     #     self.error = None
+        # 
+        # except KeyError:
+        #     self.session = None
+        #     self.user = None
+        #     self.error = None
 
     def _post(self,req,resp):
         '''Code to run after any action.'''
         # Closes the db Session object. Required to avoid holding sessions
         # indefinitely and overruning the sqlalchemy pool
-        db.remove()
+        pass
 
     def _redirect_to(self,url):
         '''Redirect the controller'''

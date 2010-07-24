@@ -24,7 +24,6 @@ class StoredObject:
 
     def __init__(self):
         self.__db_init__()
-        pass
     
     @reconstructor
     def __orm_init__(self):
