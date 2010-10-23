@@ -29,7 +29,7 @@ class TemplateEngine:
                 'from pybald.core.helpers import link_img_to',
                 ],
                 input_encoding='utf-8',output_encoding='utf-8',
-                filesystem_checks=False)
+                filesystem_checks=True)
 
 
     def form_render(self,template_name=None,**kargs):
