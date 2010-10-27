@@ -28,6 +28,13 @@ from sqlalchemy.orm import (
     eagerload_all
     )
 
+from sqlalchemy.orm.exc import (
+    NoResultFound, 
+    MultipleResultsFound
+    )
+
+
+
 import re
 
 # for green operation
@@ -40,6 +47,11 @@ else:
 
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base(bind=engine)
+
+
+class NotFound(NoResultFound):
+    '''Generic Not Found Error'''
+    pass
 
 class Plural(object):
     '''Simple Pluralizer object. Stores naive rules for word pluralization.'''
@@ -82,6 +94,8 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
 class Model(Base):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
     __metaclass__ = ModelMeta
+    
+    NotFound = sqlalchemy.orm.exc.NoResultFound
     
     def save(self,commit=True):
         '''Save this instance. When commit is False, stages data for later commit.'''

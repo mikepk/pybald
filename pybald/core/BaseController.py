@@ -88,43 +88,18 @@ class BaseController():
     def _pre(self,req):
         '''Code to run before any action.'''
         pass
-        # try:
-        #     # set the session and user
-        #     # This will except in all cases where the session manager is not used
-        #     self.session = req.environ['pybald.session']
-        #     try:
-        #         self.user = self.session.user
-        #     except (AttributeError,KeyError):
-        #         self.user = None
-        # 
-        #     # # check and clear the session error state.
-        #     # # The next handler should handle the error or it's lost.
-        #     # try:
-        #     #     if self.session.cache:
-        #     #         if self.session.cache["error"]:
-        #     #             self.error = self.session.cache["error"]
-        #     #             self.session.cache["error"] = None
-        #     #             self.session.save(True)
-        #     #     else:
-        #     #         self.error = None
-        #     # except KeyError:
-        #     #     self.error = None
-        # 
-        # except KeyError:
-        #     self.session = None
-        #     self.user = None
-        #     self.error = None
 
     def _post(self,req,resp):
         '''Code to run after any action.'''
         # Closes the db Session object. Required to avoid holding sessions
         # indefinitely and overruning the sqlalchemy pool
-        db.remove()
-        # pass
+        pass
+        # print str("CLosing in the Controller")
+        # db.remove()
 
-    def _redirect_to(self,url):
+    def _redirect_to(self,url,*pargs,**kargs):
         '''Redirect the controller'''
-        return redirect_to(url)
+        return redirect_to(url,*pargs,**kargs)
 
     def _view(self,user_dict=None):
         '''Method to invoke the template engine and display a view'''

@@ -36,7 +36,7 @@ class SessionManager:
         new_session = False
         try:
             session_id = req.cookies['session_id']
-            environ['pybald.session'] = Session.get_session(session_id)
+            environ['pybald.session'] = Session.get(session_id=session_id)
         # no session_id cookie set, either no session
         # or create anon session
         except (KeyError, IOError, Session.NotFound):
@@ -64,8 +64,7 @@ class SessionManager:
     def create_session(self,environ):
         '''Create a new anonymous session.'''
         environ['pybald.session'] = Session()
-        environ['pybald.session'].dirty = True
-        # environ['pybald.session'].save(True)
+        environ['pybald.session'].save()
         return environ['pybald.session'].session_id
 
     def create_session_cookie(self,resp):
