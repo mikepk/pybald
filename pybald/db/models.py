@@ -4,6 +4,7 @@ from pybald.db.db_engine import engine
 from sqlalchemy import (
     MetaData, 
     INT as Int,
+    Integer,
     Float,
     Column, 
     ForeignKey, 
@@ -12,6 +13,7 @@ from sqlalchemy import (
     TIMESTAMP as TimeStamp, 
     PickleType,
     Time,
+    Table
     )
 
 from sqlalchemy.orm import (
