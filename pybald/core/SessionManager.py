@@ -18,7 +18,7 @@ from app.models.Session import Session
 
 # from sqlalchemy.orm import orm_exc
 
-class SessionManager:
+class SessionManager(object):
     '''Code to handle anonymous and user sessions, implemented as WSGI middleware.'''
 
     def __init__(self,application=None,days=14):
@@ -47,6 +47,10 @@ class SessionManager:
         # execute any pre-processing code for the session
         # this includes copying environ variables etc...
         environ['pybald.session']._pre(req)
+
+        if not environ.has_key('pybald.extension'):
+            environ['pybald.extension'] = {}
+        environ['pybald.extension']['session'] = environ['pybald.session']
 
         # call the next part of the pipeline
         resp = req.get_response(self.application)

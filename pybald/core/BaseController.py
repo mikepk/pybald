@@ -19,9 +19,13 @@ from webob import Request, Response
 from webob import exc
 import re
 
-from pybald.db.models import db
+from pybald.db.models import session
 
 from routes import redirect_to
+
+def deCamelize(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 # action / method decorator
 # This decorator takes in the action method and adds some syntactic sugar around it.
@@ -31,14 +35,6 @@ from routes import redirect_to
 def action(func):
     def replacement(self, environ, start_response):
         req = Request(environ)
-        # this code defines the template id to match against
-        # template path = controller name + '/' + action name (except in the case of)
-        # index
-
-        self.template_id = re.search('(\w+)Controller',self.__module__).group(1).lower()
-        # 'index' is a special name. The index action maps to the controller name (no action view)
-        if not re.search(r'index|__call__',func.__name__):
-            self.template_id += '/'+str(func.__name__)
 
         # add any url variables as members of the controller
         # TODO: setup a way to avoid collisions with existing members (data overriding view, 
@@ -48,15 +44,27 @@ def action(func):
                 #Set the controller object to contain the url variables
                 # parsed from the dispatcher / router
                 setattr(self,key,req.urlvars[key])
+
+        # this code defines the template id to match against
+        # template path = controller name + '/' + action name (except in the case of)
+        # index
+        self.template_id = deCamelize(re.search('(\w+)Controller',self.__module__).group(1)) #.lower()
+        # 'index' is a special name. The index action maps to the controller name (no action view)
+        if not re.search(r'index|__call__',func.__name__):
+            self.template_id += '/'+str(func.__name__)
+                
+        # add the pybald extension dict to the controller
+        # object
+        extension = req.environ.get('pybald.extension',None)
+        if extension:
+            for key in extension.keys():
+                setattr(self,key,extension[key])
+
         # run the controllers "pre" code
         # resp = self._pre(req)
         # # If the pre code returned a response, return that
         # if not resp:
-        resp = self._pre(req) or func(self,req)
-
-        # if there's no return, call the view method
-        if not resp:
-            resp = self._view()
+        resp = self._pre(req) or func(self,req) or self._view()
 
         # if the function returns a string
         # wrap it in a response object
@@ -67,12 +75,14 @@ def action(func):
         self._post(req,resp)
 
         return resp(environ, start_response)
+    # restore the function name
     replacement.__name__ = func.__name__
     return replacement
 
 
 class BaseController():
     '''Base controller that includes the view and a default index method.'''
+
     def __init__(self):
         '''Initialize the base controller with a page object. Page dictionary controls title, headers, etc...'''
         self.page = {'title':None,'metas':[],'headers':[]}
@@ -95,7 +105,7 @@ class BaseController():
         # indefinitely and overruning the sqlalchemy pool
         pass
         # print str("CLosing in the Controller")
-        # db.remove()
+        # session.remove()
 
     def _redirect_to(self,url,*pargs,**kargs):
         '''Redirect the controller'''

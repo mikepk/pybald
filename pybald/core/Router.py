@@ -21,6 +21,9 @@ from mako import exceptions
 import app.controllers
 import project
 
+def deCamelize(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 class Router:
     '''router class for connecting controllers to URLs'''
@@ -43,7 +46,8 @@ class Router:
         controller_names = []
         for controller in app.controllers.__all__:
             #lowercase and strip 'Controller'
-            controller_name = re.search('(\w+)Controller',controller).group(1).lower()
+            controller_name = re.search('(\w+)Controller',controller).group(1)
+            controller_name = deCamelize(controller_name).lower()
             controller_names.append(controller_name)
             self.controllers[controller_name]={'name':controller,'module':getattr(app.controllers,controller)}
         

@@ -17,7 +17,7 @@ import logging
 import logging.handlers        
 
 class PybaldLogger:
-    def __init__(self,application=None,log_file = '/tmp/pybald.log'):
+    def __init__(self,application=None,log_file='/tmp/pybald.log',level="DEBUG",project_name="PyBald"):
         if application:
             self.application = application
         else:
@@ -26,8 +26,9 @@ class PybaldLogger:
         LOG_FILENAME = log_file
 
         # Set up a specific logger with our desired output level
-        self.my_logger = logging.getLogger('PyBald')
-        self.my_logger.setLevel(logging.DEBUG)
+        self.my_logger = logging.getLogger(project_name)
+        log_level = getattr(logging,level)
+        self.my_logger.setLevel(log_level)
 
         # Add the log message handler to the logger
         handler = logging.handlers.RotatingFileHandler(
@@ -36,18 +37,18 @@ class PybaldLogger:
                       backupCount=10)
 
         # create formatter
-        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        formatter = logging.Formatter("%(asctime)s %(levelname)s %(name)s...%(message)s")
         # add formatter to handler
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
-        self.write("Logger Started")
+        self.write("Logger Started - %s" % level)
         
 
     def __call__(self,environ,start_response):
         req = Request(environ)
         sys.stdout = self
         sys.stderr = self
-        #environ['wsgi.errors'] =
+        #environ['wsgi.errors'] = self
         #pass through if no exceptions occur
         resp = req.get_response(self.application)
         return resp(environ,start_response)
@@ -55,9 +56,7 @@ class PybaldLogger:
     def write(self,msg):
         if msg == '\n':
             return
-        # msg = msg.rstrip()
-        # self.my_logger.debug(repr(msg))
-        self.my_logger.debug(msg)
+        self.my_logger.info(msg)
 
 
 class PybaldLoggerTests(unittest.TestCase):

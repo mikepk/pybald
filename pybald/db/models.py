@@ -1,5 +1,6 @@
 
 from pybald.db.db_engine import engine
+import re
 
 from sqlalchemy import (
     MetaData, 
@@ -17,17 +18,16 @@ from sqlalchemy import (
     )
 
 from sqlalchemy.orm import (
+    column_property,
     mapper, 
     scoped_session, 
     sessionmaker, 
-    reconstructor
-    )
-    
-from sqlalchemy.orm import (
+    reconstructor,
     relationship, 
     backref, 
     eagerload, 
-    eagerload_all
+    eagerload_all,
+    synonym
     )
 
 from sqlalchemy.orm.exc import (
@@ -35,6 +35,14 @@ from sqlalchemy.orm.exc import (
     MultipleResultsFound
     )
 
+from sqlalchemy.sql import (
+    exists,
+    )
+
+from sqlalchemy.sql.expression import (
+    asc,
+    desc,
+    )
 
 
 import re
@@ -43,9 +51,9 @@ import re
 import project
 if project.green:
     from SAGreen import eventlet_greenthread_scope
-    db = scoped_session(sessionmaker(bind=engine), scopefunc=eventlet_greenthread_scope)
+    session = scoped_session(sessionmaker(bind=engine), scopefunc=eventlet_greenthread_scope)
 else:
-    db = scoped_session(sessionmaker(bind=engine))
+    session = scoped_session(sessionmaker(bind=engine))
 
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base(bind=engine)
@@ -79,6 +87,10 @@ class Plural(object):
 
 pluralize = Plural()
 
+def deCamelize(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
 import sqlalchemy.ext.declarative
 class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
     def __init__(cls, name, bases, ns):
@@ -88,7 +100,7 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         except NameError:
             return
         # set the tablename, if it's user set, use that, otherwise use a function to create one
-        cls.__tablename__ = getattr(cls, "__tablename__" , pluralize(name.lower())) 
+        cls.__tablename__ = getattr(cls, "__tablename__" , pluralize( deCamelize(name) )) 
         # tableargs adds autoload to create schema reflection
         cls.__table_args__ = ({'autoload':True})
         super(ModelMeta, cls).__init__(name, bases, ns)
@@ -101,7 +113,7 @@ class Model(Base):
     
     def save(self,commit=True):
         '''Save this instance. When commit is False, stages data for later commit.'''
-        db.add(self)
+        session.add(self)
         
         if commit:
             self.commit()
@@ -109,7 +121,7 @@ class Model(Base):
 
     def commit(self):
         '''Call the commit for the entire session (includes anything else pending)'''
-        db.commit()
+        session.commit()
 
     @classmethod
     def get(cls,**where):
@@ -119,15 +131,15 @@ class Model(Base):
     @classmethod
     def load(cls,**where):
         '''Builds a sqlalchemy load query to return stored objects. Must execute the query to retrieve.'''
-        return db.query(cls).filter_by(**where)
+        return session.query(cls).filter_by(**where)
 
     @classmethod
     def query(cls):
-        return db.query(cls)
+        return session.query(cls)
 
     @classmethod
     def load_list(cls,arg):
-        return db.query(cls).filter(arg)
+        return session.query(cls).filter(arg)
 
 
 # model commands

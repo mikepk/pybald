@@ -49,6 +49,7 @@ class TemplateEngine:
         except KeyError:
             pass
 
+        # TODO: Add memc caching of rendered templates
         mytemplate = self.lookup.get_template("/"+data['template_id'].lower()+"."+format.lower()+".template")
         return mytemplate.render(**data)
 
