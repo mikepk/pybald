@@ -111,6 +111,16 @@ class BaseController():
         '''Redirect the controller'''
         return redirect_to(url,*pargs,**kargs)
 
+    def _not_found(self,text=None):
+        raise exc.HTTPNotFound(text)
+
+    def _status(self,code):
+        raise exc.status_map[int(code)]
+
+    # def _not_authorized(self,text=None):
+    #     raise exc.HTTPNotFound(text)
+
+
     def _view(self,user_dict=None):
         '''Method to invoke the template engine and display a view'''
         view = engine

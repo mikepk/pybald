@@ -33,26 +33,25 @@ class ErrorMiddleware:
             return req.get_response(self.application)(environ,start_response)
         # handle HTTP errors
         except exc.HTTPException, err:
+            # if the middleware is configured with an error controller
+            # use that to display the errors
             if self.error_controller:
                 try:
                     controller = self.error_controller()
+                    controller.status_code = err.code
                     action = self.error_controller.error_map[err.code]
-                    handler = getattr(controller,action)
-                    #return handler(environ,start_response)
-                except (KeyError, AttributeError):
-                    controller = self.error_controller()
-                    handler = controller
+                    handler = getattr(controller,action, None) or err
+                except (KeyError,AttributeError), ex:
+                    handler = err
                 except Exception, ex:
                     handler = err
-                    #return err(environ,start_response)
-                
                 try:
                     return handler(environ,start_response)
                 except Exception:
                     raise
             else:
                 return err(environ,start_response)
-                
+        # Not a web exception. Use the general error display.
         except Exception, err:
             if self.error_controller:
                 controller = self.error_controller()
@@ -62,8 +61,6 @@ class ErrorMiddleware:
             else:
                 # create a generic HTTP server Error webob exception
                 return exc.HTTPServerError()(environ,start_response)
-        # finally:
-        #     sys.stderr.write(str(err))
 
 class ErrorMiddlewareTests(unittest.TestCase):
     def setUp(self):
