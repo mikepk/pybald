@@ -14,7 +14,7 @@ import unittest
 import datetime
 
 from webob import Request, Response
-from app.models.Session import Session
+from app.models import Session
 
 # from sqlalchemy.orm import orm_exc
 
