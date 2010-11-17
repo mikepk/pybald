@@ -93,6 +93,10 @@ class Router:
         environ['routes.route'] = route
         environ['routes.url'] = url
 
+        # TODO: Setup the framework to use the URLGenerator instead of url_for
+        # if not environ.has_key('pybald.extension'):
+        #     environ['pybald.extension'] = {}
+        # environ['pybald.extension']['__url'] = environ['routes.url']
 
 
         # defines the redirect method. In this case it generates a

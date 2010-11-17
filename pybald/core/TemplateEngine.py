@@ -22,11 +22,9 @@ class TemplateEngine:
         self.path = project.get_path()
         self.lookup = TemplateLookup(directories=[os.path.join(self.path,'app/views')], 
             module_directory=os.path.join(self.path,'viewscache'),
-            imports=['from routes import url_for',
-                'from pybald.core.helpers import link',
-                'from pybald.core.helpers import img',
-                'from pybald.core.helpers import link_to',
-                'from pybald.core.helpers import link_img_to',
+            imports=[
+                'from routes import url_for',
+                'from pybald.core.helpers import link, img',
                 ],
                 input_encoding='utf-8',output_encoding='utf-8',
                 filesystem_checks=True)

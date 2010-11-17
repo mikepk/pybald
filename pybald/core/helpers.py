@@ -21,7 +21,6 @@ Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 
 from routes import url_for
 
-
 class Img_Object():
     def __init__(self,src=''):
         self.img_src = src
@@ -45,8 +44,8 @@ class Link_Object():
         self.url = "#"
         self.attribs = []
     
-    def to(self,route,**kargs):
-        self.url = url_for(route,**kargs)
+    def to(self,*pargs,**kargs):
+        self.url = url_for(*pargs,**kargs)
         return self
     
     def set(self,**kargs):
@@ -60,7 +59,6 @@ class Link_Object():
         attr = " ".join(self.attribs) #[key,value for x in self.attribs])
         return '''<a href="%s" %s>%s</a>''' % (self.url,attr,self.link_text)
 
-
 def link(link_text='',img=None):
     lk = Link_Object(link_text)
     return lk
@@ -70,42 +68,3 @@ def img(src=None):
         return ''
     img = Img_Object(src)
     return img
-
-def url_route(*pargs,**kargs):
-    '''Why doesn t url_for work?'''
-    return url_for(*pargs,**kargs)
-
-def link_to(text=None, route=None, alt=None, **args):
-    '''A small function to help generate links in templates.'''
-    if route:
-        url = url_for(route,**args)
-    else:
-        url = url_for(**args)
-
-    if not text:
-        text = url
-        
-    if not alt:
-        alt = text
-        
-    return '''<a href="%s" >%s</a>''' % (url,text)
-
-
-def link_img_to(src=None, route=None, alt=None, style_id=None, **args):
-    '''A small function to help generate img links in templates.'''
-    if not src:
-        return ''
-    
-    id_text = ''
-    if style_id:
-        id_text = '''id="%s" ''' % (style_id)
-    
-    if route:
-        url = url_for(route,**args)
-    else:
-        url = url_for(**args)
-    
-    if not alt:
-        alt = src
-    
-    return '''<a href="%s" ><img %ssrc="%s" alt="%s" /></a>''' % (url,id_text,src,alt)
