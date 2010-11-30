@@ -44,6 +44,7 @@ from sqlalchemy.sql.expression import (
     desc,
     )
 
+from sqlalchemy import func
 
 import re
 
