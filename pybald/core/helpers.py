@@ -19,6 +19,7 @@ Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 
 # TODO: add javascript escape code here so it's available in the template engine
 
+from datetime import datetime
 from routes import url_for
 
 class Img_Object():
@@ -68,3 +69,33 @@ def img(src=None):
         return ''
     img = Img_Object(src)
     return img
+
+    from datetime import datetime
+
+
+def humanize(date_string):
+    format = "%Y-%m-%d %H:%M:%S"
+    try:
+        date = datetime.strptime(date_string, format)
+    except:
+        return date_string
+    now = datetime.now()
+    delta = now - date
+    plural = 's'
+    if delta.days >= 1:
+        if delta.days == 1:
+            plural = ''
+        return "%s day%s ago" % (str(delta.days),plural)
+    # > 1 hour, display in hours
+    elif delta.seconds > 3600:
+        hours = int(round(delta.seconds / 3600.0))
+        if hours == 1:
+            plural = ''
+        return "%s hour%s ago" % (str(hours),plural)
+    elif delta.seconds > 60:
+        minutes = int(round(delta.seconds / 60.0))
+        if minutes == 1:
+            plural = ''
+        return "%s minute%s ago" % (str(minutes),plural)
+    else:
+        return "just a moment ago"

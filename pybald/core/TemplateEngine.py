@@ -24,7 +24,7 @@ class TemplateEngine:
             module_directory=os.path.join(self.path,'viewscache'),
             imports=[
                 'from routes import url_for',
-                'from pybald.core.helpers import link, img',
+                'from pybald.core.helpers import link, img, humanize',
                 ],
                 input_encoding='utf-8',output_encoding='utf-8',
                 filesystem_checks=True)
