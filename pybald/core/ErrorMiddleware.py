@@ -40,12 +40,14 @@ class ErrorMiddleware:
                     controller = self.error_controller()
                     controller.status_code = err.code
                     action = self.error_controller.error_map[err.code]
-                    handler = getattr(controller,action, None) or err
+                    handler = getattr(controller, action, None) or err
                 except (KeyError,AttributeError), ex:
                     handler = err
                 except Exception, ex:
                     handler = err
                 try:
+                    # try executing error_handler code
+                    # otherwise re-raise the exception
                     return handler(environ,start_response)
                 except Exception:
                     raise

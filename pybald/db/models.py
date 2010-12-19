@@ -17,6 +17,46 @@ from sqlalchemy import (
     Table
     )
 
+from sqlalchemy.types import (
+    BLOB,
+    BOOLEAN,
+    BigInteger,
+    Binary,
+    Boolean,
+    CHAR,
+    CLOB,
+    DATE,
+    DATETIME,
+    DECIMAL,
+    Date,
+    DateTime,
+    Enum,
+    FLOAT,
+    Float,
+    INT,
+    INTEGER,
+    Integer,
+    Interval,
+    LargeBinary,
+    NCHAR,
+    NVARCHAR,
+    NUMERIC,
+    Numeric,
+    PickleType,
+    SMALLINT,
+    SmallInteger,
+    String,
+    TEXT,
+    TIME,
+    TIMESTAMP,
+    Text,
+    Time,
+    Unicode,
+    UnicodeText,
+    VARCHAR,
+    )
+
+
 from sqlalchemy.orm import (
     column_property,
     mapper, 
