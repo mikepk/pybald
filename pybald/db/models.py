@@ -14,7 +14,11 @@ from sqlalchemy import (
     TIMESTAMP as TimeStamp, 
     PickleType,
     Time,
-    Table
+    Table,
+    or_,
+    and_,
+    not_,
+    select
     )
 
 from sqlalchemy.types import (
@@ -176,10 +180,12 @@ class Model(Base):
 
     @classmethod
     def query(cls):
+        '''Simple Query method based on the class name.'''
         return session.query(cls)
 
     @classmethod
     def load_list(cls,arg):
+        '''Deprecated: Load a list of objects, not really used.'''
         return session.query(cls).filter(arg)
 
 

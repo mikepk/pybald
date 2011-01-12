@@ -15,12 +15,15 @@ class UserManager(object):
     def __call__(self,environ,start_response):
         req = Request(environ)
 
-        session = environ.get('pybald.session',None)
+        session = environ.get('pybald.session', None)
         if session and session.user_id:
-            try:
-                environ['REMOTE_USER'] = User.get(id=session.user_id)
-            except User.NotFound:
-                environ['REMOTE_USER'] = None
+                if session.user:
+                    environ['REMOTE_USER'] = session.user
+                else:
+                    try:
+                        environ['REMOTE_USER'] = User.get(id=session.user_id)
+                    except User.NotFound:
+                        environ['REMOTE_USER'] = None
         else:
             environ['REMOTE_USER'] = None
 
