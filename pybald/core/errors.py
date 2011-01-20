@@ -1,3 +1,4 @@
+import sys
 import mako.template
 def pybald_error_template():
     '''Lifts the Mako Exception Error template and adds an environment dump.'''
