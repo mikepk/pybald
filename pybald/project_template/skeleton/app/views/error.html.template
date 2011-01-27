@@ -1,0 +1,7 @@
+<%def name="init()"><%
+page['title'] = status_code+" -- Something Wen't Wrong"
+%></%def>\
+<%inherit file="base.html.template"/>\
+<div id="error_page">
+<h1>We've encountered an error. Please try again.</h1>
+</div>

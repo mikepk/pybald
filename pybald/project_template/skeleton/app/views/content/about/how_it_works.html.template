@@ -1,0 +1,7 @@
+<%def name="init()"><%
+page['title'] = "About How It Works"
+%></%def>\
+<%inherit file="/base.html.template"/>\
+<div class="home_section">
+<h1>How It Works</h1>
+</div>

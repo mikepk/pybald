@@ -1,0 +1,8 @@
+*.template.py
+*.pyc
+._*
+*.sqlite
+*.pyc
+environment.py
+viewscache/
+content/images/profile_pics/*.jpg

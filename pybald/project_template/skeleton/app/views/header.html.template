@@ -1,0 +1,3 @@
+<div id="banner">
+${link(img("/images/pybald.png")).to('home')}
+</div>

@@ -1,0 +1,7 @@
+<%def name="init()"><%
+page['title'] = "About"
+%></%def>\
+<%inherit file="/base.html.template"/>\
+<div class="home_section">
+<h1>About Pybald</h1>
+</div>

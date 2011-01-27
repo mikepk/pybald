@@ -1,0 +1,7 @@
+<%def name="init()"><%
+page['title'] = "About Us"
+%></%def>\
+<%inherit file="/base.html.template"/>\
+<div class="home_section">
+<h1>About The People Behind Smarterer</h1>
+</div>

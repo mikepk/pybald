@@ -147,7 +147,8 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         # set the tablename, if it's user set, use that, otherwise use a function to create one
         cls.__tablename__ = getattr(cls, "__tablename__" , pluralize( deCamelize(name) )) 
         # tableargs adds autoload to create schema reflection
-        cls.__table_args__ = ({'autoload':True})
+        if project.schema_reflection:
+            cls.__table_args__ = ({'autoload':True})
         super(ModelMeta, cls).__init__(name, bases, ns)
 
 class Model(Base):
@@ -155,6 +156,8 @@ class Model(Base):
     __metaclass__ = ModelMeta
     
     NotFound = sqlalchemy.orm.exc.NoResultFound
+
+    id = Column(Integer, nullable=False, primary_key=True)
     
     def save(self,commit=True):
         '''Save this instance. When commit is False, stages data for later commit.'''

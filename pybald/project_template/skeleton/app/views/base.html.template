@@ -1,0 +1,46 @@
+${self.init()}\
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width" />
+<title>${self.title_tag( page['title'] )}</title>
+${self.style()}
+<link type="text/css" href="/css/jquery-ui.css" rel="Stylesheet" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/jquery-ui.min.js"></script>
+%if page['headers']:
+%for head in page['headers']:
+${head}
+%endfor
+%endif
+</head><body><div id="main_content">
+        ${self.header()}
+        <div id="center_content">
+        ${self.body()}
+        </div>
+        ${self.footer()}
+      </div>
+    </body>
+</html>
+<%def name="title_tag(txt=None)">
+%if page.get("title",None):
+${page['title']} -- Pybald\
+%else:
+Pybald\
+%endif
+</%def>
+<%def name="header()">
+<div id="header">
+%if user:
+<%include file="/logged_in_header.html.template"/>
+%else:
+<%include file="/header.html.template"/>
+%endif
+</div>
+</%def>
+<%def name="footer()"><%include file="/footer.html.template"/></%def>
+<%def name="title()"></%def>
+<%def name="style()"><link rel="stylesheet" type="text/css" media="screen" href="/css/site.css" /></%def>
+<%def name="init()"></%def>
