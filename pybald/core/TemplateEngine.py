@@ -12,6 +12,7 @@ import os
 import unittest
 
 import project
+
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
@@ -19,15 +20,20 @@ class TemplateEngine:
     '''The basic template engine, looks up templates and renders them. Uses the mako template system'''
             
     def __init__(self): 
-        self.path = project.get_path()
-        self.lookup = TemplateLookup(directories=[os.path.join(self.path,'app/views')], 
-            module_directory=os.path.join(self.path,'viewscache'),
+        self.project_path = project.get_path()
+        self.default_template_path = os.path.join( os.path.dirname( os.path.realpath(__file__) ), 'default_forms' )
+        fs_test = False
+        if project.debug:
+            fs_test = True
+
+        self.lookup = TemplateLookup(directories=[os.path.join(self.project_path,'app/views'), self.default_template_path], 
+            module_directory=os.path.join(self.project_path,'viewscache'),
             imports=[
                 'from routes import url_for',
                 'from pybald.core.helpers import link, img, humanize',
                 ],
                 input_encoding='utf-8',output_encoding='utf-8',
-                filesystem_checks=True)
+                filesystem_checks=fs_test)
 
 
     def form_render(self,template_name=None,**kargs):
@@ -53,7 +59,7 @@ class TemplateEngine:
 
     def clear_viewscache(self):
         '''Clears out the viewscache. This isn't being used at the moment.'''
-        folder = os.path.join(self.path,'viewscache')
+        folder = os.path.join(self.project_path,'viewscache')
         for the_file in os.listdir(folder):
             file_path = os.path.join(folder, the_file)
             try:

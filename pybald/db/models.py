@@ -122,7 +122,7 @@ class Plural(object):
                          ['[^aeioudgkprt]h$', '$', 'es'], 
                          ['[^aeiou]y$', 'y$', 'ies'], 
                          ['$', '$', 's']]
-        self.rules = map(self.buildRule,self.patterns)
+        self.rules = map(self.buildRule, self.patterns)
 
     def __call__(self,class_name):
         '''Pluralize a noun using some simple rules.'''
@@ -176,7 +176,10 @@ class Model(Base):
     @classmethod
     def load(cls,**where):
         '''Builds a sqlalchemy load query to return stored objects. Must execute the query to retrieve.'''
-        return session.query(cls).filter_by(**where)
+        if where:
+            return session.query(cls).filter_by(**where)
+        else:
+            return session.query(cls)
 
     @classmethod
     def query(cls):

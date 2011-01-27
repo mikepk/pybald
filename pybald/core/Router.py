@@ -22,7 +22,10 @@ import app.controllers
 import project
 
 def deCamelize(name):
+    '''Convert CamelCase text into underscore separated text: e.g. CamelCase becomes camel_case'''
+    # first pass, anything before a CAPLower gets separated. i.r. CAP_Lower 123Lower -> 123_Lower
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    # second pass, anything lowerCAP gets split then lowercased lower_cap
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 class Router:
@@ -98,7 +101,6 @@ class Router:
         #     environ['pybald.extension'] = {}
         # environ['pybald.extension']['__url'] = environ['routes.url']
 
-
         # defines the redirect method. In this case it generates a
         # Webob Response object with the location and status headers
         # set
@@ -111,12 +113,16 @@ class Router:
             print 'Method: %s' % req.method
 
         # use routes to match the url to a path
-        # urlvars will contain controller + other non query
-        # URL data
-        urlvars = self.map.match(req.path)
+        # urlvars will contain controller + other non query string
+        # URL data. Middleware above this can override and set urlvars
+        # and the router will use those values.
+        # TODO: allow individual variable overrides?
+        urlvars = environ.get('urlvars', self.map.match(req.path))
+        # urlvars = self.map.match(req.path)
         if not urlvars: urlvars = {}
         
         # restore the original method if it was modified for REST purposes
+        # when dealing with browser's limited GET/POST only verbs
         if old_method:
             environ['REQUEST_METHOD'] = old_method
 
@@ -138,7 +144,7 @@ class Router:
                 # create controller instance from controllers dictionary
                 # using routes 'controller' returned from the match
                 controller = getattr(self.controllers[controller]['module'], self.controllers[controller]['name'])()
-                handler = getattr(controller,action)
+                handler = getattr(controller, action)
                 
             # only catch the KeyError/AttributeError for the controller/action search
             except (KeyError, AttributeError):
@@ -153,11 +159,10 @@ class Router:
             return handler(environ,start_response)
         # This is a mako 'missing template' exception
         except exceptions.TopLevelLookupException:
-            raise exc.HTTPNotFound("Missing Template")
-            
+            raise exc.HTTPNotFound("Missing Template")        
         except:
             # All other program errors get re-raised
-            # like a 500 server error
+            # e.g. a 500 server error
             raise
 
                 
