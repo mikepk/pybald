@@ -189,16 +189,22 @@ class Model(Base):
         '''Simple Query method based on the class name.'''
         return session.query(cls)
 
+
     @classmethod
-    def load_list(cls,arg):
-        '''Deprecated: Load a list of objects, not really used.'''
-        return session.query(cls).filter(arg)
+    def all(cls,**where):
+        '''Returns a list of objects that can be qualified. all() without arguments returns all the items of the model type.'''
+        return cls.load(**where).all()
+
+    # @classmethod
+    # def load_list(cls,arg):
+    #     '''Deprecated: Load a list of objects, not really used.'''
+    #     return session.query(cls).filter(arg)
 
 
 # model commands
 
-def create():
-    '''Create all tables.'''
-    Base.metadata.create_all()
+# def create():
+#     '''Create all tables.'''
+#     Base.metadata.create_all()
 
 

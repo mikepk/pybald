@@ -21,7 +21,7 @@ class TemplateEngine:
             
     def __init__(self): 
         self.project_path = project.get_path()
-        self.default_template_path = os.path.join( os.path.dirname( os.path.realpath(__file__) ), 'default_forms' )
+        self.default_template_path = os.path.join( os.path.dirname( os.path.realpath(__file__) ), 'default_templates' )
         fs_test = False
         if project.debug:
             fs_test = True
@@ -48,10 +48,10 @@ class TemplateEngine:
         
     def __call__(self,data,format="html"):
         '''Callable method that executes the template.'''
-        try:
-            format = data["format"]
-        except KeyError:
-            pass
+
+        # if the data dictionary has a format, use that, 
+        # otherwise default to the passed in value or html
+        format = data.get("format", format) or format or "html"
 
         # TODO: Add memc caching of rendered templates
         mytemplate = self.lookup.get_template("/"+data['template_id'].lower()+"."+format.lower()+".template")

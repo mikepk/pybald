@@ -23,6 +23,8 @@ from pybald.db.models import session
 
 from routes import redirect_to
 
+import project
+
 def deCamelize(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
@@ -60,13 +62,13 @@ def action(func):
             for key in extension.keys():
                 setattr(self,key,extension[key])
 
-        # run the controllers "pre" code
-        # resp = self._pre(req)
-        # # If the pre code returned a response, return that
-        # if not resp:
+        # Return either the controllers _pre code, whatever 
+        # is returned from the controller
+        # or the view. So pre has precedence over 
+        # the return which has precedence over the view
         resp = self._pre(req) or func(self,req) or self._view()
 
-        # if the function returns a string
+        # if the response is currently just a string
         # wrap it in a response object
         if isinstance(resp, basestring):
             resp = Response(body=resp)
@@ -75,7 +77,7 @@ def action(func):
         self._post(req,resp)
 
         return resp(environ, start_response)
-    # restore the function name
+    # restore the original function name
     replacement.__name__ = func.__name__
     return replacement
 
@@ -89,6 +91,10 @@ class BaseController():
         self.error = None
         self.user = None
         self.session = None
+
+        if project.page_options:
+            for key in project.page_options.keys():
+                setattr(self, key, project.page_options[key]) 
                 
     @action
     def index(self,req):
@@ -104,8 +110,6 @@ class BaseController():
         # Closes the db Session object. Required to avoid holding sessions
         # indefinitely and overruning the sqlalchemy pool
         pass
-        # print str("CLosing in the Controller")
-        # session.remove()
 
     def _redirect_to(self,url,*pargs,**kargs):
         '''Redirect the controller'''
