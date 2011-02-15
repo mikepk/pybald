@@ -94,9 +94,6 @@ class Page(dict):
     def compute_asset_tag(self, filename):
         asset_tag = asset_tag_cache.get(filename, None)
         if not asset_tag:
-            print "\n"*3
-            print "bing"*180
-            print "\n"*3
             asset_tag = str(int(round(os.path.getmtime(os.path.join(project.get_path(),"content",filename.lstrip("/"))) )) ) 
             asset_tag_cache[filename] = asset_tag
         return asset_tag
