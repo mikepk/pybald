@@ -81,13 +81,42 @@ def action(func):
     replacement.__name__ = func.__name__
     return replacement
 
+import os.path
+asset_tag_cache = {}
+class Page(dict):
+    def __init__(self, version=None):
+        self['title'] = None
+        self['metas'] = []
+        self['headers'] = []
+        self.version = project.media_version
+        self['asset_tags'] = {}
+
+    def compute_asset_tag(self, filename):
+        asset_tag = asset_tag_cache.get(filename, None)
+        if not asset_tag:
+            print "\n"*3
+            print "bing"*180
+            print "\n"*3
+            asset_tag = str(int(round(os.path.getmtime(os.path.join(project.get_path(),"content",filename.lstrip("/"))) )) ) 
+            asset_tag_cache[filename] = asset_tag
+        return asset_tag
+
+    def add_js(self, filename):
+        filename += '?v=%s' % (self.compute_asset_tag(filename))
+        self['headers'].append('''<script type="text/javascript" src="%s"></script>''' % (str(filename)) )
+
+    def add_css(self, filename, media="screen"):
+        filename += '?v=%s' % (self.compute_asset_tag(filename))
+        self['headers'].append('''<link type="text/css" href="%s" media="%s" rel="stylesheet" />''' % (str(filename),str(media)) )
+
+
 
 class BaseController():
     '''Base controller that includes the view and a default index method.'''
 
     def __init__(self):
         '''Initialize the base controller with a page object. Page dictionary controls title, headers, etc...'''
-        self.page = {'title':None,'metas':[],'headers':[]}
+        self.page = Page() #{'title':None,'metas':[],'headers':[]}
         self.error = None
         self.user = None
         self.session = None

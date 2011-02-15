@@ -167,6 +167,12 @@ class Model(Base):
             self.commit()
         return self
 
+    def delete(self, commit=False):
+        session.delete(self)
+        if commit:
+            self.commit()
+        return self
+
     def commit(self):
         '''Call the commit for the entire session (includes anything else pending)'''
         session.commit()
