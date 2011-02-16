@@ -23,7 +23,7 @@ import project
 
 def deCamelize(name):
     '''Convert CamelCase text into underscore separated text: e.g. CamelCase becomes camel_case'''
-    # first pass, anything before a CAPLower gets separated. i.r. CAP_Lower 123Lower -> 123_Lower
+    # first pass, anything before a CAPLower gets separated. i.e. CAP_Lower 123Lower -> 123_Lower
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     # second pass, anything lowerCAP gets split then lowercased lower_cap
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
@@ -71,13 +71,15 @@ class Router:
         req = Request(environ)
         #method override
         # for REST architecture, this allows a POST parameter of _method
-        # to be used to override POST with alternate HTTP verbs (PUT,DELETE)
+        # to be used to override POST with alternate HTTP verbs (PUT, DELETE)
         old_method = None
         req.errors = 'ignore'
+        params = req.POST
         if '_method' in req.POST:
             old_method = environ['REQUEST_METHOD']
             environ['REQUEST_METHOD'] = req.POST['_method'].upper()
-            del req.POST['_method']
+            if req.POST:
+                del req.POST['_method']
             if project.debug:
                 print "Changing request method to %s" % environ['REQUEST_METHOD']
 
@@ -123,8 +125,8 @@ class Router:
         
         # restore the original method if it was modified for REST purposes
         # when dealing with browser's limited GET/POST only verbs
-        if old_method:
-            environ['REQUEST_METHOD'] = old_method
+        # if old_method:
+        #     environ['REQUEST_METHOD'] = old_method
 
 
         req.urlvars = urlvars
