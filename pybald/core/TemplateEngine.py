@@ -22,14 +22,11 @@ class TemplateEngine:
     def __init__(self): 
         self.project_path = project.get_path()
         self.default_template_path = os.path.join( os.path.dirname( os.path.realpath(__file__) ), 'default_templates' )
-        fs_test = False
-        if project.debug:
-            fs_test = True
+        fs_test = project.debug or False
 
         self.lookup = TemplateLookup(directories=[os.path.join(self.project_path,'app/views'), self.default_template_path], 
             module_directory=os.path.join(self.project_path,'viewscache'),
             imports=[
-                'from routes import url_for',
                 'from pybald.core.helpers import link, img, humanize',
                 ],
                 input_encoding='utf-8',output_encoding='utf-8',

@@ -98,10 +98,14 @@ class Router:
         environ['routes.route'] = route
         environ['routes.url'] = url
 
+
         # TODO: Setup the framework to use the URLGenerator instead of url_for
-        # if not environ.has_key('pybald.extension'):
-        #     environ['pybald.extension'] = {}
         # environ['pybald.extension']['__url'] = environ['routes.url']
+
+        # Add pybald extension, normally gets assigned to controller object
+        environ['pybald.extension'] = environ.get('pybald.extension', {})
+        environ['pybald.extension']["url_for"] = url
+        # environ['pybald.extension']["redirect_to"] = lambda url_text: Response(location=url(url_text),status=302)
 
         # defines the redirect method. In this case it generates a
         # Webob Response object with the location and status headers

@@ -70,7 +70,7 @@ def img(src=None):
     img = Img_Object(src)
     return img
 
-    from datetime import datetime
+from datetime import datetime
 
 
 def humanize(date_string):

@@ -48,8 +48,8 @@ class SessionManager(object):
         # this includes copying environ variables etc...
         environ['pybald.session']._pre(req)
 
-        if not environ.has_key('pybald.extension'):
-            environ['pybald.extension'] = {}
+        # update or create the pybald.extension to populate controller instances
+        environ['pybald.extension'] = environ.get('pybald.extension', {})
         environ['pybald.extension']['session'] = environ['pybald.session']
 
         # call the next part of the pipeline

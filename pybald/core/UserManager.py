@@ -27,10 +27,9 @@ class UserManager(object):
         else:
             environ['REMOTE_USER'] = None
 
-        if not environ.has_key('pybald.extension'):
-            environ['pybald.extension'] = {}
+        # update or create the pybald.extension to populate controller instances
+        environ['pybald.extension'] = environ.get('pybald.extension', {})
         environ['pybald.extension']['user'] = environ['REMOTE_USER']
-
 
 
         # call the next part of the pipeline

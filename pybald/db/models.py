@@ -69,6 +69,7 @@ from sqlalchemy.orm import (
     reconstructor,
     relationship, 
     backref, 
+    contains_eager,
     eagerload, 
     eagerload_all,
     synonym
