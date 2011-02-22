@@ -67,7 +67,7 @@ def pybald_error_template():
 <h3>Environment</h3>
 <div class="environment">
 %for key in sorted(req.environ.keys()):
-<div><span class="env_key">${key}</span><span class="env_value">${str(req.environ[key])}</span></div>
+<div><span class="env_key">${key|h}</span><span class="env_value">${str(req.environ[key])|h}</span></div>
 %endfor
 </div>
 %if full:

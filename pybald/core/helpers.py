@@ -29,6 +29,8 @@ class Img_Object():
 
     def __repr__(self):
         '''Return the link in string form.'''
+        if "alt" not in self.attribs:
+            self.attribs.append('''alt="%s"''' % self.img_src)
         attr = " ".join(self.attribs) #[key,value for x in self.attribs])
         return '''<img src="%s" %s />''' % (self.img_src,attr)
 
@@ -70,8 +72,14 @@ def img(src=None):
     img = Img_Object(src)
     return img
 
-from datetime import datetime
 
+def plural(list_object):
+    '''Return "s" for > 1 items'''
+    if len(list_object) > 1:
+        return "s"
+    else:
+        return ""
+        
 
 def humanize(date_string):
     format = "%Y-%m-%d %H:%M:%S"
