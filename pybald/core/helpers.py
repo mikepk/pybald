@@ -22,6 +22,7 @@ Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 from datetime import datetime
 from routes import url_for
 
+
 class Img_Object():
     def __init__(self,src=''):
         self.img_src = src

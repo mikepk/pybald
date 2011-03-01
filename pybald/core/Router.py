@@ -21,12 +21,7 @@ from mako import exceptions
 import app.controllers
 import project
 
-def deCamelize(name):
-    '''Convert CamelCase text into underscore separated text: e.g. CamelCase becomes camel_case'''
-    # first pass, anything before a CAPLower gets separated. i.e. CAP_Lower 123Lower -> 123_Lower
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    # second pass, anything lowerCAP gets split then lowercased lower_cap
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+from pybald.util import camel_to_underscore
 
 class Router:
     '''router class for connecting controllers to URLs'''
@@ -50,7 +45,7 @@ class Router:
         for controller in app.controllers.__all__:
             #lowercase and strip 'Controller'
             controller_name = re.search('(\w+)Controller',controller).group(1)
-            controller_name = deCamelize(controller_name).lower()
+            controller_name = camel_to_underscore(controller_name).lower()
             controller_names.append(controller_name)
             self.controllers[controller_name]={'name':controller,'module':getattr(app.controllers,controller)}
         

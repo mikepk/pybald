@@ -20,14 +20,11 @@ from webob import exc
 import re
 
 from pybald.db.models import session
+from pybald.util import camel_to_underscore
 
 from routes import redirect_to
-
 import project
 
-def deCamelize(name):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 # action / method decorator
 # This decorator takes in the action method and adds some syntactic sugar around it.
@@ -50,7 +47,7 @@ def action(func):
         # this code defines the template id to match against
         # template path = controller name + '/' + action name (except in the case of)
         # index
-        self.template_id = deCamelize(re.search('(\w+)Controller',self.__module__).group(1)) #.lower()
+        self.template_id = camel_to_underscore(re.search('(\w+)Controller',self.__module__).group(1)) #.lower()
         # 'index' is a special name. The index action maps to the controller name (no action view)
         if not re.search(r'index|__call__',func.__name__):
             self.template_id += '/'+str(func.__name__)
@@ -146,9 +143,6 @@ class BaseController():
 
     def _status(self,code):
         raise exc.status_map[int(code)]
-
-    # def _not_authorized(self,text=None):
-    #     raise exc.HTTPNotFound(text)
 
 
     def _view(self,user_dict=None):

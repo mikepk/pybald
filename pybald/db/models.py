@@ -1,7 +1,4 @@
 
-from pybald.db.db_engine import engine
-import re
-
 from sqlalchemy import (
     MetaData, 
     INT as Int,
@@ -92,6 +89,9 @@ from sqlalchemy.sql.expression import (
 from sqlalchemy import func
 
 import re
+from pybald.db.db_engine import engine
+
+from pybald.util import camel_to_underscore, pluralize
 
 # for green operation
 import project
@@ -101,6 +101,8 @@ if project.green:
 else:
     session = scoped_session(sessionmaker(bind=engine))
 
+
+import sqlalchemy.ext.declarative
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base(bind=engine)
 
@@ -109,35 +111,6 @@ class NotFound(NoResultFound):
     '''Generic Not Found Error'''
     pass
 
-class Plural(object):
-    '''Simple Pluralizer object. Stores naive rules for word pluralization.'''
-    def buildRule(self, (pattern, search, replace)):                                        
-        return lambda word: re.search(pattern, word) and re.sub(search, replace, word)
-
-    def __init__(self):
-        '''Init pluralizer'''
-        #Build regex patterns to do a quick and dirty pluralization.
-        self.patterns = [['[^aeiouz]z$', '$', 's'], 
-                         ['[aeiou]z$', '$', 'zes'], 
-                         ['[sx]$', '$', 'es'], 
-                         ['[^aeioudgkprt]h$', '$', 'es'], 
-                         ['[^aeiou]y$', 'y$', 'ies'], 
-                         ['$', '$', 's']]
-        self.rules = map(self.buildRule, self.patterns)
-
-    def __call__(self,class_name):
-        '''Pluralize a noun using some simple rules.'''
-        for rule in self.rules:
-            result = rule(class_name)
-            if result: return result
-
-pluralize = Plural()
-
-def deCamelize(name):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-
-import sqlalchemy.ext.declarative
 class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
     def __init__(cls, name, bases, ns):
         try:
@@ -146,7 +119,7 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         except NameError:
             return
         # set the tablename, if it's user set, use that, otherwise use a function to create one
-        cls.__tablename__ = getattr(cls, "__tablename__" , pluralize( deCamelize(name) )) 
+        cls.__tablename__ = getattr(cls, "__tablename__" , pluralize( camel_to_underscore(name) )) 
         # tableargs adds autoload to create schema reflection
         if project.schema_reflection:
             cls.__table_args__ = ({'autoload':True})
@@ -161,7 +134,11 @@ class Model(Base):
     id = Column(Integer, nullable=False, primary_key=True)
     
     def save(self,commit=True):
-        '''Save this instance. When commit is False, stages data for later commit.'''
+        '''Save this instance. 
+        
+        When commit is False, stages data for later commit.
+        '''
+        
         session.add(self)
         
         if commit:
@@ -169,6 +146,7 @@ class Model(Base):
         return self
 
     def delete(self, commit=False):
+        '''Delete this instance.'''
         session.delete(self)
         if commit:
             self.commit()
@@ -180,12 +158,15 @@ class Model(Base):
 
     @classmethod
     def get(cls,**where):
-        '''Builds a sqlalchemy load query to return stored objects and executes it.'''
+        '''Construct a load query with keyword arguments as the filter argument and return the instance.'''
         return cls.load(**where).one()
 
     @classmethod
     def load(cls,**where):
-        '''Builds a sqlalchemy load query to return stored objects. Must execute the query to retrieve.'''
+        '''Build a sqlalchemy load query to return stored objects. 
+        
+        Returns a query object that must execute the query to retrieve.
+        '''
         if where:
             return session.query(cls).filter_by(**where)
         else:
@@ -193,7 +174,7 @@ class Model(Base):
 
     @classmethod
     def query(cls):
-        '''Simple Query method based on the class name.'''
+        '''Simple Query method based on the class.'''
         return session.query(cls)
 
 
@@ -201,17 +182,4 @@ class Model(Base):
     def all(cls,**where):
         '''Returns a list of objects that can be qualified. all() without arguments returns all the items of the model type.'''
         return cls.load(**where).all()
-
-    # @classmethod
-    # def load_list(cls,arg):
-    #     '''Deprecated: Load a list of objects, not really used.'''
-    #     return session.query(cls).filter(arg)
-
-
-# model commands
-
-# def create():
-#     '''Create all tables.'''
-#     Base.metadata.create_all()
-
 
