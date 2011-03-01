@@ -121,8 +121,13 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         # set the tablename, if it's user set, use that, otherwise use a function to create one
         cls.__tablename__ = getattr(cls, "__tablename__" , pluralize( camel_to_underscore(name) )) 
         # tableargs adds autoload to create schema reflection
+        cls.__table_args__ = getattr(cls, "__table_args__", {})
         if project.schema_reflection:
-            cls.__table_args__ = ({'autoload':True})
+            # create or update the __table_args__ attribute
+            cls.__table_args__['autoload'] = True
+        if project.global_table_args:
+            cls.__table_args__.update(project.global_table_args)
+
         super(ModelMeta, cls).__init__(name, bases, ns)
 
 class Model(Base):
@@ -133,7 +138,7 @@ class Model(Base):
 
     id = Column(Integer, nullable=False, primary_key=True)
     
-    def save(self,commit=True):
+    def save(self, commit=False):
         '''Save this instance. 
         
         When commit is False, stages data for later commit.
@@ -142,25 +147,40 @@ class Model(Base):
         session.add(self)
         
         if commit:
-            self.commit()
+            self.flush()
         return self
 
     def delete(self, commit=False):
         '''Delete this instance.'''
         session.delete(self)
         if commit:
-            self.commit()
+            self.flush()
         return self
+
+
+    def flush(self):
+        '''Call the commit for the entire session (includes anything else pending)'''
+        session.flush()
+        return self
+
 
     def commit(self):
         '''Call the commit for the entire session (includes anything else pending)'''
         session.commit()
+        return self
 
     @classmethod
     def get(cls,**where):
         '''Construct a load query with keyword arguments as the filter argument and return the instance.'''
         return cls.load(**where).one()
 
+    @classmethod
+    def all(cls,**where):
+        '''Returns a list of objects that can be qualified. all() without arguments returns all the items of the model type.'''
+        return cls.load(**where).all()
+
+    # methods that return queries (must execute to retrieve)
+    # =============================================================
     @classmethod
     def load(cls,**where):
         '''Build a sqlalchemy load query to return stored objects. 
@@ -182,4 +202,3 @@ class Model(Base):
     def all(cls,**where):
         '''Returns a list of objects that can be qualified. all() without arguments returns all the items of the model type.'''
         return cls.load(**where).all()
-

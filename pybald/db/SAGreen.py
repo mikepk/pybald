@@ -33,13 +33,14 @@ def eventlet_greenthread_scope():
 
 class GreenThreadQueuePool(QueuePool):
     '''Simple subclass of the standard SA QueuePool. Uses a sleep when the pool is empty to green thread switch.'''
-    def do_get(self):
+    def do_get(self, *pargs, **kargs):
         # while the queue pool is filled, switch to another thread until one is available
         # TODO: Add timeout code to make sure this doesn't spin forever and deadlock
         # if something goes wrong in the db connections
         while self._max_overflow > -1 and self._overflow >= self._max_overflow:
+            # debug("Pool is full, waiting...")
             eventlet.sleep(0)
-        return super(GreenThreadQueuePool,self).do_get()
+        return super(GreenThreadQueuePool,self).do_get(*pargs, **kargs)
 
 
 # lifting some of the logic from sqlalchemy

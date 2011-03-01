@@ -39,8 +39,11 @@ class Router:
         self.load()
 
     def load(self):
-        '''Scans the controllers path and imports all controllers with a pybald name.'''
+        '''Loads controllers from app.controllers. De camel-cases the name and creates
+           a mapping block to look up URLs against. Takes that mapping dict and runs the 
+           regular expressions for Routes.'''
 
+        controller_pattern = re.compile(r'(\w+)Controller')
         controller_names = []
         for controller in app.controllers.__all__:
             #lowercase and strip 'Controller'

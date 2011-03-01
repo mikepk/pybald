@@ -14,7 +14,13 @@ import unittest
 import datetime
 
 from webob import Request, Response
-from app.models import Session
+
+import re
+
+import project
+Session = getattr(__import__(project.models_module, globals(), locals(), ["Session"], 1), "Session")
+
+# from app.models import Session
 
 # from sqlalchemy.orm import orm_exc
 
@@ -68,7 +74,7 @@ class SessionManager(object):
     def create_session(self,environ):
         '''Create a new anonymous session.'''
         environ['pybald.session'] = Session()
-        environ['pybald.session'].save()
+        environ['pybald.session'].save().flush()
         return environ['pybald.session'].session_id
 
     def create_session_cookie(self,resp):

@@ -37,7 +37,7 @@ class Img_Object():
 
     def set(self,**kargs):
         for key in kargs:
-            akey = key.lstrip('_')
+            akey = key.lstrip('_').rstrip('_')
             self.attribs.append('''%s="%s"''' % (akey,kargs[key]))
         return self
     
