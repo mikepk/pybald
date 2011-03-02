@@ -18,7 +18,7 @@ from webob import Request, Response
 import re
 
 import project
-Session = getattr(__import__(project.models_module, globals(), locals(), ["Session"], 1), "Session")
+Session = getattr(__import__(project.models_module+".Session", globals(), locals(), ["Session"], 1), "Session")
 
 # from app.models import Session
 
