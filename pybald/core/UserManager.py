@@ -3,7 +3,7 @@ from webob import Request,Response
 
 # from app.models import User
 import project
-User = getattr(__import__(project.models_module+".User", globals(), locals(), ["User"], 1), "User")
+User = getattr(__import__(project.models_module, globals(), locals(), ["User"], 1), "User")
 
 class UserManager(object):
     '''Code to handle anonymous and user sessions, implemented as WSGI middleware.'''

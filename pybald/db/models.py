@@ -130,13 +130,12 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
 
         super(ModelMeta, cls).__init__(name, bases, ns)
 
-class Model(Base):
+
+class ModelApi(Base):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
     __metaclass__ = ModelMeta
     
-    NotFound = sqlalchemy.orm.exc.NoResultFound
 
-    id = Column(Integer, nullable=False, primary_key=True)
     
     def save(self, commit=False):
         '''Save this instance. 
@@ -202,3 +201,24 @@ class Model(Base):
     def all(cls,**where):
         '''Returns a list of objects that can be qualified. all() without arguments returns all the items of the model type.'''
         return cls.load(**where).all()
+
+
+class RoModel(object):
+    '''Read only version of the Model class.'''
+
+    @classmethod
+    def protect(cls, protect=True):
+        cls.__bases__ = (ModelApi,)
+
+
+class Model(ModelApi):
+    NotFound = sqlalchemy.orm.exc.NoResultFound
+
+    id = Column(Integer, nullable=False, primary_key=True)
+
+    @classmethod
+    def protect(cls, protect=True):
+        if protect:
+            cls.__bases__ = (RoModel,)
+        else:
+            cls.__bases__ = (ModelApi,)

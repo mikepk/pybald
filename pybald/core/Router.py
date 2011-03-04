@@ -18,10 +18,12 @@ from routes import Mapper, request_config, URLGenerator
 # handle Mako's top level lookup
 from mako import exceptions
 
-import app.controllers
 import project
 
-from pybald.util import camel_to_underscore
+# load the controllers from the project defined path
+controllers = __import__(project.controllers_module, globals(), locals(), [project.controllers_module], 1)
+
+from pybald.util import camel_to_underscore, underscore_to_camel
 
 class Router:
     '''router class for connecting controllers to URLs'''
@@ -39,18 +41,20 @@ class Router:
         self.load()
 
     def load(self):
-        '''Loads controllers from app.controllers. De camel-cases the name and creates
-           a mapping block to look up URLs against. Takes that mapping dict and runs the 
+        '''Loads controllers from app.controllers. Uses the controller name to define a path
+           to controller mapping. Camel-cases the module name for the actual class lookup and creates
+           a mapping block to look up URLs against. Takes that mapping dict of paths and runs the 
            regular expressions for Routes.'''
 
-        controller_pattern = re.compile(r'(\w+)Controller')
+        controller_pattern = re.compile(r'(\w+)_controller')
         controller_names = []
-        for controller in app.controllers.__all__:
-            #lowercase and strip 'Controller'
-            controller_name = re.search('(\w+)Controller',controller).group(1)
-            controller_name = camel_to_underscore(controller_name).lower()
-            controller_names.append(controller_name)
-            self.controllers[controller_name]={'name':controller,'module':getattr(app.controllers,controller)}
+        for controller in controllers.__all__:
+            #strip '_controller'
+            controller_path_name = controller_pattern.search(controller).group(1)
+            # controller_name = camel_to_underscore(controller_name).lower()
+            controller_names.append(controller_path_name)
+            # self.controllers holds paths to map to modules and controller names
+            self.controllers[controller_path_name] = {'name':underscore_to_camel(controller),'module':getattr(controllers, controller)}
         
         # register the controller module names
         # with the mapper, creates the internal regular

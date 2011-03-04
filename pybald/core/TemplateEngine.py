@@ -43,15 +43,15 @@ class TemplateEngine:
         return self.__call__(data,format="form")
 
         
-    def __call__(self,data,format="html"):
+    def __call__(self, data, format="html"):
         '''Callable method that executes the template.'''
 
         # if the data dictionary has a format, use that, 
         # otherwise default to the passed in value or html
-        format = data.get("format", format) or format or "html"
+        format = data.get("format", format) or "html"
 
         # TODO: Add memc caching of rendered templates
-        mytemplate = self.lookup.get_template("/"+data['template_id'].lower()+"."+format.lower()+".template")
+        mytemplate = self.lookup.get_template("/%s.%s.template" % (data['template_id'].lower(), format.lower()))
         return mytemplate.render(**data)
 
     def clear_viewscache(self):

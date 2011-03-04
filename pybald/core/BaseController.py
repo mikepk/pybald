@@ -25,6 +25,7 @@ from pybald.util import camel_to_underscore
 from routes import redirect_to
 import project
 
+from pybald.db import models
 
 # action / method decorator
 # This decorator takes in the action method and adds some syntactic sugar around it.
@@ -47,7 +48,7 @@ def action(func):
         # this code defines the template id to match against
         # template path = controller name + '/' + action name (except in the case of)
         # index
-        self.template_id = camel_to_underscore(re.search('(\w+)Controller',self.__module__).group(1)) #.lower()
+        self.template_id = camel_to_underscore(re.search('(\w+)Controller',self.__class__.__name__).group(1))
         # 'index' is a special name. The index action maps to the controller name (no action view)
         if not re.search(r'index|__call__',func.__name__):
             self.template_id += '/'+str(func.__name__)
@@ -103,7 +104,8 @@ class Page(dict):
         filename += '?v=%s' % (self.compute_asset_tag(filename))
         self['headers'].append('''<link type="text/css" href="%s" media="%s" rel="stylesheet" />''' % (str(filename),str(media)) )
 
-
+class Safe(object):
+    pass
 
 class BaseController():
     '''Base controller that includes the view and a default index method.'''
@@ -150,13 +152,34 @@ class BaseController():
         view = engine
         # user supplied dictionary, otherwise create a dictionary
         # from the controller
-        if user_dict:
-            user_dict['template_id'] = self.template_id
-            return view(user_dict)
-        # View has access to all the internal attributes
-        # inside the view (for Mako at least) the dictionary is copied
-        else:
-            return view(self.__dict__)
+        data = user_dict or self.__dict__ or {}
+        if data['template_id'] is None:
+            data['template_id'] = self.template_id
+
+        view_data = view(data)
+
+        # A very simple lock to avoid exposing the Model API
+        # in the mako template. The "protect" method isn't very
+        # secure, more of a protection against accidental invocation
+        # of the get, delete, load, etc... methods in the template.
+        
+        # FIXME: This experiment failed, I believe the file access in the template engine
+        # allows eventlet to thread switch in the middle, causing other objects to fail
+        # because they don't have access to the model API. Stil thinking.
+        # try:
+        #     print "LOCKING AND BLOCKING"
+        #     models.Model.protect()
+        #     for x in range(1000):
+        #         i = 0
+        #         while i < 50000:
+        #             i+=1
+        #     view_data = view(data)
+        # finally:
+        #     # regardless of the exception state, the
+        #     # models must be unlocked
+        #     print "UNLOCKING"
+        #     models.Model.protect(False)
+        return view_data
         
 class BaseControllerTests(unittest.TestCase):
     def setUp(self):

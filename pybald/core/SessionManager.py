@@ -18,11 +18,7 @@ from webob import Request, Response
 import re
 
 import project
-Session = getattr(__import__(project.models_module+".Session", globals(), locals(), ["Session"], 1), "Session")
-
-# from app.models import Session
-
-# from sqlalchemy.orm import orm_exc
+Session = getattr(__import__(project.models_module, globals(), locals(), ["Session"], 1), "Session")
 
 class SessionManager(object):
     '''Code to handle anonymous and user sessions, implemented as WSGI middleware.'''

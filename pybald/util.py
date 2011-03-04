@@ -9,7 +9,7 @@ def camel_to_underscore(text):
     '''Convert CamelCase text into underscore_separated text.'''
     return second_pass.sub( r'\1_\2', first_pass.sub(r'\1_\2', text)).lower()
 
-def undersore_to_camel(text):
+def underscore_to_camel(text):
     '''Convert underscore_separated text into CamelCase text.'''
     return ''.join([token.capitalize() for token in text.split(r'_') ])
 
