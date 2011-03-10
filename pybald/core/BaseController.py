@@ -13,6 +13,8 @@ import sys
 import os
 import unittest
 
+import os.path
+
 from pybald.core.TemplateEngine import engine
 
 from webob import Request, Response
@@ -48,7 +50,8 @@ def action(func):
         # this code defines the template id to match against
         # template path = controller name + '/' + action name (except in the case of)
         # index
-        self.template_id = camel_to_underscore(re.search('(\w+)Controller',self.__class__.__name__).group(1))
+        # if not hasattr(self, "template_id"):
+        self.template_id = camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1))
         # 'index' is a special name. The index action maps to the controller name (no action view)
         if not re.search(r'index|__call__',func.__name__):
             self.template_id += '/'+str(func.__name__)
@@ -79,7 +82,7 @@ def action(func):
     replacement.__name__ = func.__name__
     return replacement
 
-import os.path
+
 asset_tag_cache = {}
 class Page(dict):
     def __init__(self, version=None):
@@ -109,6 +112,8 @@ class Safe(object):
 
 class BaseController():
     '''Base controller that includes the view and a default index method.'''
+
+    controller_pattern = re.compile(r'(\w+)Controller')
 
     def __init__(self):
         '''Initialize the base controller with a page object. Page dictionary controls title, headers, etc...'''
