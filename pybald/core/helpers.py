@@ -48,8 +48,8 @@ class Link_Object():
         self.url = "#"
         self.attribs = []
     
-    def to(self,*pargs,**kargs):
-        self.url = url_for(*pargs,**kargs)
+    def to(self, *pargs, **kargs):
+        self.url = url_for(*pargs, **kargs)
         return self
     
     def set(self,**kargs):

@@ -38,7 +38,6 @@ class GreenThreadQueuePool(QueuePool):
         # TODO: Add timeout code to make sure this doesn't spin forever and deadlock
         # if something goes wrong in the db connections
         while self._max_overflow > -1 and self._overflow >= self._max_overflow:
-            # debug("Pool is full, waiting...")
             eventlet.sleep(0)
         return super(GreenThreadQueuePool,self).do_get(*pargs, **kargs)
 
@@ -63,7 +62,6 @@ def convert_url_to_connection_args(name_or_url, **kwargs):
     (cargs, connection_params) = dialect.create_connect_args(url)
     return dbapi, connection_params
 
-
 def green_connection():
     '''Create a green databse connection.'''    
     dbapi, kw = convert_url_to_connection_args(project.get_engine())
@@ -80,6 +78,7 @@ def green_connection():
             ## unfortunately it's hanging. The proxied connection still works
             ## nonblockingly though.
             # conn = tpool.execute(dbapi.connect, **kw)
+            # conn.errorhandler = error_handle
             proxied_connection = tpool.Proxy(conn, autowrap_names=('cursor',))
             return proxied_connection
         finally:
