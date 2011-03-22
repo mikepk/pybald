@@ -8,14 +8,14 @@ Copyright (c) 2010 Michael Kowalchik. All rights reserved.
 """
 
 import os
-from formalchemy import FieldSet, Field
 
 import project
 from formalchemy import templates, config
+from formalchemy import FieldSet, Field, Grid, validators
+
 from pybald.core.TemplateEngine import engine
 
 import pybald.db.models
-# templates.MAKO_TEMPLATES
 
 # set the Pybald Mako engine to be the main
 # form template engine

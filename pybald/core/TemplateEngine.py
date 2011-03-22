@@ -31,29 +31,41 @@ class TemplateEngine:
             imports=[
                 'from pybald.core.helpers import link, img, humanize',
                 ],
-                input_encoding='utf-8',output_encoding='utf-8',
+                input_encoding='utf-8', output_encoding='utf-8',
                 filesystem_checks=fs_test)
 
 
-    def form_render(self,template_name=None,**kargs):
+    def form_render(self, template_name=None, **kargs):
         '''Render the form for a specific model using formalchemy.'''
         data = kargs
         try:
             data['template_id'] = kargs['fieldset'].template_id
         except (KeyError, AttributeError):
             data['template_id'] = 'forms/%s' % template_name
-        return self.__call__(data,format="form")
 
-        
-    def __call__(self, data, format=None):
-        '''Callable method that executes the template.'''
+        # get passed in form if it's in the data
+        # but more likely we'll use the form extension
+        format = data.get("format", None) or "form"
 
+        mytemplate = self._get_template(data, format)
+        # We use the render_unicode to return a native unicode
+        # string for inclusion in another Mako template
+        return mytemplate.render_unicode(**data)
+
+    
+    def _get_template(self, data, format=None):
         # if the data dictionary has a format, use that, 
         # otherwise default to the passed in value or html
         format = format or data.get("format", None) or "html"
 
         # TODO: Add memc caching of rendered templates
-        mytemplate = self.lookup.get_template("/%s.%s.template" % (data['template_id'].lower(), format.lower()))
+        # also need to check if the internal caching is good enough
+        return self.lookup.get_template("/%s.%s.template" % (data['template_id'].lower(), format.lower()))
+
+    
+    def __call__(self, data, format=None):
+        '''Callable method that executes the template.'''
+        mytemplate = self._get_template(data, format)
         return mytemplate.render(**data)
 
 

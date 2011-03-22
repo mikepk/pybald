@@ -21,7 +21,7 @@ Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 
 from datetime import datetime
 from routes import url_for
-
+from mako import filters
 
 class Img_Object():
     def __init__(self,src=''):
@@ -47,6 +47,10 @@ class Link_Object():
         self.link_text = link_text
         self.url = "#"
         self.attribs = []
+
+    def filter(self, filter_type="h"):
+        self.link_text = filters.html_escape(self.link_text)
+        return self
     
     def to(self, *pargs, **kargs):
         self.url = url_for(*pargs, **kargs)
