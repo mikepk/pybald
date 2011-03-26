@@ -77,11 +77,20 @@ class Router:
         old_method = None
         req.errors = 'ignore'
         params = req.POST
-        if '_method' in req.POST:
+        if '_method' in req.params:
             old_method = environ['REQUEST_METHOD']
-            environ['REQUEST_METHOD'] = req.POST['_method'].upper()
-            if req.POST:
+            environ['REQUEST_METHOD'] = req.params['_method'].upper()
+            try:
                 del req.POST['_method']
+            except:
+                pass
+            try:
+                del req.GET['_method']
+            except:
+                pass
+
+            # del req.params['_method']
+
             if project.debug:
                 print "Changing request method to %s" % environ['REQUEST_METHOD']
 

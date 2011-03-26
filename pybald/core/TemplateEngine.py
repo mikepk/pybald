@@ -22,7 +22,7 @@ class TemplateEngine:
     def __init__(self, template_path=None): 
         self.project_path = project.get_path()
         default_template_path = os.path.join( os.path.dirname( os.path.realpath(__file__) ), 'default_templates' )
-        fs_test = project.debug or False
+        fs_test = project.template_filesystem_check or project.debug or False
 
         project_template_path = template_path or os.path.join(self.project_path,'app/views')
 
