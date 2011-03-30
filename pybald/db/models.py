@@ -69,6 +69,7 @@ from sqlalchemy.orm import (
     contains_eager,
     eagerload, 
     eagerload_all,
+    joinedload,
     synonym
     )
 

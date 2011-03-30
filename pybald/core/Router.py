@@ -121,7 +121,7 @@ class Router:
         # defines the redirect method. In this case it generates a
         # Webob Response object with the location and status headers
         # set
-        config.redirect = lambda url: Response(location=url,status=302)
+        config.redirect = lambda url: Response(location=url, status=302)
         
 
         # debug print messages
