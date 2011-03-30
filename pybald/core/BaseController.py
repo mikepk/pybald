@@ -39,23 +39,20 @@ def action(func):
         req = Request(environ)
 
         # add any url variables as members of the controller
-        # TODO: setup a way to avoid collisions with existing members (data overriding view, 
-        # possible sec hole)
-        if req.urlvars:
-            for key in req.urlvars.keys():
-                #Set the controller object to contain the url variables
-                # parsed from the dispatcher / router
-                setattr(self,key,req.urlvars[key])
+        for key in req.urlvars.keys():
+            #Set the controller object to contain the url variables
+            # parsed from the dispatcher / router
+            setattr(self,key,req.urlvars[key])
 
         # this code defines the template id to match against
         # template path = controller name + '/' + action name (except in the case of)
         # index
         # if not hasattr(self, "template_id"):
-        self.template_id = camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1))
-        # 'index' is a special name. The index action maps to the controller name (no action view)
-        if not re.search(r'index|__call__',func.__name__):
-            self.template_id += '/'+str(func.__name__)
-                
+        if func.__name__ not in ('index','__call__'):
+            self.template_id = "{0}/{1}".format(camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1)), func.__name__)
+        else:
+            self.template_id = camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1))
+        
         # add the pybald extension dict to the controller
         # object
         extension = req.environ.get('pybald.extension',None)
