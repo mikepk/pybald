@@ -26,6 +26,9 @@ from pybald.util import camel_to_underscore
 
 from routes import redirect_to
 import project
+media_version = project.media_version
+project_path = project.get_path()
+page_options = project.page_options
 
 from pybald.db import models
 
@@ -86,13 +89,13 @@ class Page(dict):
         self['title'] = None
         self['metas'] = []
         self['headers'] = []
-        self.version = project.media_version
+        self.version = media_version
         self['asset_tags'] = {}
 
     def compute_asset_tag(self, filename):
         asset_tag = asset_tag_cache.get(filename, None)
         if not asset_tag:
-            asset_tag = str(int(round(os.path.getmtime(os.path.join(project.get_path(),"content",filename.lstrip("/"))) )) ) 
+            asset_tag = str(int(round(os.path.getmtime(os.path.join(project_path,"content",filename.lstrip("/"))) )) ) 
             asset_tag_cache[filename] = asset_tag
         return asset_tag
 
@@ -114,14 +117,14 @@ class BaseController():
 
     def __init__(self):
         '''Initialize the base controller with a page object. Page dictionary controls title, headers, etc...'''
-        self.page = Page() #{'title':None,'metas':[],'headers':[]}
+        self.page = Page()
         self.error = None
         self.user = None
         self.session = None
 
-        if project.page_options:
-            for key in project.page_options.keys():
-                setattr(self, key, project.page_options[key]) 
+        if page_options:
+            for key in page_options.keys():
+                setattr(self, key, page_options[key]) 
                 
     @action
     def index(self,req):
@@ -167,7 +170,7 @@ class BaseController():
         
         # FIXME: This experiment failed, I believe the file access in the template engine
         # allows eventlet to thread switch in the middle, causing other objects to fail
-        # because they don't have access to the model API. Stil thinking.
+        # because they don't have access to the model API. Still thinking.
         # try:
         #     print "LOCKING AND BLOCKING"
         #     models.Model.protect()
