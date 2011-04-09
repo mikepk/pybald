@@ -19,6 +19,7 @@ from routes import Mapper, request_config, URLGenerator
 from mako import exceptions
 
 import project
+debug = project.debug
 
 # load the controllers from the project defined path
 controllers = __import__(project.controllers_module, globals(), locals(), [project.controllers_module], 1)
@@ -27,6 +28,11 @@ from pybald.util import camel_to_underscore, underscore_to_camel
 
 class Router:
     '''router class for connecting controllers to URLs'''
+    
+    # class method match patterns
+    underscore_match = re.compile(r'^\_')
+    controller_pattern = re.compile(r'(\w+)_controller')
+    
     def __init__(self,application=None,routes=None):
         self.controllers = {}
         # default mapper was switched to explicit
@@ -46,12 +52,9 @@ class Router:
            a mapping block to look up URLs against. Takes that mapping dict of paths and runs the 
            regular expressions for Routes.'''
 
-        controller_pattern = re.compile(r'(\w+)_controller')
         controller_names = []
         for controller in controllers.__all__:
-            #strip '_controller'
-            controller_path_name = controller_pattern.search(controller).group(1)
-            # controller_name = camel_to_underscore(controller_name).lower()
+            controller_path_name = self.controller_pattern.search(controller).group(1)
             controller_names.append(controller_path_name)
             # self.controllers holds paths to map to modules and controller names
             self.controllers[controller_path_name] = {'name':underscore_to_camel(controller),'module':getattr(controllers, controller)}
@@ -74,7 +77,7 @@ class Router:
         #method override
         # for REST architecture, this allows a POST parameter of _method
         # to be used to override POST with alternate HTTP verbs (PUT, DELETE)
-        old_method = None
+        #old_method = None
         req.errors = 'ignore'
         params = req.POST
         if '_method' in req.params:
@@ -84,14 +87,14 @@ class Router:
                 del req.POST['_method']
             except:
                 pass
+            # Experiment, is it worth it to change get method too?
             try:
                 del req.GET['_method']
             except:
                 pass
 
-            # del req.params['_method']
 
-            if project.debug:
+            if debug:
                 print "Changing request method to %s" % environ['REQUEST_METHOD']
 
 
@@ -116,53 +119,50 @@ class Router:
         # Add pybald extension, normally gets assigned to controller object
         environ['pybald.extension'] = environ.get('pybald.extension', {})
         environ['pybald.extension']["url_for"] = url
-        # environ['pybald.extension']["redirect_to"] = lambda url_text: Response(location=url(url_text),status=302)
 
         # defines the redirect method. In this case it generates a
         # Webob Response object with the location and status headers
         # set
-        config.redirect = lambda url: Response(location=url, status=302)
-        
+        config.redirect = lambda url: Response(location=url, status=302)        
 
         # debug print messages
-        if project.debug:
-            print '============= '+req.path+' =============='
-            print 'Method: %s' % req.method
+        if debug:
+            print ''.join(['============= ',req.path,' =============='])
+            print 'Method: {0}'.format(req.method)
 
         # use routes to match the url to a path
         # urlvars will contain controller + other non query string
         # URL data. Middleware above this can override and set urlvars
         # and the router will use those values.
         # TODO: allow individual variable overrides?
-        urlvars = environ.get('urlvars', self.map.match(req.path))
-        # urlvars = self.map.match(req.path)
-        if not urlvars: urlvars = {}
-        
-        # restore the original method if it was modified for REST purposes
-        # when dealing with browser's limited GET/POST only verbs
-        # if old_method:
-        #     environ['REQUEST_METHOD'] = old_method
+        urlvars = environ.get('urlvars', self.map.match(environ=environ)) or {}
+
+        # lifted from Routes middleware, handles 'redirect'
+        # routes (map.redirect)
+        if route and route.redirect:
+            route_name = '_redirect_%s' % id(route)
+            location = url(route_name, **match)
+            return Response(location=location, status=route.redirect_status)(environ, start_response)
 
 
         req.urlvars = urlvars
         environ['urlvars'] = urlvars
         if urlvars:
-            try:
-                controller = urlvars["controller"]
-                action = urlvars["action"]
-                if project.debug:
-                    for key in urlvars.keys():
-                        print '''%s: %s''' % (key, urlvars[key])
+            controller = urlvars["controller"]
+            action = urlvars["action"]
+            if debug:
+                for key in urlvars.keys():
+                    print '''{0}: {1}'''.format(key, urlvars[key])
 
-                #methods starting with underscore can't be used as actions
-                if re.match('^\_',action):
-                    raise exc.HTTPNotFound("Invalid Action")
-                    
+            #methods starting with underscore can't be used as actions
+            if self.underscore_match.match(action):
+                raise exc.HTTPNotFound("Invalid Action")
+
+            try:                    
                 # create controller instance from controllers dictionary
                 # using routes 'controller' returned from the match
                 controller = getattr(self.controllers[controller]['module'], self.controllers[controller]['name'])()
                 handler = getattr(controller, action)
-                
             # only catch the KeyError/AttributeError for the controller/action search
             except (KeyError, AttributeError):
                 raise exc.HTTPNotFound("Missing Controller or Action")
