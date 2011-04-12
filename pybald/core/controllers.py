@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-BaseController.py
-
-Base Controller that all PyBald controllers inherit from.
-
-Created by mikepk on 2009-06-29.
-Copyright (c) 2009 Michael Kowalchik. All rights reserved.
-"""
+# """
+# BaseController.py
+# 
+# Base Controller that all PyBald controllers inherit from.
+# 
+# Created by mikepk on 2009-06-29.
+# Copyright (c) 2009 Michael Kowalchik. All rights reserved.
+# """
 
 import sys
 import os
@@ -15,7 +15,7 @@ import unittest
 
 import os.path
 
-from pybald.core.TemplateEngine import engine
+from pybald.core.templates import engine
 
 from webob import Request, Response
 from webob import exc
@@ -37,7 +37,24 @@ from pybald.db import models
 # Allows the actions to work with WebOb request / response objects, and handles default
 # behaviors, such as displaying the view when nothing is returned, or plain text
 # if a string is returned.
-def action(func):
+def action(method):
+    '''
+    Decorates methods to turn them into pybald-style actions.
+
+    :param method: The method to turn into a pybald-style action.
+
+    This decorator takes the method of a controller instance (or any method that is a WSGI app) 
+    and adds some syntactic sugar around it to allow the method to use WebOb Request, 
+    Response objects.
+    
+    It allows actions to work with WebOb request / response objects, and handles default
+    behaviors, such as displaying the view when nothing is returned, or setting up a plain text
+    Response if a string is returned. It also assigns instance variables from the ``pybald.extension``
+    environ variables that can be set from other parts of the WSGI pipeline.
+    
+    This decorator is completely *optional* but recommended for making working with requests
+    and responses easier.
+    '''
     def replacement(self, environ, start_response):
         req = Request(environ)
 
@@ -51,8 +68,8 @@ def action(func):
         # template path = controller name + '/' + action name (except in the case of)
         # index
         # if not hasattr(self, "template_id"):
-        if func.__name__ not in ('index','__call__'):
-            self.template_id = "{0}/{1}".format(camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1)), func.__name__)
+        if method.__name__ not in ('index','__call__'):
+            self.template_id = "{0}/{1}".format(camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1)), method.__name__)
         else:
             self.template_id = camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1))
         
@@ -67,7 +84,7 @@ def action(func):
         # is returned from the controller
         # or the view. So pre has precedence over 
         # the return which has precedence over the view
-        resp = self._pre(req) or func(self,req) or self._view()
+        resp = self._pre(req) or method(self,req) or self._view()
 
         # if the response is currently just a string
         # wrap it in a response object
@@ -79,7 +96,7 @@ def action(func):
 
         return resp(environ, start_response)
     # restore the original function name
-    replacement.__name__ = func.__name__
+    replacement.__name__ = method.__name__
     return replacement
 
 
@@ -116,7 +133,11 @@ class BaseController():
     controller_pattern = re.compile(r'(\w+)Controller')
 
     def __init__(self):
-        '''Initialize the base controller with a page object. Page dictionary controls title, headers, etc...'''
+        '''
+        Initialize the base controller with a page object. 
+        
+        Page dictionary controls title, headers, etc...
+        '''
         self.page = Page()
         self.error = None
         self.user = None
@@ -131,26 +152,25 @@ class BaseController():
         '''default index action'''
         pass
         
-    def _pre(self,req):
+    def _pre(self, req):
         '''Code to run before any action.'''
         pass
 
-    def _post(self,req,resp):
+    def _post(self, req, resp):
         '''Code to run after any action.'''
         # Closes the db Session object. Required to avoid holding sessions
         # indefinitely and overruning the sqlalchemy pool
         pass
 
-    def _redirect_to(self,url,*pargs,**kargs):
+    def _redirect_to(self, url, *pargs, **kargs):
         '''Redirect the controller'''
         return redirect_to(url,*pargs,**kargs)
 
-    def _not_found(self,text=None):
+    def _not_found(self, text=None):
         raise exc.HTTPNotFound(text)
 
-    def _status(self,code):
+    def _status(self, code):
         raise exc.status_map[int(code)]
-
 
     def _view(self,user_dict=None):
         '''Method to invoke the template engine and display a view'''

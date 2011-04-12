@@ -4,7 +4,7 @@
 __init__.py
 
 Created by mikepk on 2010-10-14.
-Copyright (c) 2010 Michael Kowalchik. All rights reserved.
+Copyright (c) 2011 Michael Kowalchik. All rights reserved.
 """
 
 import os

@@ -17,23 +17,24 @@ def underscore_to_camel(text):
 class Plural(object):
     '''Simple Pluralizer object. Stores naive rules for word pluralization.'''
     def buildRule(self, (pattern, search, replace)):                                        
-        return lambda word: re.search(pattern, word) and re.sub(search, replace, word)
+        return lambda word: pattern.search(word) and search.sub(replace, word)
 
     def __init__(self):
         '''Init pluralizer'''
         #Build regex patterns to do a quick and dirty pluralization.
-        self.patterns = [['[^aeiouz]z$', '$', 's'], 
-                         ['[aeiou]z$', '$', 'zes'], 
-                         ['[sx]$', '$', 'es'], 
-                         ['[^aeioudgkprt]h$', '$', 'es'], 
-                         ['[^aeiou]y$', 'y$', 'ies'], 
-                         ['$', '$', 's']]
+        self.patterns = [ (re.compile(pattern), re.compile(search), replace) for pattern, search, replace in (
+                         ('[^aeiouz]z$', '$', 's'), 
+                         ('[aeiou]z$', '$', 'zes'), 
+                         ('[sx]$', '$', 'es'), 
+                         ('[^aeioudgkprt]h$', '$', 'es'),
+                         ('[^aeiou]y$', 'y$', 'ies'), 
+                         ('$', '$', 's')) ]
         self.rules = map(self.buildRule, self.patterns)
 
-    def __call__(self,class_name):
+    def __call__(self, text):
         '''Pluralize a noun using some simple rules.'''
         for rule in self.rules:
-            result = rule(class_name)
+            result = rule(text)
             if result: return result
 
 pluralize = Plural()

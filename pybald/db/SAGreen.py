@@ -6,7 +6,7 @@ SAGreen.py
 Support code to allow SQLalchemy to operate correctly with Eventlet and Green Threads.
 
 Created by mikepk on 2010-10-15.
-Copyright (c) 2010 Michael Kowalchik. All rights reserved.
+Copyright (c) 2011 Michael Kowalchik. All rights reserved.
 """
 
 import sqlalchemy.engine.url
@@ -34,11 +34,21 @@ def eventlet_greenthread_scope():
 class GreenThreadQueuePool(QueuePool):
     '''Simple subclass of the standard SA QueuePool. Uses a sleep when the pool is empty to green thread switch.'''
     def do_get(self, *pargs, **kargs):
-        # while the queue pool is filled, switch to another thread until one is available
+        # while the queue pool is filled, switch to another green thread until one is available
         # TODO: Add timeout code to make sure this doesn't spin forever and deadlock
         # if something goes wrong in the db connections
-        while self._max_overflow > -1 and self._overflow >= self._max_overflow:
-            eventlet.sleep(0)
+        # t = timeout.Timeout(20, ConnectTimeout())
+        # try:
+        # while self._max_overflow > -1 and self._overflow >= self._max_overflow
+        # if wait:
+        #     gt = eventlet.greenthread.getcurrent()
+        #     gt.wait()
+        # print "%s : sleeping/switching" % id(eventlet.greenthread.getcurrent())
+        # print pargs, kargs
+        # eventlet.sleep(0)
+        # finally:
+        #     # cancel the timeout
+        #     t.cancel()
         return super(GreenThreadQueuePool,self).do_get(*pargs, **kargs)
 
 

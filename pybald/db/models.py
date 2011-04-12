@@ -136,12 +136,15 @@ class ModelApi(Base):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
     __metaclass__ = ModelMeta
     
-
     
     def save(self, commit=False):
-        '''Save this instance. 
+        '''Save this instance in the current databse session.
         
-        When commit is False, stages data for later commit.
+        This does not guarantee that the data is persisted since these operations
+        occur within a transaction. If something causes a rollback before the session
+        is committed, these changes will be lost.
+        
+        When commit is False, stages data for later flush/commit.
         '''
         
         session.add(self)
@@ -151,7 +154,12 @@ class ModelApi(Base):
         return self
 
     def delete(self, commit=False):
-        '''Delete this instance.'''
+        '''
+        Delete this instance from the current database session.
+
+        You should follow this operation with a commit to emit the SQL to
+        delete the item from the database and commit the transaction.
+        '''
         session.delete(self)
         if commit:
             self.flush()
@@ -159,33 +167,51 @@ class ModelApi(Base):
 
 
     def flush(self):
-        '''Call the commit for the entire session (includes anything else pending)'''
+        '''
+        Syncs all pending SQL changes (including other pending objects) to the underlying
+        data store within the current transaction.
+        
+        Flush emits all the relevant SQL to the underlying store, but does **not** commit the
+        current transaction or close the current database session.
+        '''
         session.flush()
         return self
 
 
     def commit(self):
-        '''Call the commit for the entire session (includes anything else pending)'''
+        '''
+        Commits the entire database session (including other pending objects).
+        
+        This emits all relevant SQL to the databse, commits the current transaction, 
+        and closes the current session (and database connection) and returns it to the 
+        connection pool. Any data operations after this will pull a new database
+        session from the connection pool.
+        '''
         session.commit()
         return self
 
     @classmethod
-    def get(cls,**where):
+    def get(cls, **where):
         '''Construct a load query with keyword arguments as the filter argument and return the instance.'''
         return cls.load(**where).one()
 
     @classmethod
-    def all(cls,**where):
-        '''Returns a list of objects that can be qualified. all() without arguments returns all the items of the model type.'''
+    def all(cls, **where):
+        '''
+        Returns a collection of objects that can be filtered for specific collections.
+        
+        all() without arguments returns all the items of the model type.
+        '''
         return cls.load(**where).all()
 
     # methods that return queries (must execute to retrieve)
     # =============================================================
     @classmethod
-    def load(cls,**where):
+    def load(cls, **where):
         '''Build a sqlalchemy load query to return stored objects. 
         
-        Returns a query object that must execute the query to retrieve.
+        Returns a query object. This query object must be executed to retrieve
+        actual items from the database.
         '''
         if where:
             return session.query(cls).filter_by(**where)
@@ -196,12 +222,6 @@ class ModelApi(Base):
     def query(cls):
         '''Simple Query method based on the class.'''
         return session.query(cls)
-
-
-    @classmethod
-    def all(cls,**where):
-        '''Returns a list of objects that can be qualified. all() without arguments returns all the items of the model type.'''
-        return cls.load(**where).all()
 
 
 class RoModel(object):

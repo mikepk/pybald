@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-BaseForm.py
-
-Created by mikepk on 2010-04-25.
-Copyright (c) 2010 Michael Kowalchik. All rights reserved.
-"""
+# """
+# forms.py
+# 
+# Created by mikepk on 2010-04-25.
+# Copyright (c) 2011 Michael Kowalchik. All rights reserved.
+# """
 
 import os
 
@@ -13,7 +13,7 @@ import project
 from formalchemy import templates, config
 from formalchemy import FieldSet, Field, Grid, validators
 
-from pybald.core.TemplateEngine import engine
+from pybald.core.templates import engine
 
 import pybald.db.models
 

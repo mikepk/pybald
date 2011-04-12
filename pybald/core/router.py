@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-Router.py
+# Router.py
+# 
+# Created by mikepk on 2009-06-28.
+# Copyright (c) 2011 Michael Kowalchik. All rights reserved.
 
-Created by mikepk on 2009-06-28.
-Copyright (c) 2009 Michael Kowalchik. All rights reserved.
-"""
 
 import sys
-import os  #, glob
+import os
 import unittest
 import re
 
@@ -26,14 +25,21 @@ controllers = __import__(project.controllers_module, globals(), locals(), [proje
 
 from pybald.util import camel_to_underscore, underscore_to_camel
 
-class Router:
-    '''router class for connecting controllers to URLs'''
-    
+class Router(object):
     # class method match patterns
-    underscore_match = re.compile(r'^\_')
+    has_underscore = re.compile(r'^\_')
     controller_pattern = re.compile(r'(\w+)_controller')
     
-    def __init__(self,application=None,routes=None):
+    def __init__(self, application=None, routes=None):
+        '''
+        Create a Router object, the core of the pybald framework.
+        
+        :param application:  WSGI application/middleware that is to be *wrapped* by the router 
+                             in the web app pipeline.
+        
+        :param routes: An instance of a Routes mapper (for parsing and matching urls)
+        
+        '''
         self.controllers = {}
         # default mapper was switched to explicit
         # explains all the mapper weirdness I was seeing
@@ -47,10 +53,14 @@ class Router:
         self.load()
 
     def load(self):
-        '''Loads controllers from app.controllers. Uses the controller name to define a path
-           to controller mapping. Camel-cases the module name for the actual class lookup and creates
-           a mapping block to look up URLs against. Takes that mapping dict of paths and runs the 
-           regular expressions for Routes.'''
+        '''
+        Loads controllers from app.controllers. Uses the controller name to define a path
+        to controller mapping. It does some text munging to camel-case the module name 
+        to look up the expected classname in the modules. It loads all controller candidates into
+        a mapping block to look up URLs against. 
+        
+        Called only once at the start of a pybald application.
+        '''
 
         controller_names = []
         for controller in controllers.__all__:
@@ -64,24 +74,29 @@ class Router:
         # expressions
         self.map.create_regs(controller_names)
 
-    def deferred_exception(self, func, exc_info):
-        '''Function wrapper / closure to re-raise exceptions that occur too early to be displayed.'''
-        def raise_deferred(environ,start_response):
-            raise exc_info[0], exc_info[1], exc_info[2]
-        return raise_deferred
 
-
-    def __call__(self,environ,start_response):
-        '''WSGI app, Router is called directly to actually route the url to the target'''
+    def __call__(self, environ, start_response):
+        '''
+        A Router instance is a WSGI app. It accepts the standard WSGI call signature of
+        ``environ``, ``start_response``. 
+        
+        The Router has a few jobs. First it uses the Routes package to
+        compare the requested path to available url patterns that have
+        been loaded and passed to the Router upon init.
+        
+        Router is the most *framework-like* component of Pybald. In addition to
+        dispatching urls to controllers, it also allows 'method override' 
+        behavior allowing other HTTP methods to be invoked such as ``put`` and
+        ``delete``.
+        '''
         req = Request(environ)
         #method override
+        #===============
         # for REST architecture, this allows a POST parameter of _method
         # to be used to override POST with alternate HTTP verbs (PUT, DELETE)
-        #old_method = None
         req.errors = 'ignore'
         params = req.POST
         if '_method' in req.params:
-            old_method = environ['REQUEST_METHOD']
             environ['REQUEST_METHOD'] = req.params['_method'].upper()
             try:
                 del req.POST['_method']
@@ -95,7 +110,7 @@ class Router:
 
 
             if debug:
-                print "Changing request method to %s" % environ['REQUEST_METHOD']
+                print "Changing request method to {0}".format(environ["REQUEST_METHOD"])
 
 
         # routes config object, this must be done on every request.
@@ -150,15 +165,15 @@ class Router:
         if urlvars:
             controller = urlvars["controller"]
             action = urlvars["action"]
-            if debug:
-                for key in urlvars.keys():
-                    print '''{0}: {1}'''.format(key, urlvars[key])
 
             #methods starting with underscore can't be used as actions
-            if self.underscore_match.match(action):
+            if self.has_underscore.match(action):
                 raise exc.HTTPNotFound("Invalid Action")
+                
+            if debug:
+                print "\n".join(['''{0}: {1}'''.format(key, value) for key, value in urlvars.items()])
 
-            try:                    
+            try:
                 # create controller instance from controllers dictionary
                 # using routes 'controller' returned from the match
                 controller = getattr(self.controllers[controller]['module'], self.controllers[controller]['name'])()
