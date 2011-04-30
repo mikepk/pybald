@@ -23,30 +23,38 @@ from datetime import datetime
 from routes import url_for
 from mako import filters
 
-class Img_Object():
-    def __init__(self,src=''):
-        self.img_src = src
-        self.attribs = []
+static_prefix="http://static.smarterer.com"
 
-    def __repr__(self):
-        '''Return the link in string form.'''
-        if "alt" not in self.attribs:
-            self.attribs.append('''alt="%s"''' % self.img_src)
-        attr = " ".join(self.attribs) #[key,value for x in self.attribs])
-        return '''<img src="%s" %s />''' % (self.img_src,attr)
-
+class tag(object):
     def set(self,**kargs):
         for key in kargs:
-            akey = key.lstrip('_').rstrip('_')
+            akey = key.rstrip('_')
             self.attribs.append('''%s="%s"''' % (akey,kargs[key]))
         return self
     
 
-class Link_Object():
-    def __init__(self,link_text=''):
+class img(tag):
+    def __init__(self,src='', **kargs):
+        self.img_src = src
+        self.attribs = []
+        self.set(**kargs)
+
+    def __str__(self):
+        '''Return the image in string form.'''
+        image_url='''{0}{1}'''.format(static_prefix,self.img_src)
+        if "alt" not in self.attribs:
+            self.attribs.append('''alt="{0}"'''.format(image_url))
+        attr = " ".join(self.attribs) #[key,value for x in self.attribs])
+        return '''<img src="{0}" {1} />'''.format(image_url,attr)
+
+    
+
+class link(tag):
+    def __init__(self,link_text='', **kargs):
         self.link_text = link_text
         self.url = "#"
         self.attribs = []
+        self.set(**kargs)
 
     def filter(self, filter_type="h"):
         self.link_text = filters.html_escape(self.link_text)
@@ -56,27 +64,10 @@ class Link_Object():
         self.url = url_for(*pargs, **kargs)
         return self
     
-    def set(self,**kargs):
-        for key in kargs:
-            akey = key.lstrip('_')
-            self.attribs.append('''%s="%s"''' % (akey,kargs[key]))
-        return self
-    
-    def __repr__(self):
+    def __str__(self):
         '''Return the link in string form.'''
         attr = " ".join(self.attribs) #[key,value for x in self.attribs])
         return '''<a href="%s" %s>%s</a>''' % (self.url,attr,self.link_text)
-
-def link(link_text='',img=None):
-    lk = Link_Object(link_text)
-    return lk
-
-def img(src=None):
-    if not src:
-        return ''
-    img = Img_Object(src)
-    return img
-
 
 def plural(list_object):
     '''Return "s" for > 1 items'''
