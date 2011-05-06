@@ -15,7 +15,7 @@ import unittest
 
 import os.path
 
-from pybald.core.templates import engine
+from pybald.core.templates import engine as view_engine
 
 from webob import Request, Response
 from webob import exc
@@ -31,6 +31,7 @@ project_path = project.get_path()
 page_options = project.page_options
 
 from pybald.db import models
+
 
 # action / method decorator
 # This decorator takes in the action method and adds some syntactic sugar around it.
@@ -100,7 +101,6 @@ def action(method):
     return replacement
 
 
-asset_tag_cache = {}
 class Page(dict):
     def __init__(self, version=None):
         self['title'] = None
@@ -109,20 +109,15 @@ class Page(dict):
         self.version = media_version
         self['asset_tags'] = {}
 
-    def compute_asset_tag(self, filename):
-        asset_tag = asset_tag_cache.get(filename, None)
-        if not asset_tag:
-            asset_tag = str(int(round(os.path.getmtime(os.path.join(project_path,"content",filename.lstrip("/"))) )) ) 
-            asset_tag_cache[filename] = asset_tag
-        return asset_tag
+        #self.sm = project.registry.sm
 
     def add_js(self, filename):
-        filename += '?v=%s' % (self.compute_asset_tag(filename))
-        self['headers'].append('''<script type="text/javascript" src="%s"></script>''' % (str(filename)) )
+        self['headers'].append('''<script type="text/javascript" src="{0}"></script>'''.format(filename) )
 
     def add_css(self, filename, media="screen"):
-        filename += '?v=%s' % (self.compute_asset_tag(filename))
-        self['headers'].append('''<link type="text/css" href="%s" media="%s" rel="stylesheet" />''' % (str(filename),str(media)) )
+        self['headers'].append('''<link type="text/css" href="{0}" media="{1}" rel="stylesheet" />'''.format(filename, str(media)) )
+
+
 
 class Safe(object):
     pass
@@ -151,15 +146,23 @@ class BaseController():
     def index(self,req):
         '''default index action'''
         pass
-        
+
+
+    def __before__(self, req):
+        '''Code to run before any action.'''
+        return self._pre(req)
+
+    def __after__(self, req, resp):
+        '''Code to run after any action.'''
+        return self._post(req, resp)
+
+
     def _pre(self, req):
         '''Code to run before any action.'''
         pass
 
     def _post(self, req, resp):
         '''Code to run after any action.'''
-        # Closes the db Session object. Required to avoid holding sessions
-        # indefinitely and overruning the sqlalchemy pool
         pass
 
     def _redirect_to(self, url, *pargs, **kargs):
@@ -172,39 +175,18 @@ class BaseController():
     def _status(self, code):
         raise exc.status_map[int(code)]
 
-    def _view(self,user_dict=None):
+    def _view(self,user_dict=None, helpers=None):
         '''Method to invoke the template engine and display a view'''
-        view = engine
+        # view = engine
         # user supplied dictionary, otherwise create a dictionary
         # from the controller
         data = user_dict or self.__dict__ or {}
+        # prob should check for keyerror
         if data['template_id'] is None:
             data['template_id'] = self.template_id
-
-        view_data = view(data)
-
-        # A very simple lock to avoid exposing the Model API
-        # in the mako template. The "protect" method isn't very
-        # secure, more of a protection against accidental invocation
-        # of the get, delete, load, etc... methods in the template.
-        
-        # FIXME: This experiment failed, I believe the file access in the template engine
-        # allows eventlet to thread switch in the middle, causing other objects to fail
-        # because they don't have access to the model API. Still thinking.
-        # try:
-        #     print "LOCKING AND BLOCKING"
-        #     models.Model.protect()
-        #     for x in range(1000):
-        #         i = 0
-        #         while i < 50000:
-        #             i+=1
-        #     view_data = view(data)
-        # finally:
-        #     # regardless of the exception state, the
-        #     # models must be unlocked
-        #     print "UNLOCKING"
-        #     models.Model.protect(False)
-        return view_data
+        if helpers:
+            data.update(helpers)
+        return view_engine(data)
         
 class BaseControllerTests(unittest.TestCase):
     def setUp(self):

@@ -132,10 +132,13 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         super(ModelMeta, cls).__init__(name, bases, ns)
 
 
-class ModelApi(Base):
+class Model(Base):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
     __metaclass__ = ModelMeta
     
+    NotFound = sqlalchemy.orm.exc.NoResultFound
+    # automatically assign id to the table/class
+    id = Column(Integer, nullable=False, primary_key=True)
     
     def save(self, commit=False):
         '''Save this instance in the current databse session.
@@ -224,22 +227,22 @@ class ModelApi(Base):
         return session.query(cls)
 
 
-class RoModel(object):
-    '''Read only version of the Model class.'''
+# class RoModel(object):
+#     '''Read only version of the Model class.'''
+# 
+#     @classmethod
+#     def protect(cls, protect=True):
+#         cls.__bases__ = (ModelApi,)
 
-    @classmethod
-    def protect(cls, protect=True):
-        cls.__bases__ = (ModelApi,)
 
-
-class Model(ModelApi):
-    NotFound = sqlalchemy.orm.exc.NoResultFound
-
-    id = Column(Integer, nullable=False, primary_key=True)
-
-    @classmethod
-    def protect(cls, protect=True):
-        if protect:
-            cls.__bases__ = (RoModel,)
-        else:
-            cls.__bases__ = (ModelApi,)
+# class Model(ModelApi):
+#     NotFound = sqlalchemy.orm.exc.NoResultFound
+# 
+#     id = Column(Integer, nullable=False, primary_key=True)
+# 
+#     @classmethod
+#     def protect(cls, protect=True):
+#         if protect:
+#             cls.__bases__ = (RoModel,)
+#         else:
+#             cls.__bases__ = (ModelApi,)

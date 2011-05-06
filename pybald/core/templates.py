@@ -1,11 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-# """
-# TemplateEngine.py
-# 
-# Created by mikepk on 2009-06-29.
-# Copyright (c) 2009 Michael Kowalchik. All rights reserved.
-# """
 
 import sys
 import os
@@ -29,14 +23,20 @@ class TemplateEngine:
         self.lookup = TemplateLookup(directories=[project_template_path, default_template_path], 
             module_directory=os.path.join(self.project_path,'viewscache'),
             imports=[
-                'from pybald.core.helpers import link, img, humanize',
+                'from pybald.core.helpers import img, link, humanize',
                 ],
                 input_encoding='utf-8', output_encoding='utf-8',
                 filesystem_checks=fs_test)
 
 
     def form_render(self, template_name=None, **kargs):
-        '''Render the form for a specific model using formalchemy.'''
+        '''
+        Render the form for a specific model using formalchemy.
+        
+        :param template_name: The name of the template to search for and
+                              render for a form
+        :param **kargs: the data to render in the context of the form template
+        '''
         data = kargs
         try:
             data['template_id'] = kargs['fieldset'].template_id
@@ -79,7 +79,7 @@ class TemplateEngine:
         Renders the template.
         
         :param data: A dictionary that represents the context to render inside the template. Items in 
-                     this dictionary will be available to the template for display.
+                     this dictionary will be available to the template.
         :param format: A string specifying the format type to return, this overrides a format specified
                        in the data dictionary
         
@@ -89,7 +89,7 @@ class TemplateEngine:
         return mytemplate.render(**data)
 
 
-
+#module scope singleton, should this be changed?
 engine = TemplateEngine()
 
 class TemplateEngineTests(unittest.TestCase):

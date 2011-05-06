@@ -1,14 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-helpers.py
-
-A set of HTML helpers for the templates. This includes link generating code, and special
-escaping code.
-
-Created by mikepk on 2009-07-08.
-Copyright (c) 2009 Michael Kowalchik. All rights reserved.
-"""
 
 #url_for takes these arguments as well
 # anchor          specified the anchor name to be appened to the path
@@ -23,13 +14,9 @@ from datetime import datetime
 from routes import url_for
 from mako import filters
 
-static_prefix="http://static.smarterer.com"
-
 class tag(object):
-    def set(self,**kargs):
-        for key in kargs:
-            akey = key.rstrip('_')
-            self.attribs.append('''%s="%s"''' % (akey,kargs[key]))
+    def set(self, **kargs):
+        self.attribs.extend(['''{0}="{1}"'''.format(k.rstrip('_'), v) for k,v in kargs.items() ])
         return self
     
 
@@ -38,14 +25,13 @@ class img(tag):
         self.img_src = src
         self.attribs = []
         self.set(**kargs)
-
+        
     def __str__(self):
         '''Return the image in string form.'''
-        image_url='''{0}{1}'''.format(static_prefix,self.img_src)
+        image_url=str(self.img_src)
         if "alt" not in self.attribs:
             self.attribs.append('''alt="{0}"'''.format(image_url))
-        attr = " ".join(self.attribs) #[key,value for x in self.attribs])
-        return '''<img src="{0}" {1} />'''.format(image_url,attr)
+        return '''<img src="{0}" {1} />'''.format(image_url, " ".join(self.attribs) )
 
     
 
@@ -66,8 +52,8 @@ class link(tag):
     
     def __str__(self):
         '''Return the link in string form.'''
-        attr = " ".join(self.attribs) #[key,value for x in self.attribs])
-        return '''<a href="%s" %s>%s</a>''' % (self.url,attr,self.link_text)
+        attr = " ".join(self.attribs)
+        return '''<a href="{0}" {1}>{2}</a>'''.format(self.url, attr, self.link_text)
 
 def plural(list_object):
     '''Return "s" for > 1 items'''
@@ -86,7 +72,9 @@ def humanize(date_string):
     now = datetime.now()
     delta = now - date
     plural = 's'
-    if delta.days >= 1:
+    if delta.days < 0:
+        return "in the future"
+    elif delta.days >= 1:
         if delta.days == 1:
             plural = ''
         return "%s day%s ago" % (str(delta.days),plural)

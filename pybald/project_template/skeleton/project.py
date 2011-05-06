@@ -13,7 +13,7 @@ env_name = "Default"
 green = False
 
 # temporary until I have pybald be installable
-pybald_path = '/usr/share/xpertrank/pybald' # <- Must set pybald path
+pybald_path = '/usr/share/smarterer/pybald' # <- Must set pybald path
 project_name = "skeleton"
 
 # define project routes for the URL mapper
