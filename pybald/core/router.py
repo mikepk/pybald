@@ -16,7 +16,8 @@ import project
 debug = project.debug
 
 # load the controllers from the project defined path
-controllers = __import__(project.controllers_module, globals(), locals(), [project.controllers_module], 1)
+controllers = __import__(project.controllers_module, globals(), locals(), 
+                        [project.controllers_module], 1)
 
 from pybald.util import camel_to_underscore, underscore_to_camel
 
@@ -29,10 +30,11 @@ class Router(object):
         '''
         Create a Router object, the core of the pybald framework.
         
-        :param application:  WSGI application/middleware that is to be *wrapped* by the router 
-                             in the web app pipeline.
+        :param application:  WSGI application/middleware that is to be 
+                             *wrapped* by the router in the web app pipeline.
         
-        :param routes: An instance of a Routes mapper (for parsing and matching urls)
+        :param routes: An instance of a Routes mapper (for parsing and matching
+                       urls)
         
         '''
         self.controllers = {}
@@ -49,20 +51,25 @@ class Router(object):
 
     def load(self):
         '''
-        Loads controllers from app.controllers. Uses the controller name to define a path
-        to controller mapping. It does some text munging to camel-case the module name 
-        to look up the expected classname in the modules. It loads all controller candidates into
-        a mapping block to look up URLs against. 
+        Loads controllers from app.controllers. Uses the controller name to 
+        define a path to controller mapping. It does some text munging to
+        camel-case the module name to look up the expected classname in the
+        modules. It loads all controller candidates into a mapping block to
+        look up URLs against. 
         
         Called only once at the start of a pybald application.
         '''
 
         controller_names = []
         for controller in controllers.__all__:
-            controller_path_name = self.controller_pattern.search(controller).group(1)
+            controller_path_name = self.controller_pattern.search(
+                                                           controller).group(1)
             controller_names.append(controller_path_name)
-            # self.controllers holds paths to map to modules and controller names
-            self.controllers[controller_path_name] = {'name':underscore_to_camel(controller),'module':getattr(controllers, controller)}
+            # self.controllers holds paths to map to modules and controller 
+            # names
+            self.controllers[controller_path_name] = {
+                                    'name':underscore_to_camel(controller),
+                                    'module':getattr(controllers, controller)}
         
         # register the controller module names
         # with the mapper, creates the internal regular
@@ -72,8 +79,8 @@ class Router(object):
 
     def __call__(self, environ, start_response):
         '''
-        A Router instance is a WSGI app. It accepts the standard WSGI call signature of
-        ``environ``, ``start_response``. 
+        A Router instance is a WSGI app. It accepts the standard WSGI call 
+        signature of ``environ``, ``start_response``. 
         
         The Router has a few jobs. First it uses the Routes package to
         compare the requested path to available url patterns that have
@@ -105,7 +112,8 @@ class Router(object):
 
 
             if debug:
-                print "Changing request method to {0}".format(environ["REQUEST_METHOD"])
+                print "Changing request method to {0}".format(
+                                                     environ["REQUEST_METHOD"])
 
 
         # routes config object, this must be done on every request.
@@ -152,7 +160,10 @@ class Router(object):
         if route and route.redirect:
             route_name = '_redirect_%s' % id(route)
             location = url(route_name, **match)
-            return Response(location=location, status=route.redirect_status)(environ, start_response)
+            return Response(
+                location=location, 
+                status=route.redirect_status
+                )(environ, start_response)
 
 
         req.urlvars = urlvars
@@ -166,14 +177,17 @@ class Router(object):
                 raise exc.HTTPNotFound("Invalid Action")
                 
             if debug:
-                print "\n".join(['''{0}: {1}'''.format(key, value) for key, value in urlvars.items()])
+                print "\n".join(['''{0}: {1}'''.format(key, value) 
+                                for key, value in urlvars.items()])
 
             try:
                 # create controller instance from controllers dictionary
                 # using routes 'controller' returned from the match
-                controller = getattr(self.controllers[controller]['module'], self.controllers[controller]['name'])()
+                controller = getattr(self.controllers[controller]['module'], 
+                                     self.controllers[controller]['name'])()
                 handler = getattr(controller, action)
-            # only catch the KeyError/AttributeError for the controller/action search
+            # only catch the KeyError/AttributeError for the controller/action 
+            # search
             except (KeyError, AttributeError):
                 raise exc.HTTPNotFound("Missing Controller or Action")
 
