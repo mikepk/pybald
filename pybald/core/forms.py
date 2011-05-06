@@ -1,11 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-# """
-# forms.py
-# 
-# Created by mikepk on 2010-04-25.
-# Copyright (c) 2011 Michael Kowalchik. All rights reserved.
-# """
 
 import os
 

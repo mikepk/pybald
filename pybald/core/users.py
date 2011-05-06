@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+# encoding: utf-8
 
 from webob import Request,Response
 
 # from app.models import User
 import project
+#total hack to get the User class with the proper namespace
 User = getattr(__import__(project.models_module, globals(), locals(), ["User"], 1), "User")
 
 class UserManager(object):

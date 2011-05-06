@@ -1,11 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-PybaldLogger.py
-
-Created by mikepk on 2009-12-01.
-Copyright (c) 2009 Michael Kowalchik. All rights reserved.
-"""
 
 import sys
 import os

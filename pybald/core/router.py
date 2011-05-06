@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-# Router.py
-# 
-# Created by mikepk on 2009-06-28.
-# Copyright (c) 2011 Michael Kowalchik. All rights reserved.
-
 
 import sys
 import os

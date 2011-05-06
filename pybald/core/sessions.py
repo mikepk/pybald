@@ -1,11 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-# """
-# SessionManager.py
-# 
-# Created by mikepk on 2009-07-06.
-# Copyright (c) 2009 Michael Kowalchik. All rights reserved.
-# """
 
 import sys
 import os
