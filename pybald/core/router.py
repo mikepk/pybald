@@ -33,8 +33,8 @@ class Router(object):
         :param application:  WSGI application/middleware that is to be 
                              *wrapped* by the router in the web app pipeline.
         
-        :param routes: An instance of a Routes mapper (for parsing and matching
-                       urls)
+        :param routes: An instance of a Routes mapper (for parsing and 
+                       matching urls)
         
         '''
         self.controllers = {}

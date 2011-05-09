@@ -90,8 +90,7 @@ from sqlalchemy.sql.expression import (
 from sqlalchemy import func
 
 import re
-from pybald.db.db_engine import engine
-
+from pybald.db import engine, dump_engine
 from pybald.util import camel_to_underscore, pluralize
 
 # for green operation
@@ -225,6 +224,13 @@ class Model(Base):
     def query(cls):
         '''Simple Query method based on the class.'''
         return session.query(cls)
+    
+    @classmethod
+    def show_create_table(cls):
+        '''
+        Use the simple dump_engine to print the SQL for this table.
+        '''
+        cls.__table__.create(dump_engine)
 
 
 # class RoModel(object):

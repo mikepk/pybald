@@ -9,3 +9,9 @@ if project.green:
     engine_args["poolclass"] = GreenThreadQueuePool
 
 engine = sa.create_engine(project.get_engine(), **engine_args)
+
+
+def dump(sql, *multiparams, **params):
+    print str(sql.compile(dialect=dump_engine.dialect) )
+
+dump_engine = sa.create_engine('mysql://', strategy='mock', executor=dump)
