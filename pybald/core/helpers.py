@@ -53,7 +53,7 @@ class link(tag):
     def __str__(self):
         '''Return the link in string form.'''
         attr = " ".join(self.attribs)
-        return '''<a href="{0}" {1}>{2}</a>'''.format(self.url, attr, self.link_text)
+        return u'''<a href="{0}" {1}>{2}</a>'''.format(self.url, attr, self.link_text)
 
 def plural(list_object):
     '''Return "s" for > 1 items'''

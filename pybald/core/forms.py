@@ -22,14 +22,16 @@ class BaseForm(FieldSet):
         if 'template' in kargs:
             del kargs['template']
 
-        # This hack is to assign a session for non-instances. Used primarily for
-        # loading the relations in models, otherwise session has to be explicitly
-        # assigned (I think, can't find docs to the contrary)
-        if isinstance(pargs[0],pybald.db.models.ModelMeta) and not kargs.get('session',None):
+        # This hack is to assign a session for non-instances. Used 
+        # primarily for loading the relations in models, otherwise 
+        # session has to be explicitly assigned (I think, can't find 
+        # docs to the contrary)
+        if (pargs and isinstance(pargs[0],pybald.db.models.ModelMeta) and not 
+            kargs.get('session',None)):
             kargs['session'] = pybald.db.models.session
 
         # Init the standard FieldSet
-        super(BaseForm,self).__init__(*pargs,**kargs)
+        super(BaseForm, self).__init__(*pargs,**kargs)
         # FieldSet.__init__(self,instance or self.__class__, data=data or None)
         # set the template_id to the name of the model
         self.template_id = os.path.join('forms', template)
