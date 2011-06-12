@@ -25,7 +25,9 @@ class img(tag):
         self.img_src = src
         self.attribs = []
         self.set(**kargs)
-        
+        if "alt" not in kargs:
+            self.set(alt=self.img_src)
+
     def __str__(self):
         '''Return the image in string form.'''
         image_url=str(self.img_src)

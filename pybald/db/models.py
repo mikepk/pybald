@@ -221,6 +221,17 @@ class Model(Base):
             return session.query(cls)
 
     @classmethod
+    def filter(cls, *pargs, **kargs):
+        '''
+        Convenience method that auto-builds the query and passes the filter
+        to it.
+        
+        Returns a query object.
+        '''
+        return session.query(cls).filter(*pargs, **kargs)
+
+
+    @classmethod
     def query(cls):
         '''Simple Query method based on the class.'''
         return session.query(cls)
