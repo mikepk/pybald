@@ -14,9 +14,15 @@ from datetime import datetime
 from routes import url_for
 from mako import filters
 
+# from markdown import markdown
+
+def as_p(input_str):
+    lines = input_str.splitlines()
+    return unicode("".join([u"<p>{0}</p>".format(line) for line in lines]))
+
 class tag(object):
     def set(self, **kargs):
-        self.attribs.extend(['''{0}="{1}"'''.format(k.rstrip('_'), v) for k,v in kargs.items() ])
+        self.attribs.extend([u'''{0}="{1}"'''.format(k.rstrip('_'), v) for k,v in kargs.items() ])
         return self
     
 
@@ -30,12 +36,26 @@ class img(tag):
 
     def __str__(self):
         '''Return the image in string form.'''
-        image_url=str(self.img_src)
-        if "alt" not in self.attribs:
-            self.attribs.append('''alt="{0}"'''.format(image_url))
-        return '''<img src="{0}" {1} />'''.format(image_url, " ".join(self.attribs) )
+        return u'''<img src="{0}" {1} />'''.format(self.img_src, " ".join(self.attribs) )
 
-    
+
+class anchor(tag):
+    def __init__(self,link_text='', name='', **kargs):
+        self.link_text = link_text
+        if name:
+            self.url = name
+        else:
+            self.url=self.link_text
+        self.attribs = []
+        self.set(**kargs)
+
+    def __str__(self):
+        '''Return the anchor in string form.'''
+        attr = " ".join(self.attribs)
+        return u'''<a name="{0}" {1}>{2}</a>'''.format(self.url,
+                                                       " ".join(self.attribs), 
+                                                       self.link_text)
+
 
 class link(tag):
     def __init__(self,link_text='', **kargs):
