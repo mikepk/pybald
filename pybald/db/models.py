@@ -136,6 +136,7 @@ class Model(Base):
     __metaclass__ = ModelMeta
     
     NotFound = sqlalchemy.orm.exc.NoResultFound
+    MultipleFound = sqlalchemy.orm.exc.MultipleResultsFound
     # automatically assign id to the table/class
     id = Column(Integer, nullable=False, primary_key=True)
     
