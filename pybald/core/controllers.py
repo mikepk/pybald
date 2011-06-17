@@ -100,7 +100,7 @@ def action(method):
     replacement.__name__ = method.__name__
     return replacement
 
-
+asset_tag_cache = {}
 class Page(dict):
     def __init__(self, version=None):
         self['title'] = None
@@ -111,11 +111,18 @@ class Page(dict):
 
         #self.sm = project.registry.sm
 
+    def _compute_asset_tag(self, filename):
+         asset_tag = asset_tag_cache.get(filename, None)
+         if not asset_tag:
+             asset_tag = str(int(round(os.path.getmtime(os.path.join(project_path,"content",filename.lstrip("/"))) )) ) 
+             asset_tag_cache[filename] = asset_tag
+         return "?v={0}".format(asset_tag)
+
     def add_js(self, filename):
-        self['headers'].append('''<script type="text/javascript" src="{0}"></script>'''.format(filename) )
+        self['headers'].append('''<script type="text/javascript" src="{0}{1}"></script>'''.format(filename, self._compute_asset_tag(filename) ) )
 
     def add_css(self, filename, media="screen"):
-        self['headers'].append('''<link type="text/css" href="{0}" media="{1}" rel="stylesheet" />'''.format(filename, str(media)) )
+        self['headers'].append('''<link type="text/css" href="{0}{2}" media="{1}" rel="stylesheet" />'''.format(filename, str(media), self._compute_asset_tag(filename) ))
 
 
 
