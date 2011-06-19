@@ -16,7 +16,7 @@ import project
 debug = project.debug
 
 # load the controllers from the project defined path
-controllers = __import__(project.controllers_module, globals(), locals(), 
+controllers = __import__(project.controllers_module, globals(), locals(),
                         [project.controllers_module], 1)
 
 from pybald.util import camel_to_underscore, underscore_to_camel
@@ -25,17 +25,17 @@ class Router(object):
     # class method match patterns
     has_underscore = re.compile(r'^\_')
     controller_pattern = re.compile(r'(\w+)_controller')
-    
+
     def __init__(self, application=None, routes=None):
         '''
         Create a Router object, the core of the pybald framework.
-        
-        :param application:  WSGI application/middleware that is to be 
+
+        :param application:  WSGI application/middleware that is to be
                              *wrapped* by the router in the web app pipeline.
-        
-        :param routes: An instance of a Routes mapper (for parsing and 
+
+        :param routes: An instance of a Routes mapper (for parsing and
                        matching urls)
-        
+
         '''
         self.controllers = {}
         # default mapper was switched to explicit
@@ -51,12 +51,12 @@ class Router(object):
 
     def load(self):
         '''
-        Loads controllers from app.controllers. Uses the controller name to 
+        Loads controllers from app.controllers. Uses the controller name to
         define a path to controller mapping. It does some text munging to
         camel-case the module name to look up the expected classname in the
         modules. It loads all controller candidates into a mapping block to
-        look up URLs against. 
-        
+        look up URLs against.
+
         Called only once at the start of a pybald application.
         '''
 
@@ -65,12 +65,12 @@ class Router(object):
             controller_path_name = self.controller_pattern.search(
                                                            controller).group(1)
             controller_names.append(controller_path_name)
-            # self.controllers holds paths to map to modules and controller 
+            # self.controllers holds paths to map to modules and controller
             # names
             self.controllers[controller_path_name] = {
                                     'name':underscore_to_camel(controller),
                                     'module':getattr(controllers, controller)}
-        
+
         # register the controller module names
         # with the mapper, creates the internal regular
         # expressions
@@ -79,15 +79,15 @@ class Router(object):
 
     def __call__(self, environ, start_response):
         '''
-        A Router instance is a WSGI app. It accepts the standard WSGI call 
-        signature of ``environ``, ``start_response``. 
-        
+        A Router instance is a WSGI app. It accepts the standard WSGI call
+        signature of ``environ``, ``start_response``.
+
         The Router has a few jobs. First it uses the Routes package to
         compare the requested path to available url patterns that have
         been loaded and passed to the Router upon init.
-        
+
         Router is the most *framework-like* component of Pybald. In addition to
-        dispatching urls to controllers, it also allows 'method override' 
+        dispatching urls to controllers, it also allows 'method override'
         behavior allowing other HTTP methods to be invoked such as ``put`` and
         ``delete``.
         '''
@@ -141,7 +141,7 @@ class Router(object):
         # defines the redirect method. In this case it generates a
         # Webob Response object with the location and status headers
         # set
-        config.redirect = lambda url: Response(location=url, status=302)        
+        config.redirect = lambda url: Response(location=url, status=302)
 
         # debug print messages
         if debug:
@@ -161,7 +161,7 @@ class Router(object):
             route_name = '_redirect_%s' % id(route)
             location = url(route_name, **match)
             return Response(
-                location=location, 
+                location=location,
                 status=route.redirect_status
                 )(environ, start_response)
 
@@ -175,18 +175,18 @@ class Router(object):
             #methods starting with underscore can't be used as actions
             if self.has_underscore.match(action):
                 raise exc.HTTPNotFound("Invalid Action")
-                
+
             if debug:
-                print "\n".join(['''{0}: {1}'''.format(key, value) 
+                print "\n".join(['''{0}: {1}'''.format(key, value)
                                 for key, value in urlvars.items()])
 
             try:
                 # create controller instance from controllers dictionary
                 # using routes 'controller' returned from the match
-                controller = getattr(self.controllers[controller]['module'], 
+                controller = getattr(self.controllers[controller]['module'],
                                      self.controllers[controller]['name'])()
                 handler = getattr(controller, action)
-            # only catch the KeyError/AttributeError for the controller/action 
+            # only catch the KeyError/AttributeError for the controller/action
             # search
             except (KeyError, AttributeError):
                 raise exc.HTTPNotFound("Missing Controller or Action")
@@ -200,13 +200,13 @@ class Router(object):
             return handler(environ,start_response)
         # This is a mako 'missing template' exception
         except exceptions.TopLevelLookupException:
-            raise exc.HTTPNotFound("Missing Template")        
+            raise exc.HTTPNotFound("Missing Template")
         except:
             # All other program errors get re-raised
             # e.g. a 500 server error
             raise
 
-                
+
 class routerTests(unittest.TestCase):
     def setUp(self):
         pass
@@ -219,6 +219,6 @@ class routerTests(unittest.TestCase):
 
     def testLoad(self):
         pass
-        
+
 if __name__ == '__main__':
     unittest.main()

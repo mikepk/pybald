@@ -1,16 +1,16 @@
 
 from sqlalchemy import (
-    MetaData, 
+    MetaData,
     INT as Int,
     Integer,
     Float,
     Column,
     UniqueConstraint,
-    Index, 
-    ForeignKey, 
-    String, 
-    DateTime, 
-    TIMESTAMP as TimeStamp, 
+    Index,
+    ForeignKey,
+    String,
+    DateTime,
+    TIMESTAMP as TimeStamp,
     PickleType,
     Time,
     Table,
@@ -62,21 +62,21 @@ from sqlalchemy.types import (
 
 from sqlalchemy.orm import (
     column_property,
-    mapper, 
-    scoped_session, 
-    sessionmaker, 
+    mapper,
+    scoped_session,
+    sessionmaker,
     reconstructor,
-    relationship, 
-    backref, 
+    relationship,
+    backref,
     contains_eager,
-    eagerload, 
+    eagerload,
     eagerload_all,
     joinedload,
     synonym
     )
 
 from sqlalchemy.orm.exc import (
-    NoResultFound, 
+    NoResultFound,
     MultipleResultsFound
     )
 
@@ -121,7 +121,7 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         except NameError:
             return
         # set the tablename, if it's user set, use that, otherwise use a function to create one
-        cls.__tablename__ = getattr(cls, "__tablename__" , pluralize( camel_to_underscore(name) )) 
+        cls.__tablename__ = getattr(cls, "__tablename__" , pluralize( camel_to_underscore(name) ))
         # tableargs adds autoload to create schema reflection
         cls.__table_args__ = getattr(cls, "__table_args__", {})
         if project.schema_reflection:
@@ -136,24 +136,24 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
 class Model(Base):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
     __metaclass__ = ModelMeta
-    
+
     NotFound = sqlalchemy.orm.exc.NoResultFound
     MultipleFound = sqlalchemy.orm.exc.MultipleResultsFound
     # automatically assign id to the table/class
     id = Column(Integer, nullable=False, primary_key=True)
-    
+
     def save(self, commit=False):
         '''Save this instance in the current databse session.
-        
+
         This does not guarantee that the data is persisted since these operations
         occur within a transaction. If something causes a rollback before the session
         is committed, these changes will be lost.
-        
+
         When commit is False, stages data for later flush/commit.
         '''
-        
+
         session.add(self)
-        
+
         if commit:
             self.flush()
         return self
@@ -175,7 +175,7 @@ class Model(Base):
         '''
         Syncs all pending SQL changes (including other pending objects) to the underlying
         data store within the current transaction.
-        
+
         Flush emits all the relevant SQL to the underlying store, but does **not** commit the
         current transaction or close the current database session.
         '''
@@ -186,9 +186,9 @@ class Model(Base):
     def commit(self):
         '''
         Commits the entire database session (including other pending objects).
-        
-        This emits all relevant SQL to the databse, commits the current transaction, 
-        and closes the current session (and database connection) and returns it to the 
+
+        This emits all relevant SQL to the databse, commits the current transaction,
+        and closes the current session (and database connection) and returns it to the
         connection pool. Any data operations after this will pull a new database
         session from the connection pool.
         '''
@@ -204,7 +204,7 @@ class Model(Base):
     def all(cls, **where):
         '''
         Returns a collection of objects that can be filtered for specific collections.
-        
+
         all() without arguments returns all the items of the model type.
         '''
         return cls.load(**where).all()
@@ -213,8 +213,8 @@ class Model(Base):
     # =============================================================
     @classmethod
     def load(cls, **where):
-        '''Build a sqlalchemy load query to return stored objects. 
-        
+        '''Build a sqlalchemy load query to return stored objects.
+
         Returns a query object. This query object must be executed to retrieve
         actual items from the database.
         '''
@@ -228,7 +228,7 @@ class Model(Base):
         '''
         Convenience method that auto-builds the query and passes the filter
         to it.
-        
+
         Returns a query object.
         '''
         return session.query(cls).filter(*pargs, **kargs)
@@ -238,7 +238,7 @@ class Model(Base):
     def query(cls):
         '''Simple Query method based on the class.'''
         return session.query(cls)
-    
+
     @classmethod
     def show_create_table(cls):
         '''
@@ -249,7 +249,7 @@ class Model(Base):
 
 # class RoModel(object):
 #     '''Read only version of the Model class.'''
-# 
+#
 #     @classmethod
 #     def protect(cls, protect=True):
 #         cls.__bases__ = (ModelApi,)
@@ -257,9 +257,9 @@ class Model(Base):
 
 # class Model(ModelApi):
 #     NotFound = sqlalchemy.orm.exc.NoResultFound
-# 
+#
 #     id = Column(Integer, nullable=False, primary_key=True)
-# 
+#
 #     @classmethod
 #     def protect(cls, protect=True):
 #         if protect:

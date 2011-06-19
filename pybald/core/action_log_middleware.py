@@ -2,7 +2,7 @@
 # encoding: utf-8
 # """
 # ActionLogManager.py
-# 
+#
 # Created by mikepk on 2009-11-30.
 # Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 # """

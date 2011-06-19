@@ -5,7 +5,7 @@
 # anchor          specified the anchor name to be appened to the path
 # host            overrides the default (current) host if provided
 # protocol        overrides the default (current) protocol if provided
-# qualified       creates the URL with the host/port information as 
+# qualified       creates the URL with the host/port information as
 #                 needed
 
 # TODO: add javascript escape code here so it's available in the template engine
@@ -24,7 +24,7 @@ class tag(object):
     def set(self, **kargs):
         self.attribs.extend([u'''{0}="{1}"'''.format(k.rstrip('_'), v) for k,v in kargs.items() ])
         return self
-    
+
 
 class img(tag):
     def __init__(self,src='', **kargs):
@@ -53,7 +53,7 @@ class anchor(tag):
         '''Return the anchor in string form.'''
         attr = " ".join(self.attribs)
         return u'''<a name="{0}" {1}>{2}</a>'''.format(self.url,
-                                                       " ".join(self.attribs), 
+                                                       " ".join(self.attribs),
                                                        self.link_text)
 
 
@@ -67,11 +67,11 @@ class link(tag):
     def filter(self, filter_type="h"):
         self.link_text = filters.html_escape(self.link_text)
         return self
-    
+
     def to(self, *pargs, **kargs):
         self.url = url_for(*pargs, **kargs)
         return self
-    
+
     def __str__(self):
         '''Return the link in string form.'''
         attr = " ".join(self.attribs)
@@ -83,7 +83,7 @@ def plural(list_object):
         return "s"
     else:
         return ""
-        
+
 
 def humanize(date_string):
     format = "%Y-%m-%d %H:%M:%S"

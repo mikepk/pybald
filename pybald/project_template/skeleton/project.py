@@ -22,7 +22,7 @@ def set_routes(rmap):
 
     # the order of the routes is important, more specific should come before
     # more generic
-    
+
     if not rmap:
         raise Exception("No Routes Mapper")
 
@@ -34,7 +34,7 @@ def set_routes(rmap):
         m.connect('about','/about', template='about')
 
 
-    # sample RESTful mapping    
+    # sample RESTful mapping
     # rmap.resource("question", "questions", path_prefix="/quizzes/{quiz_id}")
     # rmap.resource("quiz", "quizzes")
 
@@ -50,7 +50,7 @@ def set_routes(rmap):
         print rmap
 
 def get_engine():
-    '''Get sqlalchemy engine string. 
+    '''Get sqlalchemy engine string.
     Examples:
       mysql -         "user:passwd@host/dbname"
       sqllite -       "sqlite:///filename"
@@ -62,7 +62,7 @@ def get_engine():
 def get_engine_args():
     '''SqlAlchemy engine arguments'''
     options = {'pool_recycle':3600,
-                'pool_size':10, 
+                'pool_size':10,
                 'encoding':'utf-8' }
     if debug:
         # show all sqlalchemy queries in log
@@ -91,7 +91,7 @@ class ConfigWrapper(object):
     self.wrapped = wrapped
   def __getattr__(self, name):
     # Some sensible default?
-    return getattr(self.wrapped, name, None)    
+    return getattr(self.wrapped, name, None)
 
 
 # Runs the project console. Allows interacting with the models and controllers.

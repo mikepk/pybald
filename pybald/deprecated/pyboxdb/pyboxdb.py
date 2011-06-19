@@ -71,17 +71,17 @@ class Pyboxdb:
 
         # for selects, return dicitonaries?
         return self.sqlExecute(sql_statement, tuple(values), cursor_type=mysqldb.cursors.DictCursor)
-        
+
     def sqlDelete(self,table,where=None):
         '''DB delete rows from a table'''
         # safety, requires where clause
         if not where:
             raise UnsafeSQL()
-        
+
         where_list,values = self.gen_where_list(where)
         sql_statement = '''DELETE FROM %s WHERE %s''' % (table, where_list)
         return self.sqlExecute(sql_statement, tuple(values))
-        
+
     def sqlUpdate(self,table,params,where=None):
         '''DB update rows in a table'''
         # safety, requires where clause
@@ -111,7 +111,7 @@ class Pyboxdb:
 
     def queryTracer(func):
         '''Function decorator to add debug information to the SQL statements.'''
-        def replacement(self, statement, values=None, cursor_type=None):        
+        def replacement(self, statement, values=None, cursor_type=None):
             import inspect
             stack = inspect.stack()
             # get the calling frame for the method/function calling
@@ -127,7 +127,7 @@ class Pyboxdb:
             return func(self, statement, values, cursor_type)
         return replacement
 
-    # Uncomment this decorator to add debug information to trace where queries are originating. 
+    # Uncomment this decorator to add debug information to trace where queries are originating.
     # Very useful for slow queries (look in mysql slow query log to get pointers to the code
     # issuing the slow queries)
     @queryTracer
@@ -146,7 +146,7 @@ class Pyboxdb:
                 else:
                     cursor = self.db.cursor()
                 cursor.execute(statement, values)
-                
+
             # retry the statement
             except (mysqldb.OperationalError,mysqldb.ProgrammingError),e:
                 try:
@@ -161,7 +161,7 @@ class Pyboxdb:
                     time.sleep(0.1)
                 if retry == 0:
                     raise
-            else:  
+            else:
                 self.db.commit()
                 rows = cursor.fetchall()
                 cursor.close()
@@ -169,14 +169,14 @@ class Pyboxdb:
                 #self.close()
                 return list(rows)
 
-       
+
     def gen_where_list(self,where):
         '''Take a where dictionary and create a where clause as well as a list of fields and placeholders'''
-        fields = where.keys()        
+        fields = where.keys()
         values = where.values()
         where_list = ' AND '.join([f+"=%s" for f in fields])
         return where_list,values
-        
+
     def gen_params_list(self,params):
         '''Create a list of fields and values as well as a string of '\%s' placeholders'''
         placeholders = ', '.join(['%s'] * len(params))
@@ -186,9 +186,9 @@ class Pyboxdb:
 
 
 pdb = Pyboxdb()
-        
+
 class PyboxdbTests(unittest.TestCase):
-    '''Database access unit tests.'''        
+    '''Database access unit tests.'''
     def setUp(self):
         self.pdb = Pyboxdb()
         self.pdb.set_connection_string({'host':'localhost', 'user':'test', 'passwd':'test', 'db':'test'})
@@ -212,7 +212,7 @@ class PyboxdbTests(unittest.TestCase):
         rows = self.pdb.sqlSelect('*','sessions',{'cache':'INJECTED'})
         self.pdb.sqlDelete('sessions',{'session_id':'DEADBEEF6'})
         self.assertTrue(len(rows) == 0)
-        
+
 
     def testUnsafe(self):
         '''Make sure that Delete and Update require a Where clause.'''
@@ -223,6 +223,6 @@ class PyboxdbTests(unittest.TestCase):
         '''Check whether column name select works.'''
         rows = self.pdb.sqlGetColumns('sessions')
         self.assertTrue(len(rows) == 3)
-        
+
 if __name__ == '__main__':
     unittest.main()

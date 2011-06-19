@@ -73,7 +73,7 @@ def action(method):
             self.template_id = "{0}/{1}".format(camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1)), method.__name__)
         else:
             self.template_id = camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1))
-        
+
         # add the pybald extension dict to the controller
         # object
         extension = req.environ.get('pybald.extension',None)
@@ -81,16 +81,16 @@ def action(method):
             for key in extension.keys():
                 setattr(self,key,extension[key])
 
-        # Return either the controllers _pre code, whatever 
+        # Return either the controllers _pre code, whatever
         # is returned from the controller
-        # or the view. So pre has precedence over 
+        # or the view. So pre has precedence over
         # the return which has precedence over the view
         resp = self._pre(req) or method(self,req) or self._view()
 
         # if the response is currently just a string
         # wrap it in a response object
         if isinstance(resp, basestring):
-            resp = Response(body=resp)
+            resp = Response(body=resp, charset="utf-8")
 
         # run the controllers post code
         self._post(req,resp)
@@ -114,7 +114,7 @@ class Page(dict):
     def _compute_asset_tag(self, filename):
          asset_tag = asset_tag_cache.get(filename, None)
          if not asset_tag:
-             asset_tag = str(int(round(os.path.getmtime(os.path.join(project_path,"content",filename.lstrip("/"))) )) ) 
+             asset_tag = str(int(round(os.path.getmtime(os.path.join(project_path,"public",filename.lstrip("/"))) )) ) 
              asset_tag_cache[filename] = asset_tag
          return "?v={0}".format(asset_tag)
 
@@ -147,8 +147,7 @@ class BaseController():
 
         if page_options:
             for key in page_options.keys():
-                setattr(self, key, page_options[key]) 
-                
+                setattr(self, key, page_options[key])
     @action
     def index(self,req):
         '''default index action'''
@@ -194,7 +193,7 @@ class BaseController():
         if helpers:
             data.update(helpers)
         return view_engine(data)
-        
+
 class BaseControllerTests(unittest.TestCase):
     def setUp(self):
         pass

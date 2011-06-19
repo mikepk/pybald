@@ -8,7 +8,7 @@ import unittest
 from webob import Request, Response
 
 import logging
-import logging.handlers        
+import logging.handlers
 
 class PybaldLogger:
     def __init__(self,application=None,log_file='/tmp/pybald.log',level="DEBUG",project_name="PyBald"):
@@ -26,8 +26,8 @@ class PybaldLogger:
 
         # Add the log message handler to the logger
         handler = logging.handlers.RotatingFileHandler(
-                      LOG_FILENAME, 
-                      maxBytes=1024*1024*20, 
+                      LOG_FILENAME,
+                      maxBytes=1024*1024*20,
                       backupCount=10)
 
         # create formatter
@@ -36,7 +36,7 @@ class PybaldLogger:
         handler.setFormatter(formatter)
         self.my_logger.addHandler(handler)
         self.write("Logger Started - %s" % level)
-        
+
 
     def __call__(self,environ,start_response):
         req = Request(environ)

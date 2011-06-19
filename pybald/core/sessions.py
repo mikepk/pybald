@@ -74,10 +74,10 @@ class SessionManager(object):
         expires=None
         if self.days:
             expires = datetime.timedelta(days=self.days)
-        # resp.set_cookie('session_id', self.session.session_id, expires=expires.strftime('%a, %d %b %Y %H:%M:%S UTC'), path='/') 
-        resp.set_cookie('session_id', resp.environ['pybald.session'].session_id, max_age=expires, path='/') 
+        # resp.set_cookie('session_id', self.session.session_id, expires=expires.strftime('%a, %d %b %Y %H:%M:%S UTC'), path='/')
+        resp.set_cookie('session_id', resp.environ['pybald.session'].session_id, max_age=expires, path='/')
         return resp
-        
+
 
 class SessionManagerTests(unittest.TestCase):
     def setUp(self):

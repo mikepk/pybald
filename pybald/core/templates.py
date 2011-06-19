@@ -12,15 +12,15 @@ from mako.lookup import TemplateLookup
 
 class TemplateEngine:
     '''The basic template engine, looks up templates and renders them. Uses the mako template system'''
-            
-    def __init__(self, template_path=None): 
+
+    def __init__(self, template_path=None):
         self.project_path = project.get_path()
         default_template_path = os.path.join( os.path.dirname( os.path.realpath(__file__) ), 'default_templates' )
         fs_test = project.template_filesystem_check or project.debug or False
 
         project_template_path = template_path or os.path.join(self.project_path,'app/views')
 
-        self.lookup = TemplateLookup(directories=[project_template_path, default_template_path], 
+        self.lookup = TemplateLookup(directories=[project_template_path, default_template_path],
             module_directory=os.path.join(self.project_path,'viewscache'),
             imports=[
                 'from pybald.core.helpers import img, link, humanize',
@@ -52,7 +52,7 @@ class TemplateEngine:
         # string for inclusion in another Mako template
         return mytemplate.render_unicode(**data)
 
-    
+
     def _get_template(self, data, format=None):
         '''
         Retrieves the proper template from the Mako template system.
@@ -65,7 +65,7 @@ class TemplateEngine:
         The _get_template method of the template engine constructs a template name based on the
         template_id and the format and retrieves it from the Mako template system.
         '''
-        # if the data dictionary has a format, use that, 
+        # if the data dictionary has a format, use that,
         # otherwise default to the passed in value or html
         format = format or data.get("format", None) or "html"
 
@@ -73,7 +73,7 @@ class TemplateEngine:
         # also need to check if the internal caching is good enough
         return self.lookup.get_template("/{0}.{1}.template".format(data['template_id'].lower(), format.lower()))
 
-    
+
     def __call__(self, data, format=None):
         '''
         Renders the template.

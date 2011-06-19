@@ -73,13 +73,13 @@ def convert_url_to_connection_args(name_or_url, **kwargs):
     return dbapi, connection_params
 
 def green_connection():
-    '''Create a green databse connection.'''    
+    '''Create a green databse connection.'''
     dbapi, kw = convert_url_to_connection_args(project.get_engine())
     # TODO: this should check for supported dbapis before proceeding
 
     def eventlet_connection_creator():
         '''Creator method to wrap DBAPI connections with native threads to allow non-blocking db access.'''
-        # This code is lifted and slightly tweaked 
+        # This code is lifted and slightly tweaked
         # from the db_pool in the eventlet package
         t = timeout.Timeout(20, ConnectTimeout())
         try:
@@ -93,6 +93,6 @@ def green_connection():
             return proxied_connection
         finally:
             # cancel the timeout
-            t.cancel()  
+            t.cancel()
 
     return eventlet_connection_creator

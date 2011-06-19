@@ -17,16 +17,16 @@ config.engine = engine.form_render
 
 class BaseForm(FieldSet):
     def __init__(self, *pargs, **kargs):
-        
+
         template = kargs.get('template', 'fieldset')
         if 'template' in kargs:
             del kargs['template']
 
-        # This hack is to assign a session for non-instances. Used 
-        # primarily for loading the relations in models, otherwise 
-        # session has to be explicitly assigned (I think, can't find 
+        # This hack is to assign a session for non-instances. Used
+        # primarily for loading the relations in models, otherwise
+        # session has to be explicitly assigned (I think, can't find
         # docs to the contrary)
-        if (pargs and isinstance(pargs[0],pybald.db.models.ModelMeta) and not 
+        if (pargs and isinstance(pargs[0],pybald.db.models.ModelMeta) and not
             kargs.get('session',None)):
             kargs['session'] = pybald.db.models.session
 
