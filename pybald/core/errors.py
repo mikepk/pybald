@@ -134,6 +134,13 @@ def pybald_error_template():
 <div><span class="env_key">${key|h}</span><span class="env_value">${str(req.environ[key])|h}</span></div>
 %endfor
 </div>
+
+% if req.environ.get('pybald.extension') and req.environ.get('pybald.extension').get('dbg_log'):
+<h3>Debug Log</h3>
+<div class="debug">
+<pre>${req.environ['pybald.extension']['dbg_log']|h}</pre>
+</div>
+%endif
 %if full:
 </body>
 </html>
