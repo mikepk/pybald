@@ -11,6 +11,20 @@ import datetime
 
 from webob import Request, Response, exc
 from mako import exceptions
+from sqlalchemy.exc import SQLAlchemyError
+
+class SAException(SQLAlchemyError):
+    def __init__(self, *pargs, **kargs):
+        if kargs.get('error_controller'):
+            self.error_controller = kargs.get('error_controller')
+            del kargs["error_controller"]
+        else:
+            self.error_controller = None
+        super(SAException, self).__init__(*pargs, **kargs)
+
+    def __call__(self, environ, start_response):
+        if self.error_controller:
+            return self.error_controller(environ, start_response)
 
 class ErrorMiddleware:
     '''
@@ -18,7 +32,7 @@ class ErrorMiddleware:
     
     Implemented as WSGI middleware.
     '''
-    def __init__(self,application=None,error_controller=None):
+    def __init__(self, application=None, error_controller=None):
         if application:
             self.application = application
         else:
@@ -31,6 +45,16 @@ class ErrorMiddleware:
         #pass through if no exceptions occur
         try:
             return req.get_response(self.application)(environ,start_response)
+        except SQLAlchemyError, err:
+            # special case, when there's a SQLAlchemyError
+            # run the error controller and the re-raise an exception
+            # passing the response up the chain (so we don't lose)
+            # the original stack trace)
+            controller = self.error_controller()
+            handler = controller
+            controller.message=str(err)
+            resp = req.get_response(handler)
+            raise SAException(error_controller=resp)
         # handle HTTP errors
         except exc.HTTPException, err:
             # if the middleware is configured with an error controller
@@ -78,16 +102,24 @@ def pybald_error_template():
 % endif
 % if css:
     <style>
-        body { font-family:verdana; margin:10px 30px 10px 30px;}
+        body { 
+           font-family:Helvetica,Arial,verdana,sans-serif; 
+           font-size: 1.2em; 
+           margin:10px 30px 10px 30px;
+           background-color: #FFE;
+           }
         .stacktrace { margin:5px 5px 5px 5px; }
-        .highlight { padding:0px 10px 0px 10px; background-color:#9F9FDF; }
-        .nonhighlight { padding:0px; background-color:#DFDFDF; }
+        .highlight { padding:0px 10px 0px 10px; background-color:gold; font-weight: bold; }
+        .nonhighlight { padding:0px; background-color:#EFEFEF; }
         .sample { padding:10px; margin:10px 10px 10px 10px; font-family:monospace; }
         .sampleline { padding:0px 10px 0px 10px; }
         .sourceline { margin:5px 5px 10px 5px; font-family:monospace;}
         .location { font-size:80%; }
         .env_key { display: inline-block; text-algin: right; width: 300px }
         .environment div { border-bottom: 1px dotted #EEE }
+        #exception { }
+        table { border-collapse: collapse; }
+        table td { vertical-align: top; border: 1px solid #DDD; }
     </style>
 % endif
 % if full:
@@ -95,7 +127,6 @@ def pybald_error_template():
 <body>
 % endif
 
-<h2>Error !</h2>
 <%
     tback = RichTraceback(error=error, traceback=traceback)
     src = tback.source
@@ -105,8 +136,14 @@ def pybald_error_template():
     else:
         lines = None
 %>
-<h3>${tback.errorname}: ${tback.message}</h3>
-
+<h3 id="exception">${tback.errorname}: ${tback.message}</h3>
+% if req:
+<div>method: <span class="sourceline">${req.environ.get("REQUEST_METHOD")|h}</span></div>
+<div>url: <span class="sourceline">${req.environ.get("PATH_INFO")|h}</span></div>
+% for label, val in req.environ.get("urlvars").items():
+<div>${label|h}: <span class="sourceline">${val|h}</span></div>
+% endfor
+% endif
 % if lines:
     <div class="sample">
     <div class="nonhighlight">
@@ -130,15 +167,22 @@ def pybald_error_template():
 %if req:
 <h3>Environment</h3>
 <div class="environment">
+<table>
+<tbody>
 %for key in sorted(req.environ.keys()):
-<div><span class="env_key">${key|h}</span><span class="env_value">${str(req.environ[key])|h}</span></div>
+<tr><td>
+<span class="env_key">${key|h}</span></td>
+<td><span class="env_value">${str(req.environ[key])|h}</span></td>
+</tr>
 %endfor
+</tbody>
+</table>
 </div>
 
 % if req.environ.get('pybald.extension') and req.environ.get('pybald.extension').get('dbg_log'):
 <h3>Debug Log</h3>
 <div class="debug">
-<pre>${req.environ['pybald.extension']['dbg_log']|h}</pre>
+<pre>${req.environ['pybald.extension']['dbg_log'] | h}</pre>
 </div>
 %endif
 %if full:
