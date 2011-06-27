@@ -45,16 +45,6 @@ class ErrorMiddleware:
         #pass through if no exceptions occur
         try:
             return req.get_response(self.application)(environ,start_response)
-        except SQLAlchemyError, err:
-            # special case, when there's a SQLAlchemyError
-            # run the error controller and the re-raise an exception
-            # passing the response up the chain (so we don't lose)
-            # the original stack trace)
-            controller = self.error_controller()
-            handler = controller
-            controller.message=str(err)
-            resp = req.get_response(handler)
-            raise SAException(error_controller=resp)
         # handle HTTP errors
         except exc.HTTPException, err:
             # if the middleware is configured with an error controller
@@ -77,7 +67,17 @@ class ErrorMiddleware:
                     raise
             else:
                 return err(environ,start_response)
-        # Not a web exception. Use the general error display.
+        # special case, when there's a SQLAlchemyError
+        except SQLAlchemyError, err:
+            # run the error controller and the re-raise an exception
+            # passing the response up the chain (so we don't lose)
+            # the original stack trace)
+            controller = self.error_controller()
+            handler = controller
+            controller.message=str(err)
+            resp = req.get_response(handler)
+            raise SAException(error_controller=resp)
+        # Not a web or SA exception. Use the general error display.
         except Exception, err:
             if self.error_controller:
                 controller = self.error_controller()
