@@ -118,7 +118,7 @@ def pybald_error_template():
         .env_key { display: inline-block; text-algin: right; width: 300px }
         .environment div { border-bottom: 1px dotted #EEE }
         #exception { }
-        table { border-collapse: collapse; }
+        table { border-collapse: collapse; width: 400px; }
         table td { vertical-align: top; border: 1px solid #DDD; }
     </style>
 % endif
@@ -140,7 +140,7 @@ def pybald_error_template():
 % if req:
 <div>method: <span class="sourceline">${req.environ.get("REQUEST_METHOD")|h}</span></div>
 <div>url: <span class="sourceline">${req.environ.get("PATH_INFO")|h}</span></div>
-% for label, val in req.environ.get("urlvars").items():
+% for label, val in req.environ.get("urlvars",{}).items():
 <div>${label|h}: <span class="sourceline">${val|h}</span></div>
 % endfor
 % endif

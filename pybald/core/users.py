@@ -1,17 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from webob import Request,Response
-
-# from app.models import User
-import project
-#total hack to get the User class with the proper namespace
-User = getattr(__import__(project.models_module, globals(), locals(), ["User"], 1), "User")
+from webob import Request, Response
 
 class UserManager(object):
-    '''Code to handle anonymous and user sessions, implemented as WSGI middleware.'''
+    '''Code to users, implemented as WSGI middleware.'''
 
-    def __init__(self,application=None):
+    def __init__(self, application=None, user_class=None):
+        self.user_class = user_class
         if application:
             self.application = application
         else:
@@ -22,21 +18,15 @@ class UserManager(object):
         req = Request(environ)
 
         session = environ.get('pybald.session', None)
-        if session and session.user_id:
-                if session.user:
-                    environ['REMOTE_USER'] = session.user
-                else:
-                    try:
-                        environ['REMOTE_USER'] = User.get(id=session.user_id)
-                    except User.NotFound:
-                        environ['REMOTE_USER'] = None
+        if session and session.user and session.user.can_login:
+            environ['REMOTE_USER'] = session.user
         else:
             environ['REMOTE_USER'] = None
 
-        # update or create the pybald.extension to populate controller instances
+        # update or create the pybald.extension to populate controller
+        # instances
         environ['pybald.extension'] = environ.get('pybald.extension', {})
         environ['pybald.extension']['user'] = environ['REMOTE_USER']
-
 
         # call the next part of the pipeline
         resp = req.get_response(self.application)

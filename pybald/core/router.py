@@ -130,10 +130,6 @@ class Router(object):
         environ['routes.route'] = route
         environ['routes.url'] = url
 
-
-        # TODO: Setup the framework to use the URLGenerator instead of url_for
-        # environ['pybald.extension']['__url'] = environ['routes.url']
-
         # Add pybald extension, normally gets assigned to controller object
         environ['pybald.extension'] = environ.get('pybald.extension', {})
         environ['pybald.extension']["url_for"] = url
@@ -160,10 +156,9 @@ class Router(object):
         if route and route.redirect:
             route_name = '_redirect_%s' % id(route)
             location = url(route_name, **match)
-            return Response(
-                location=location,
-                status=route.redirect_status
-                )(environ, start_response)
+            return Response(location=location,
+                            status=route.redirect_status
+                            )(environ, start_response)
 
 
         req.urlvars = urlvars

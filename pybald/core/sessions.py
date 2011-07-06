@@ -11,13 +11,11 @@ from webob import Request, Response
 
 import re
 
-import project
-Session = getattr(__import__(project.models_module, globals(), locals(), ["Session"], 1), "Session")
-
 class SessionManager(object):
     '''Code to handle anonymous and user sessions, implemented as WSGI middleware.'''
 
-    def __init__(self,application=None,days=14):
+    def __init__(self, application=None, days=14, session_class=None):
+        self.session_class = session_class
         self.days = days
         if application:
             self.application = application
@@ -32,10 +30,10 @@ class SessionManager(object):
         new_session = False
         try:
             session_id = req.cookies['session_id']
-            environ['pybald.session'] = Session.get(session_id=session_id)
+            environ['pybald.session'] = self.session_class.get(session_id=session_id)
         # no session_id cookie set, either no session
         # or create anon session
-        except (KeyError, IOError, Session.NotFound):
+        except (KeyError, IOError, self.session_class.NotFound):
             self.create_session(environ)
             new_session = True
 
@@ -63,7 +61,7 @@ class SessionManager(object):
 
     def create_session(self,environ):
         '''Create a new anonymous session.'''
-        environ['pybald.session'] = Session()
+        environ['pybald.session'] = self.session_class()
         environ['pybald.session'].save().flush()
         return environ['pybald.session'].session_id
 

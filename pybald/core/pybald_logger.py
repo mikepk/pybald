@@ -10,8 +10,9 @@ from webob import Request, Response
 import logging
 import logging.handlers
 
-class PybaldLogger:
-    def __init__(self,application=None,log_file='/tmp/pybald.log',level="DEBUG",project_name="PyBald"):
+class PybaldLogger(object):
+    def __init__(self, application=None, log_file='/tmp/pybald.log',
+                       level="DEBUG", project_name="PyBald"):
         if application:
             self.application = application
         else:

@@ -57,13 +57,15 @@ class TemplateEngine:
         '''
         Retrieves the proper template from the Mako template system.
         
-        :param data: A dictionary containing the ``template_id`` and ``format`` for the template
-                     lookup.
-        :param format: A string specifying the format for the template (html, json, xml, etc...),
-                       overrides the format specified in the data dictionary.
+        :param data: A dictionary containing the ``template_id`` and ``format``
+                     for the template lookup.
+        :param format: A string specifying the format for the template (html,
+                       json, xml, etc...), overrides the format specified in
+                       the data dictionary.
 
-        The _get_template method of the template engine constructs a template name based on the
-        template_id and the format and retrieves it from the Mako template system.
+        The _get_template method of the template engine constructs a template
+        name based on the template_id and the format and retrieves it from the
+        Mako template system.
         '''
         # if the data dictionary has a format, use that,
         # otherwise default to the passed in value or html
@@ -78,10 +80,11 @@ class TemplateEngine:
         '''
         Renders the template.
         
-        :param data: A dictionary that represents the context to render inside the template. Items in 
-                     this dictionary will be available to the template.
-        :param format: A string specifying the format type to return, this overrides a format specified
-                       in the data dictionary
+        :param data: A dictionary that represents the context to render inside 
+                     the template. Items in this dictionary will be available
+                     to the template.
+        :param format: A string specifying the format type to return, this
+                       overrides a format specified in the data dictionary
         
         Calls _get_template to retrieve the template and then renders it.
         '''
