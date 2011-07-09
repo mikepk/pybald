@@ -13,7 +13,7 @@ from mako.lookup import TemplateLookup
 class TemplateEngine:
     '''The basic template engine, looks up templates and renders them. Uses the mako template system'''
 
-    def __init__(self, template_path=None):
+    def __init__(self, template_path=None, cache_path=None):
         self.project_path = project.get_path()
         default_template_path = os.path.join( os.path.dirname( os.path.realpath(__file__) ), 'default_templates' )
         fs_test = project.template_filesystem_check or project.debug or False
@@ -21,7 +21,7 @@ class TemplateEngine:
         project_template_path = template_path or os.path.join(self.project_path,'app/views')
 
         self.lookup = TemplateLookup(directories=[project_template_path, default_template_path],
-            module_directory=os.path.join(self.project_path,'viewscache'),
+            module_directory=cache_path or os.path.join(self.project_path,'viewscache'),
             imports=[
                 'from pybald.core.helpers import img, link, humanize',
                 ],

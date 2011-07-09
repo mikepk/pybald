@@ -97,11 +97,39 @@ from pybald.util import camel_to_underscore, pluralize
 
 # for green operation
 import project
+from project import mc
+
+from sqlalchemy.orm.interfaces import SessionExtension
+
+class SessionCachingExtension(SessionExtension):
+    def __init__(self):
+        self.updates = {}
+    def after_flush(self, session, flush_context, *pargs, **kargs):
+        for instance in session.dirty:
+            if hasattr(instance, "update_cache"):
+                key, cached_object = instance.update_cache()
+                self.updates[key] = cached_object
+        for instance in session.new:
+            if hasattr(instance, "update_cache"):
+                key, cached_object = instance.update_cache()
+                self.updates[key] = cached_object
+
+    def after_commit(self, session, *pargs, **kargs):
+        for key, value in self.updates.items():
+            mc.set(key, value, 180)
+        self.updates = {}
+
+
+session_args = {}
+
 if project.green:
     from SAGreen import eventlet_greenthread_scope
-    session = scoped_session(sessionmaker(bind=engine), scopefunc=eventlet_greenthread_scope)
-else:
-    session = scoped_session(sessionmaker(bind=engine))
+    session_args['scopefunc'] = eventlet_greenthread_scope
+
+if project.session_caching:
+    session_args['extension'] = SessionCachingExtension()
+
+session = scoped_session(sessionmaker(bind=engine, **session_args))
 
 
 import sqlalchemy.ext.declarative
