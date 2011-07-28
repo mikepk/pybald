@@ -142,6 +142,12 @@ class NotFound(NoResultFound):
     pass
 
 class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
+    '''
+    MetaClass that sets up some common behaviors for pybald models.
+    
+    Will assign tablename if not defined based on pluralization rules. Also
+    applies project global table arguments
+    '''
     def __init__(cls, name, bases, ns):
         try:
             if Model not in bases:
@@ -171,13 +177,17 @@ class Model(Base):
     id = Column(Integer, nullable=False, primary_key=True)
 
     def save(self, commit=False):
-        '''Save this instance in the current databse session.
+        '''
+        Saves (adds) this instance in the current databse session.
 
-        This does not guarantee that the data is persisted since these operations
-        occur within a transaction. If something causes a rollback before the session
-        is committed, these changes will be lost.
+        This does not immediatly persist the data since these operations
+        occur within a transaction and the sqlalchemy unit-of-work pattern.
+        If something causes a rollback before the session is committed,
+        these changes will be lost.
 
-        When commit is False, stages data for later flush/commit.
+        When commit is `True`, flushes the data to the database immediately.
+        This does not commit the transaction, for that use 
+        :py:meth:`~pybald.db.models.Model.commit`)
         '''
 
         session.add(self)
@@ -190,8 +200,10 @@ class Model(Base):
         '''
         Delete this instance from the current database session.
 
-        You should follow this operation with a commit to emit the SQL to
-        delete the item from the database and commit the transaction.
+        The object will be deleted from the database at the next commit. If
+        you want to immediately delete the object, you should follow this
+        operation with a commit to emit the SQL to delete the item from
+        the database and commit the transaction.
         '''
         session.delete(self)
         if commit:
@@ -225,13 +237,17 @@ class Model(Base):
 
     @classmethod
     def get(cls, **where):
-        '''Construct a load query with keyword arguments as the filter argument and return the instance.'''
+        '''
+        A convenience method that constructs a load query with keyword 
+        arguments as the filter arguments and return a single instance.
+        '''
         return cls.load(**where).one()
 
     @classmethod
     def all(cls, **where):
         '''
-        Returns a collection of objects that can be filtered for specific collections.
+        Returns a collection of objects that can be filtered for 
+        specific collections.
 
         all() without arguments returns all the items of the model type.
         '''
@@ -241,7 +257,9 @@ class Model(Base):
     # =============================================================
     @classmethod
     def load(cls, **where):
-        '''Build a sqlalchemy load query to return stored objects.
+        '''
+        Convenience method to build a sqlalchemy query to return stored
+        objects.
 
         Returns a query object. This query object must be executed to retrieve
         actual items from the database.
@@ -264,33 +282,17 @@ class Model(Base):
 
     @classmethod
     def query(cls):
-        '''Simple Query method based on the class.'''
+        '''
+        Convenience method to return a query based on the current object
+        class.
+        '''
         return session.query(cls)
 
     @classmethod
     def show_create_table(cls):
         '''
-        Use the simple dump_engine to print the SQL for this table.
+        Uses the simple dump_engine to print to stdout the SQL for this
+        table.
         '''
         cls.__table__.create(dump_engine)
 
-
-# class RoModel(object):
-#     '''Read only version of the Model class.'''
-#
-#     @classmethod
-#     def protect(cls, protect=True):
-#         cls.__bases__ = (ModelApi,)
-
-
-# class Model(ModelApi):
-#     NotFound = sqlalchemy.orm.exc.NoResultFound
-#
-#     id = Column(Integer, nullable=False, primary_key=True)
-#
-#     @classmethod
-#     def protect(cls, protect=True):
-#         if protect:
-#             cls.__bases__ = (RoModel,)
-#         else:
-#             cls.__bases__ = (ModelApi,)

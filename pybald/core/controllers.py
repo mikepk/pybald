@@ -34,27 +34,25 @@ from pybald.db import models
 
 
 # action / method decorator
-# This decorator takes in the action method and adds some syntactic sugar around it.
-# Allows the actions to work with WebOb request / response objects, and handles default
-# behaviors, such as displaying the view when nothing is returned, or plain text
-# if a string is returned.
 def action(method):
     '''
-    Decorates methods to turn them into pybald-style actions.
+    Decorates methods that are WSGI apps to turn them into pybald-style actions.
 
-    :param method: The method to turn into a pybald-style action.
+    :param method: A method to turn into a pybald-style action.
 
-    This decorator takes the method of a controller instance (or any method that is a WSGI app) 
-    and adds some syntactic sugar around it to allow the method to use WebOb Request, 
-    Response objects.
+    This decorator is usually used to take the method of a controller instance 
+    and add some syntactic sugar around it to allow the method to use WebOb
+    Request and Response objects. It will work with any method that 
+    implements the WSGI spec.
     
-    It allows actions to work with WebOb request / response objects, and handles default
-    behaviors, such as displaying the view when nothing is returned, or setting up a plain text
-    Response if a string is returned. It also assigns instance variables from the ``pybald.extension``
-    environ variables that can be set from other parts of the WSGI pipeline.
+    It allows actions to work with WebOb request / response objects and handles
+    default behaviors, such as displaying the view when nothing is returned, 
+    or setting up a plain text Response if a string is returned. It also 
+    assigns instance variables from the ``pybald.extension`` environ variables
+    that can be set from other parts of the WSGI pipeline.
     
-    This decorator is completely *optional* but recommended for making working with requests
-    and responses easier.
+    This decorator is optional but recommended for making working
+    with requests and responses easier.
     '''
     def replacement(self, environ, start_response):
         req = Request(environ)
@@ -129,7 +127,7 @@ class Page(dict):
 class Safe(object):
     pass
 
-class BaseController():
+class BaseController(object):
     '''Base controller that includes the view and a default index method.'''
 
     controller_pattern = re.compile(r'(\w+)Controller')

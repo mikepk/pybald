@@ -16,6 +16,8 @@ import project
 debug = project.debug
 
 # load the controllers from the project defined path
+# change this to passed in value to the Router. That way it can
+# be project specific
 controllers = __import__(project.controllers_module, globals(), locals(),
                         [project.controllers_module], 1)
 
@@ -26,6 +28,8 @@ class Router(object):
     has_underscore = re.compile(r'^\_')
     controller_pattern = re.compile(r'(\w+)_controller')
 
+    # add controllers=None to the call sig and use that for controller
+    # loading
     def __init__(self, application=None, routes=None):
         '''
         Create a Router object, the core of the pybald framework.
