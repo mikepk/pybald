@@ -23,6 +23,9 @@ class Client(object):
                 self.cookies[key]=value
         return resp
 
+    def clear_cookies(self):
+        self.cookies = {}
+
     def post(self, url, data):
         r = Request.blank(url,
                          content_type="application/x-www-form-urlencoded",
