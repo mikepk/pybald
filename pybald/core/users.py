@@ -4,7 +4,7 @@
 from webob import Request, Response
 
 class UserManager(object):
-    '''Code to users, implemented as WSGI middleware.'''
+    '''Code to manage users, implemented as WSGI middleware.'''
 
     def __init__(self, application=None, user_class=None):
         self.user_class = user_class
