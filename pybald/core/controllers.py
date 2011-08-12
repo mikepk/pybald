@@ -32,6 +32,7 @@ page_options = project.page_options
 
 from pybald.db import models
 
+import json
 
 # action / method decorator
 def action(method):
@@ -191,6 +192,18 @@ class BaseController(object):
         if helpers:
             data.update(helpers)
         return view_engine(data)
+
+    def _JSON(self, message_object, status=200):
+        '''Return JSON object with the proper headers.'''
+        res = Response( body=json.dumps(message_object),
+            status=status,
+            # wonky Cache-Control headers to stop IE6 from caching content
+            cache_control="max-age=0,no-cache,no-store,post-check=0,pre-check=0",
+            expires = "Mon, 26 Jul 1997 05:00:00 GMT",
+            content_type = "application/json",
+            charset = 'UTF-8'
+            )
+        return res
 
 class BaseControllerTests(unittest.TestCase):
     def setUp(self):
