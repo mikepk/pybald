@@ -29,6 +29,6 @@ class Client(object):
     def post(self, url, data):
         r = Request.blank(url,
                          content_type="application/x-www-form-urlencoded",
-                         method="post",
+                         method="POST",
                          body=urlencode(data))
         return r.get_response(self.app)
