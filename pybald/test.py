@@ -27,8 +27,10 @@ class Client(object):
         self.cookies = {}
 
     def post(self, url, data):
-        r = Request.blank(url,
+        req = Request.blank(url,
                          content_type="application/x-www-form-urlencoded",
                          method="POST",
                          body=urlencode(data))
-        return r.get_response(self.app)
+        for key, value in self.cookies.items():
+            req.cookies[key]=value
+        return req.get_response(self.app)

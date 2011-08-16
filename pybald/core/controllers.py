@@ -193,9 +193,9 @@ class BaseController(object):
             data.update(helpers)
         return view_engine(data)
 
-    def _JSON(self, message_object, status=200):
+    def _JSON(self, data, status=200):
         '''Return JSON object with the proper headers.'''
-        res = Response( body=json.dumps(message_object),
+        res = Response( body=json.dumps(data),
             status=status,
             # wonky Cache-Control headers to stop IE6 from caching content
             cache_control="max-age=0,no-cache,no-store,post-check=0,pre-check=0",
