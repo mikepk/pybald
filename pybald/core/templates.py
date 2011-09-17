@@ -24,6 +24,7 @@ class TemplateEngine:
             module_directory=cache_path or os.path.join(self.project_path,'viewscache'),
             imports=[
                 'from pybald.core.helpers import img, link, humanize',
+                'from mako.filters import html_escape',
                 ],
                 input_encoding='utf-8', output_encoding='utf-8',
                 filesystem_checks=fs_test)
@@ -41,7 +42,7 @@ class TemplateEngine:
         try:
             data['template_id'] = kargs['fieldset'].template_id
         except (KeyError, AttributeError):
-            data['template_id'] = 'forms/%s' % template_name
+            data['template_id'] = 'forms/{0}'.format(template_name)
 
         # get passed in form if it's in the data
         # but more likely we'll use the form extension

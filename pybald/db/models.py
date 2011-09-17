@@ -1,3 +1,4 @@
+from sqlalchemy import dialects
 
 from sqlalchemy import (
     MetaData,
@@ -101,6 +102,21 @@ from project import mc
 
 from sqlalchemy.orm.interfaces import SessionExtension
 
+from sqlalchemy import __version__ as sa_ver
+
+
+sa_maj_ver, sa_min_ver, sa_rev_ver = sa_ver.split(".")
+
+if int(sa_min_ver) >= 7:
+    from sqlalchemy.orm.attributes import flag_modified
+else:
+    from sqlalchemy.orm.attributes import instance_state, instance_dict, NO_VALUE
+    def flag_modified(instance, key):
+        state, dict_ = instance_state(instance), instance_dict(instance)
+        impl = state.manager[key].impl
+        state.modified_event(dict_, impl, True, NO_VALUE)
+
+
 class SessionCachingExtension(SessionExtension):
     def __init__(self):
         self.updates = {}
@@ -131,11 +147,125 @@ if project.session_caching:
 
 session = scoped_session(sessionmaker(bind=engine, **session_args))
 
-
 import sqlalchemy.ext.declarative
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base(bind=engine)
 
+
+# # lifted from zzzeek's post on "Magic ORM"
+# # this only works for SA 7, due to the
+# # use of the event system.
+# # Source: http://techspot.zzzeek.org/2011/05/17/magic-a-new-orm/
+# # Copyright (I assume) Michael Bayer
+# # =====================================
+# from sqlalchemy.orm import (
+#             class_mapper, mapper, relationship,
+#             scoped_session, sessionmaker, configure_mappers
+#         )
+# from sqlalchemy.ext.declarative import declared_attr, declarative_base
+# from sqlalchemy import event
+# import re
+# 
+# @event.listens_for(mapper, "mapper_configured")
+# def _setup_deferred_properties(mapper, class_):
+#     """Listen for finished mappers and apply DeferredProp
+#     configurations."""
+# 
+#     for key, value in class_.__dict__.items():
+#         if isinstance(value, DeferredProp):
+#             value._config(class_, key)
+# 
+# class DeferredProp(object):
+#     """A class attribute that generates a mapped attribute
+#     after mappers are configured."""
+# 
+#     def _setup_reverse(self, key, rel, target_cls):
+#         """Setup bidirectional behavior between two relationships."""
+# 
+#         reverse = self.kw.get('reverse')
+#         if reverse:
+#             reverse_attr = getattr(target_cls, reverse)
+#             if not isinstance(reverse_attr, DeferredProp):
+#                 reverse_attr.property._add_reverse_property(key)
+#                 rel._add_reverse_property(reverse)
+# 
+# class FKRelationship(DeferredProp):
+#     """Generates a one to many or many to one relationship."""
+# 
+#     def __init__(self, target, fk_col, **kw):
+#         self.target = target
+#         self.fk_col = fk_col
+#         self.kw = kw
+# 
+#     def _config(self, cls, key):
+#         """Create a Column with ForeignKey as well as a relationship()."""
+# 
+#         target_cls = cls._decl_class_registry[self.target]
+# 
+#         pk_target, fk_target = self._get_pk_fk(cls, target_cls)
+#         pk_table = pk_target.__table__
+#         pk_col = list(pk_table.primary_key)[0]
+# 
+#         if hasattr(fk_target, self.fk_col):
+#             fk_col = getattr(fk_target, self.fk_col)
+#         else:
+#             fk_col = Column(self.fk_col, pk_col.type, ForeignKey(pk_col))
+#             setattr(fk_target, self.fk_col, fk_col)
+# 
+#         rel = relationship(target_cls,
+#                 primaryjoin=fk_col==pk_col,
+#                 collection_class=self.kw.get('collection_class', set)
+#             )
+#         setattr(cls, key, rel)
+#         self._setup_reverse(key, rel, target_cls)
+# 
+# class one_to_many(FKRelationship):
+#     """Generates a one to many relationship."""
+# 
+#     def _get_pk_fk(self, cls, target_cls):
+#         return cls, target_cls
+# 
+# class many_to_one(FKRelationship):
+#     """Generates a many to one relationship."""
+# 
+#     def _get_pk_fk(self, cls, target_cls):
+#         return target_cls, cls
+# 
+# class many_to_many(DeferredProp):
+#     """Generates a many to many relationship."""
+# 
+#     def __init__(self, target, tablename, local, remote, **kw):
+#         self.target = target
+#         self.tablename = tablename
+#         self.local = local
+#         self.remote = remote
+#         self.kw = kw
+# 
+#     def _config(self, cls, key):
+#         """Create an association table between parent/target
+#         as well as a relationship()."""
+# 
+#         target_cls = cls._decl_class_registry[self.target]
+#         local_pk = list(cls.__table__.primary_key)[0]
+#         target_pk = list(target_cls.__table__.primary_key)[0]
+# 
+#         t = Table(
+#                 self.tablename,
+#                 cls.metadata,
+#                 Column(self.local, ForeignKey(local_pk), primary_key=True),
+#                 Column(self.remote, ForeignKey(target_pk), primary_key=True),
+#                 keep_existing=True
+#             )
+#         rel = relationship(target_cls,
+#                 secondary=t,
+#                 collection_class=self.kw.get('collection_class', set)
+#             )
+#         setattr(cls, key, rel)
+#         self._setup_reverse(key, rel, target_cls)
+# 
+# # =====================================
+# # end of zzzeek's code for "Magic" ORM
+# # =====================================
 
 class NotFound(NoResultFound):
     '''Generic Not Found Error'''
@@ -144,7 +274,7 @@ class NotFound(NoResultFound):
 class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
     '''
     MetaClass that sets up some common behaviors for pybald models.
-    
+
     Will assign tablename if not defined based on pluralization rules. Also
     applies project global table arguments
     '''
@@ -158,6 +288,7 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         cls.__tablename__ = getattr(cls, "__tablename__" , pluralize( camel_to_underscore(name) ))
         # tableargs adds autoload to create schema reflection
         cls.__table_args__ = getattr(cls, "__table_args__", {})
+
         if project.schema_reflection:
             # create or update the __table_args__ attribute
             cls.__table_args__['autoload'] = True
@@ -171,10 +302,20 @@ class Model(Base):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
     __metaclass__ = ModelMeta
 
+    # class NotFound(sqlalchemy.orm.exc.NoResultFound):
+    #     '''Generic Not Found Error'''
+    #     pass
+    # 
+    # class MultipleFound(sqlalchemy.orm.exc.MultipleResultsFound):
+    #     '''Generic Multiple Found Error'''
+    #     pass
+
+    # exception aliases
     NotFound = sqlalchemy.orm.exc.NoResultFound
     MultipleFound = sqlalchemy.orm.exc.MultipleResultsFound
     # automatically assign id to the table/class
     id = Column(Integer, nullable=False, primary_key=True)
+    # check __table__.primary_key exists?
 
     def save(self, commit=False):
         '''
@@ -186,7 +327,7 @@ class Model(Base):
         these changes will be lost.
 
         When commit is `True`, flushes the data to the database immediately.
-        This does not commit the transaction, for that use 
+        This does not commit the transaction, for that use
         :py:meth:`~pybald.db.models.Model.commit`)
         '''
 
@@ -238,7 +379,7 @@ class Model(Base):
     @classmethod
     def get(cls, **where):
         '''
-        A convenience method that constructs a load query with keyword 
+        A convenience method that constructs a load query with keyword
         arguments as the filter arguments and return a single instance.
         '''
         return cls.load(**where).one()
@@ -246,7 +387,7 @@ class Model(Base):
     @classmethod
     def all(cls, **where):
         '''
-        Returns a collection of objects that can be filtered for 
+        Returns a collection of objects that can be filtered for
         specific collections.
 
         all() without arguments returns all the items of the model type.

@@ -15,6 +15,7 @@ import unittest
 
 import os.path
 
+from functools import update_wrapper, wraps
 from pybald.core.templates import engine as view_engine
 
 from webob import Request, Response
@@ -55,23 +56,28 @@ def action(method):
     This decorator is optional but recommended for making working
     with requests and responses easier.
     '''
-    def replacement(self, environ, start_response):
+    @wraps(method)
+    def action_wrapper(self, environ, start_response):
         req = Request(environ)
 
         # add any url variables as members of the controller
         for key in req.urlvars.keys():
             #Set the controller object to contain the url variables
             # parsed from the dispatcher / router
-            setattr(self,key,req.urlvars[key])
+            setattr(self, key, req.urlvars[key])
 
         # this code defines the template id to match against
         # template path = controller name + '/' + action name (except in the case of)
         # index
         if not hasattr(self, "template_id"):
             if method.__name__ not in ('index','__call__'):
-                self.template_id = "{0}/{1}".format(camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1)), method.__name__)
+                self.template_id = "{0}/{1}".format(camel_to_underscore(
+                         self.controller_pattern.search(self.__class__.__name__
+                                                  ).group(1)), method.__name__)
             else:
-                self.template_id = camel_to_underscore(self.controller_pattern.search(self.__class__.__name__).group(1))
+                self.template_id = camel_to_underscore(
+                         self.controller_pattern.search(self.__class__.__name__
+                                                  ).group(1))
 
         # add the pybald extension dict to the controller
         # object
@@ -84,7 +90,7 @@ def action(method):
         # is returned from the controller
         # or the view. So pre has precedence over
         # the return which has precedence over the view
-        resp = self._pre(req) or method(self,req) or self._view()
+        resp = self._pre(req) or method(self, req) or self._view()
 
         # if the response is currently just a string
         # wrap it in a response object
@@ -92,12 +98,12 @@ def action(method):
             resp = Response(body=resp, charset="utf-8")
 
         # run the controllers post code
-        self._post(req,resp)
+        self._post(req, resp)
 
         return resp(environ, start_response)
     # restore the original function name
-    replacement.__name__ = method.__name__
-    return replacement
+    # replacement.__name__ = method.__name__
+    return action_wrapper
 
 asset_tag_cache = {}
 class Page(dict):
@@ -112,9 +118,12 @@ class Page(dict):
 
     def _compute_asset_tag(self, filename):
          asset_tag = asset_tag_cache.get(filename, None)
-         if not asset_tag:
-             asset_tag = str(int(round(os.path.getmtime(os.path.join(project_path,"public",filename.lstrip("/"))) )) )
-             asset_tag_cache[filename] = asset_tag
+         try:
+             if not asset_tag:
+                 asset_tag = str(int(round(os.path.getmtime(os.path.join(project_path,"public",filename.lstrip("/"))) )) )
+                 asset_tag_cache[filename] = asset_tag
+         except OSError:
+            asset_tag_cache[filename] = "xxx"
          return "?v={0}".format(asset_tag)
 
     def add_js(self, filename):
@@ -180,7 +189,7 @@ class BaseController(object):
     def _status(self, code):
         raise exc.status_map[int(code)]
 
-    def _view(self,user_dict=None, helpers=None):
+    def _view(self, user_dict=None, helpers=None):
         '''Method to invoke the template engine and display a view'''
         # view = engine
         # user supplied dictionary, otherwise create a dictionary

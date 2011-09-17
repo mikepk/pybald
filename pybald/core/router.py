@@ -37,10 +37,18 @@ class Router(object):
         :param application:  WSGI application/middleware that is to be
                              *wrapped* by the router in the web app pipeline.
 
-        :param routes: An instance of a Routes mapper (for parsing and
-                       matching urls)
+        :param routes: A routing function that takes a mapper (for parsing and
+                       matching urls).
 
         '''
+        if routes is None:
+            raise Exception("Route mapping is required. Please pass in a "
+                            "routing function to the router as and arg to "
+                            "Router init. "
+                            "The routing function takes a routes mapper "
+                            "object and uses it to contruct url mappings. "
+                            "See pybald docs for more details.")
+
         self.controllers = {}
         # default mapper was switched to explicit
         # explains all the mapper weirdness I was seeing
@@ -48,8 +56,6 @@ class Router(object):
         # default action
         # initialize Router
         self.map = Mapper(explicit=False)
-        if not routes:
-            raise Exception("Route mapping required, please pass in a routing function to Router init.")
         routes(self.map)
         self.load()
 
