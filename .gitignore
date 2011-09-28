@@ -1,2 +1,5 @@
 *.pyc
 ._*
+build/
+dist/
+pybald.egg-info/
