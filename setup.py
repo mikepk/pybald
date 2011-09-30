@@ -19,8 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
-"""Setup script for pybald."""
+"""Setup script for the pybald web framework."""
 
 try:
     from setuptools import setup, find_packages
