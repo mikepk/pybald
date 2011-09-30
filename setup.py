@@ -43,7 +43,7 @@ setup(name='pybald',
       install_requires=[
           "Routes>=1.12", "FormAlchemy>=1.4", "SqlAlchemy>=0.7.0",
           "WebOb>=1.0", "Eventlet>=0.9.13.dev1", "Spawning>=0.9.4",
-          # "simple-db-migrate", "celery"
+          "Mako>=0.5.0", "python-memcached>=1.47"
       ]
 )
 
