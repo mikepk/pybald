@@ -1,0 +1,33 @@
+.. PyBald documentation master file, created by
+   sphinx-quickstart on Tue Apr 13 12:00:54 2010.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+PyBald
+======
+
+**!!WARNING!!** This documentation is under construction and in no way complete. If you're interested in this project, please contact me before reading any further. mikepk tenzerolab.com.
+  
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   intro
+   getting_started
+   magic
+   error_handling
+   api_reference
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+License
+=======
+
+PyBald is distributed under the `MIT license <http://www.opensource.org/licenses/mit-license.php>`_.

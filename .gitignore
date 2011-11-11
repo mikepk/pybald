@@ -2,4 +2,6 @@
 ._*
 build/
 dist/
-pybald.egg-info/
+*.egg-info
+*.egg
+docs/_build/
