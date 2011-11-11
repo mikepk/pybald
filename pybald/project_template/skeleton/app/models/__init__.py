@@ -13,8 +13,8 @@ import re
 
 import project
 
-# proj_path = project.get_path()
-project_path, top_level = os.path.split(project.get_path())
+# proj_path = project.path
+project_path, top_level = os.path.split(project.path)
 
 import pybald.db.models
 

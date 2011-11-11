@@ -14,14 +14,23 @@ class TemplateEngine:
     '''The basic template engine, looks up templates and renders them. Uses the mako template system'''
 
     def __init__(self, template_path=None, cache_path=None):
-        self.project_path = project.get_path()
-        default_template_path = os.path.join( os.path.dirname( os.path.realpath(__file__) ), 'default_templates' )
+        self.project_path = project.path
+        try:
+            default_template_path = os.path.join( os.path.dirname( os.path.realpath(__file__) ), 'default_templates' )
+            project_template_path = template_path or os.path.join(self.project_path,'app/views')
+            project_cache_path = cache_path or os.path.join(self.project_path,'viewscache')
+        except AttributeError, e:
+            sys.stderr.write(("**Warning**\n"
+            "Exception: {exception}\n"
+            "Unable to load templates from template path\n").format(exception=e))
+            default_template_path = ""
+            project_template_path = ""
+            project_cache_path = ""
+
         fs_test = project.template_filesystem_check or project.debug or False
 
-        project_template_path = template_path or os.path.join(self.project_path,'app/views')
-
         self.lookup = TemplateLookup(directories=[project_template_path, default_template_path],
-            module_directory=cache_path or os.path.join(self.project_path,'viewscache'),
+            module_directory=project_cache_path,
             imports=[
                 'from pybald.core.helpers import img, link, humanize',
                 'from mako.filters import html_escape',

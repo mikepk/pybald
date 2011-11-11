@@ -15,13 +15,20 @@ from mako import exceptions
 import project
 debug = project.debug
 
+from pybald.util import camel_to_underscore, underscore_to_camel
+
 # load the controllers from the project defined path
 # change this to passed in value to the Router. That way it can
 # be project specific
-controllers = __import__(project.controllers_module, globals(), locals(),
+try:
+    controllers = __import__(project.controllers_module, globals(), locals(),
                         [project.controllers_module], 1)
+except (ImportError, ValueError), e:
+    controllers = []
+    sys.stderr.write(("**Warning**\nException: "
+                     "{exception}\n"
+              "No controllers detected for project.\n").format(exception=e))
 
-from pybald.util import camel_to_underscore, underscore_to_camel
 
 class Router(object):
     # class method match patterns

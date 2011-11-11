@@ -74,7 +74,7 @@ def convert_url_to_connection_args(name_or_url, **kwargs):
 
 def green_connection():
     '''Create a green databse connection.'''
-    dbapi, kw = convert_url_to_connection_args(project.get_engine())
+    dbapi, kw = convert_url_to_connection_args(project.database_engine_uri)
     # TODO: this should check for supported dbapis before proceeding
 
     def eventlet_connection_creator():

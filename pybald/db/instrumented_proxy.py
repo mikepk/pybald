@@ -40,4 +40,4 @@ class InstrumentedProxy(ConnectionProxy):
             pass
 
 # use by passing the proxy to the engine
-#engine = sa.create_engine(project.get_engine(), proxy=InstrumentedProxy(), **engine_args)
+#engine = sa.create_engine(project.database_engine_uri, proxy=InstrumentedProxy(), **engine_args)

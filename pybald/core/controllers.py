@@ -28,7 +28,7 @@ from pybald.util import camel_to_underscore
 from routes import redirect_to
 import project
 media_version = project.media_version
-project_path = project.get_path()
+project_path = project.path
 page_options = project.page_options
 
 from pybald.db import models

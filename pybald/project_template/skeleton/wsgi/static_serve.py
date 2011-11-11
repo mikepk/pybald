@@ -18,7 +18,7 @@ class static_serve:
     def __init__(self, application, path):
         """ path is directory where static files are stored
         """
-        project_path = project.get_path()
+        project_path = project.path
         
         self.path = os.path.join(project_path, path)
         self.application = application
