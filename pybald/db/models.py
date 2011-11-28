@@ -88,6 +88,7 @@ from sqlalchemy.sql import (
 from sqlalchemy.sql.expression import (
     asc,
     desc,
+    literal_column
     )
 
 from sqlalchemy import func
