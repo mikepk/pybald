@@ -143,8 +143,8 @@ if project.green:
     from SAGreen import eventlet_greenthread_scope
     session_args['scopefunc'] = eventlet_greenthread_scope
 
-if project.session_caching:
-    session_args['extension'] = SessionCachingExtension()
+# if project.session_caching:
+#     session_args['extension'] = SessionCachingExtension()
 
 session = scoped_session(sessionmaker(bind=engine, **session_args))
 
