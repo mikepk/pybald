@@ -81,10 +81,10 @@ def action(method):
 
         # add the pybald extension dict to the controller
         # object
-        extension = req.environ.get('pybald.extension',None)
+        extension = req.environ.get('pybald.extension', None)
         if extension:
-            for key in extension.keys():
-                setattr(self,key,extension[key])
+            for key, value in extension.items():
+                setattr(self, key, value)
 
         # Return either the controllers _pre code, whatever
         # is returned from the controller
@@ -92,7 +92,7 @@ def action(method):
         # the return which has precedence over the view
         resp = self._pre(req) or method(self, req) or self._view()
 
-        # if the response is currently just a string
+        # if the response is currently a string
         # wrap it in a response object
         if isinstance(resp, basestring):
             resp = Response(body=resp, charset="utf-8")
@@ -101,8 +101,6 @@ def action(method):
         self._post(req, resp)
 
         return resp(environ, start_response)
-    # restore the original function name
-    # replacement.__name__ = method.__name__
     return action_wrapper
 
 asset_tag_cache = {}
