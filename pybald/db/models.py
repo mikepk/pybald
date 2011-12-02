@@ -76,6 +76,10 @@ from sqlalchemy.orm import (
     synonym
     )
 
+from sqlalchemy.orm.attributes import (
+    instance_state
+    )
+
 from sqlalchemy.orm.exc import (
     NoResultFound,
     MultipleResultsFound
@@ -102,9 +106,9 @@ import project
 from project import mc
 
 from sqlalchemy.orm.interfaces import SessionExtension
+from sqlalchemy.ext.mutable import Mutable
 
 from sqlalchemy import __version__ as sa_ver
-
 
 sa_maj_ver, sa_min_ver, sa_rev_ver = sa_ver.split(".")
 
@@ -118,23 +122,23 @@ else:
         state.modified_event(dict_, impl, True, NO_VALUE)
 
 
-class SessionCachingExtension(SessionExtension):
-    def __init__(self):
-        self.updates = {}
-    def after_flush(self, session, flush_context, *pargs, **kargs):
-        for instance in session.dirty:
-            if hasattr(instance, "update_cache"):
-                key, cached_object = instance.update_cache()
-                self.updates[key] = cached_object
-        for instance in session.new:
-            if hasattr(instance, "update_cache"):
-                key, cached_object = instance.update_cache()
-                self.updates[key] = cached_object
-
-    def after_commit(self, session, *pargs, **kargs):
-        for key, value in self.updates.items():
-            mc.set(key, value, 180)
-        self.updates = {}
+# class SessionCachingExtension(SessionExtension):
+#     def __init__(self):
+#         self.updates = {}
+#     def after_flush(self, session, flush_context, *pargs, **kargs):
+#         for instance in session.dirty:
+#             if hasattr(instance, "update_cache"):
+#                 key, cached_object = instance.update_cache()
+#                 self.updates[key] = cached_object
+#         for instance in session.new:
+#             if hasattr(instance, "update_cache"):
+#                 key, cached_object = instance.update_cache()
+#                 self.updates[key] = cached_object
+# 
+#     def after_commit(self, session, *pargs, **kargs):
+#         for key, value in self.updates.items():
+#             mc.set(key, value, 180)
+#         self.updates = {}
 
 
 session_args = {}
@@ -268,6 +272,47 @@ Base = declarative_base(bind=engine)
 # # end of zzzeek's code for "Magic" ORM
 # # =====================================
 
+
+class MutationDict(Mutable, dict):
+    '''
+    A dictionary that automatically emits change events for SQA 
+    change tracking.
+    
+    Lifted almost verbatim from the SQA docs.
+    '''
+    @classmethod
+    def coerce(cls, key, value):
+        "Convert plain dictionaries to MutationDict."
+        if not isinstance(value, MutationDict):
+            if isinstance(value, dict):
+                return MutationDict(value)
+            # this call will raise ValueError
+            return Mutable.coerce(key, value)
+        else:
+            return value
+
+    def __setitem__(self, key, value):
+        "Detect dictionary set events and emit change events."
+        dict.__setitem__(self, key, value)
+        self.changed()
+
+    def __delitem__(self, key):
+        "Detect dictionary del events and emit change events."
+        dict.__delitem__(self, key)
+        self.changed()
+
+    def __getstate__(self):
+        '''Get state returns a plain dictionary for picking purposes.'''
+        return dict(self)
+
+    def __setstate__(self, state):
+        '''
+        Set state assumes a plain dictionary and then re-constitutes a 
+        Mutable dict.
+        '''
+        self.update(state)
+
+
 class NotFound(NoResultFound):
     '''Generic Not Found Error'''
     pass
@@ -296,6 +341,15 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         if project.global_table_args:
             cls.__table_args__.update(project.global_table_args)
 
+        # check if the class has at least one primary key
+        # if not, automatically generate one.
+        has_primary = reduce(lambda x,y: x or y,
+                            [cls.__dict__[key].primary_key
+                                            for key in cls.__dict__
+                                    if isinstance(cls.__dict__[key], Column)])
+        if not has_primary:
+            cls.id = Column(Integer, nullable=False, primary_key=True)
+
         super(ModelMeta, cls).__init__(name, bases, ns)
 
 
@@ -303,20 +357,17 @@ class Model(Base):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
     __metaclass__ = ModelMeta
 
-    # class NotFound(sqlalchemy.orm.exc.NoResultFound):
-    #     '''Generic Not Found Error'''
-    #     pass
-    # 
-    # class MultipleFound(sqlalchemy.orm.exc.MultipleResultsFound):
-    #     '''Generic Multiple Found Error'''
-    #     pass
-
     # exception aliases
     NotFound = sqlalchemy.orm.exc.NoResultFound
     MultipleFound = sqlalchemy.orm.exc.MultipleResultsFound
     # automatically assign id to the table/class
-    id = Column(Integer, nullable=False, primary_key=True)
-    # check __table__.primary_key exists?
+    # id = Column(Integer, nullable=False, primary_key=True)
+    def is_modified(self):
+        return instance_state(self).modified
+
+    def clear_modified(self):
+        return instance_state(self).commit_all({})
+
 
     def save(self, commit=False):
         '''
