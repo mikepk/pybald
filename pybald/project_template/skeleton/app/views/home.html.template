@@ -1,7 +1,0 @@
-<%def name="init()"><%
-page['title'] = "Hello World"
-%></%def>\
-<%inherit file="base.html.template"/>\
-<div>
-<h1>Pybald is working</h1>
-</div>

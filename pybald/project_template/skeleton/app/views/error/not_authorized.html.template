@@ -1,6 +1,0 @@
-<%def name="init()"><%
-page['title'] = "Not Authorized"
-%></%def>\
-<%inherit file="/base.html.template"/>\
-<h1>Sorry, you are not authorized for this resource.</h1>
-<h2>You can always return to the ${link("home page").to('home')} and try something else.</h2>

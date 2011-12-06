@@ -1,6 +1,0 @@
-<%def name="init()"><%
-page['title'] = "Not Found"
-%></%def>\
-<%inherit file="/base.html.template"/>\
-<h1>Sorry, we can't find what you're looking for.</h1>
-<h2>You can always return to the ${link("home page").to('home')} and try something else.</h2>

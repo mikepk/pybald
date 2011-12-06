@@ -1,0 +1,1 @@
+This dir is used for webserver caches like nginx's reverse proxy mirror/cache.

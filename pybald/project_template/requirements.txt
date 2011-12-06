@@ -1,0 +1,2 @@
+-e git+git://github.com/mikepk/pybald#egg=pybald
+simple-db-migrate==1.4.2

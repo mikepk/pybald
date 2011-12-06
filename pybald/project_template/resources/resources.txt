@@ -1,0 +1,1 @@
+This directory can hold any non-public-facing assets.
