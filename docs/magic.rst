@@ -1,24 +1,28 @@
 Magic
 =====
 
-PyBald only has a few 'magical' behaviors. This documentation explains how they work.
+Pybald only has a few 'magical' behaviors. This documentation explains how they work.
 
 
 Loading Controllers
 -------------------
 
-PyBald uses the idea of convention over configuration. It assumes that a PyBald project's files will be organized in a specific way. Borrowing from Ruby on Rails, application controllers are assumed to be stored, one per file, in the project's ``./app/controllers`` directory. Each controller also follows the name convention of **name**\_controller.py. So, for example, a controller named ``hello`` would be in a file named ``hello_controller.py`` inside the directory ``./app/controllers``. Following proper Python styles, the controller is then declared with the same name but in CamelCase inside this file. The translation is underscores in the file names will be converted to CamelCase when looking for the class in the file.
+Pybald uses the idea of convention over configuration. It assumes that a  project's files will be organized in a specific way. Borrowing from Ruby on Rails, application controllers are assumed to be stored, one per file, in the project's ``./app/controllers`` directory. Each controller also follows the name convention of **name**\_controller.py. So, for example, ``./app/controllers/hello_controller.py``. 
+
+Following the Python style guide (`PEP8 <http://www.python.org/dev/peps/pep-0008/>`_), controller module names are expected to be all lowercase, using underscores to separate words. Inside the module the controller class is declared with the same name converted to CamelCase. For example, to create a controller for blog posts you might have a module like ``./app/controllers/post_controller.py`` and the class would look something like this:
 
 .. code-block:: python
 
-  class HomeController(BaseController):
+  from pybald.core.controller import BaseController
+
+  class PostController(BaseController):
       pass
 
-There's no requirement that this be the *only* class in the file, you can have as many classes in these files as you wish, but only the class name mapping to the file name will be used for controllers.
+While Pybald will look for this name correspondence, there's no requirement that this be the *only* class in the file. You can have as many classes in these files as you wish, but only the class name mapping to the file name will be automatically used for controllers.
 
-When the Router is first created, but before the web application starts, the Router's ``load`` method is called. This method scans the ``./app/controllers`` directory and loads all of the controller modules into the Router object. 
+When the Router is first created, but before the web application starts, the Router's ``load`` method is called. This method scans the ``./app/controllers`` directory and loads all of the controller modules it finds into the Router object. 
 
-Again taking cues from Ruby on Rails, the project is configured with a default route ``/{controller}/{action}/{id}``. This default route means that just by creating a new **name**\_controller.py file in the ./app/controllers project directory, the URL will become immediately available without any further configuration or additional route creation.
+Again taking cues from Ruby on Rails, the initial project tempalte is configured with a default route ``/{controller}/{action}/{id}``. This default route means that just by creating a new **name**\_controller.py file in the ./app/controllers project directory, the URL will become immediately available without any further configuration or additional route creation.
 
 .. code-block:: python
 
@@ -47,7 +51,7 @@ Again taking cues from Ruby on Rails, the project is configured with a default r
 The @action decorator
 ---------------------
 
-Actions are any methods in Controllers that do not begin with an underscore. The standard pattern is to use the ``@action`` decorator to decorate each method you intend to use as an action. The ``@action`` decorator provides numerous convenience behaviors. A typical action will look like the following:
+Actions are any methods in Controllers with the exception of any methods whose name begins with an underscore. The standard pattern is to use the ``@action`` decorator to decorate each method you intend to use as an action. The ``@action`` decorator provides numerous convenience behaviors. A typical action will look like the following:
 
 .. code-block:: python
 
@@ -67,53 +71,74 @@ The first is that it assigns to the controller instance, data that is parsed/pro
 
 .. code-block:: python
 
-  # action / method decorator
-  # This decorator takes in the action method and adds some syntactic sugar around it.
-  # Allows the actions to work with WebOb request / response objects, and handles default
-  # behaviors, such as displaying the view when nothing is returned, or plain text
-  # if a string is returned.
-  def action(func):
-      def replacement(self, environ, start_response):
-          req = Request(environ)
-          # this code defines the template id to match against
-          # template path = controller name + '/' + action name (except in the case of)
-          # index
-          self.template_id = re.search('(\w+)Controller',self.__module__).group(1).lower()
-          # 'index' is a special name. The index action maps to the controller name (no action view)
-          if not re.search('index',func.__name__):
-              self.template_id += '/'+str(func.__name__)
+    # action / method decorator
+    def action(method):
+        '''
+        Decorates methods that are WSGI apps to turn them into pybald-style actions.
 
-          # add any url variables as members of the controller
-          if req.urlvars:
-              ignore = ['controller','action']
-              for key in req.urlvars.keys(): # and not in ignore:
-                  #Set the controller object to contain the url variables
-                  # parsed from the dispatcher / router
-                  setattr(self,key,req.urlvars[key])
+        :param method: A method to turn into a pybald-style action.
 
-          # run the controllers "pre" code
-          resp = self._pre(req)
-          # If the pre code returned a response, return that
-          if not resp:
-              try:
-                  resp = func(self,req)
-              except exc.HTTPException, e:
-                  resp = e
+        This decorator is usually used to take the method of a controller instance 
+        and add some syntactic sugar around it to allow the method to use WebOb
+        Request and Response objects. It will work with any method that 
+        implements the WSGI spec.
+    
+        It allows actions to work with WebOb request / response objects and handles
+        default behaviors, such as displaying the view when nothing is returned, 
+        or setting up a plain text Response if a string is returned. It also 
+        assigns instance variables from the ``pybald.extension`` environ variables
+        that can be set from other parts of the WSGI pipeline.
+    
+        This decorator is optional but recommended for making working
+        with requests and responses easier.
+        '''
+        @wraps(method)
+        def action_wrapper(self, environ, start_response):
+            req = Request(environ)
 
-          # if there's no return, call the view method
-          if not resp:
-              resp = self._view()
+            # add any url variables as members of the controller
+            for key in req.urlvars.keys():
+                #Set the controller object to contain the url variables
+                # parsed from the dispatcher / router
+                setattr(self, key, req.urlvars[key])
 
-          # if the function returns a string
-          # wrap it in a response object
-          if isinstance(resp, basestring):
-              resp = Response(body=resp)
+            # this code defines the template id to match against
+            # template path = controller name + '/' + action name (except in the case of)
+            # index
+            if not hasattr(self, "template_id"):
+                if method.__name__ not in ('index','__call__'):
+                    self.template_id = "{0}/{1}".format(camel_to_underscore(
+                             self.controller_pattern.search(self.__class__.__name__
+                                                      ).group(1)), method.__name__)
+                else:
+                    self.template_id = camel_to_underscore(
+                             self.controller_pattern.search(self.__class__.__name__
+                                                      ).group(1))
 
-          # run the controllers post code
-          self._post(req,resp)
+            # add the pybald extension dict to the controller
+            # object
+            extension = req.environ.get('pybald.extension', None)
+            if extension:
+                for key, value in extension.items():
+                    setattr(self, key, value)
 
-          return resp(environ, start_response)
-      return replacement
+            # Return either the controllers _pre code, whatever
+            # is returned from the controller
+            # or the view. So pre has precedence over
+            # the return which has precedence over the view
+            resp = self._pre(req) or method(self, req) or self._view()
+
+            # if the response is currently a string
+            # wrap it in a response object
+            if isinstance(resp, basestring):
+                resp = Response(body=resp, charset="utf-8")
+
+            # run the controllers post code
+            self._post(req, resp)
+
+            return resp(environ, start_response)
+        return action_wrapper
+
 
 The action decorator provides four "magical" behaviors. 
 

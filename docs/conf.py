@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# PyBald documentation build configuration file, created by
+# Pybald documentation build configuration file, created by
 # sphinx-quickstart on Tue Apr 13 12:00:54 2010.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'PyBald'
+project = u'Pybald'
 copyright = u'2011, Michael Kowalchik'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -165,7 +165,7 @@ html_static_path = ['_static']
 #html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PyBalddoc'
+htmlhelp_basename = 'Pybalddoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -179,7 +179,7 @@ htmlhelp_basename = 'PyBalddoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'PyBald.tex', u'PyBald Documentation',
+  ('index', 'Pybald.tex', u'Pybald Documentation',
    u'Michael Kowalchik', 'manual'),
 ]
 

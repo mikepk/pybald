@@ -12,7 +12,7 @@ import logging.handlers
 
 class PybaldLogger(object):
     def __init__(self, application=None, log_file='/tmp/pybald.log',
-                       level="DEBUG", project_name="PyBald"):
+                       level="DEBUG", project_name="Pybald"):
         if application:
             self.application = application
         else:

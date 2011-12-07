@@ -3,7 +3,7 @@
 # """
 # BaseController.py
 # 
-# Base Controller that all PyBald controllers inherit from.
+# Base Controller that all Pybald controllers inherit from.
 # 
 # Created by mikepk on 2009-06-29.
 # Copyright (c) 2009 Michael Kowalchik. All rights reserved.
