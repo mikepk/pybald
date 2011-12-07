@@ -1,18 +1,13 @@
 Pybald
 ======
+Pybald is a light weight, python, `MVC <http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller>`_ style web framework. It is inspired by work done by `Ian Bicking <http://blog.ianbicking.org/>`_, and builds upon the concepts presented in `Another do-it-yourself framework <http://pythonpaste.org/webob/do-it-yourself.html>`_. It is also takes design inspiration from `Ruby on Rails <http://rubyonrails.org>`_ and `Django <http://www.djangoproject.com/>`_. 
 
-Pybald is a extremely light weight, python, `MVC <http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller>`_ web framework that is inspired by work done by `Ian Bicking <http://blog.ianbicking.org/>`_, and builds upon the concepts presented in `Another do-it-yourself framework <http://pythonpaste.org/webob/do-it-yourself.html>`_. It takes the bare-bones framework approach presented there and adds some convenience methods and the following components and glue:
+Pybald began life as an ultra-bare-bones framework but has evolved over time  adding convenience methods, components and glue:
 
   * `Routes <http://routes.groovie.org/>`_ for dispatching and URL parsing
   * `Mako <http://www.makotemplates.org/>`_ as the template engine.
-  * A very thin MySQL interface and python object to database table mapper
-  * `SqlAlchemy <http://www.sqlalchemy.org/>`_ integration
-  * Automated forms using `FormAlchemy <http://code.google.com/p/formalchemy/>`_
-  * A slightly more complex WSGI decorator
-  * An Apache configuration template
-  * Session Management, Simple Logging, and some template helper functions
-  
-License
-=======
-
-Pybald is distributed under the `MIT license <http://www.opensource.org/licenses/mit-license.php>`_. See LICENSE.
+  * `SqlAlchemy <http://sqlalchemy.org/>`_ for data persistence and object mapping
+  * `FormAlchemy <http://formalchemy.org/>`_ for automated form generation and validation
+  * A more complex WSGI decorator
+  * Some deploy infrastructure such as Apache and Nginx configuration templates
+  * Session Management, Simple Logging, and template helper functions
