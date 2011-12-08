@@ -93,6 +93,33 @@ class Router(object):
         # expressions
         self.map.create_regs(controller_names)
 
+    def __repr__(self):
+        return u"<Pybald Router Object>"
+
+    def get_handler(self, urlvars=None):
+        controller_name = urlvars["controller"]
+        action_name = urlvars["action"]
+
+        #methods starting with underscore can't be used as actions
+        if self.has_underscore.match(action_name):
+            raise exc.HTTPNotFound("Invalid Action")
+
+        if debug:
+            print "\n".join(['''{0}: {1}'''.format(key, value)
+                            for key, value in urlvars.items()])
+
+        try:
+            # create controller instance from controllers dictionary
+            # using routes 'controller' returned from the match
+            controller = getattr(self.controllers[controller_name]['module'],
+                                 self.controllers[controller_name]['name'])()
+            handler = getattr(controller, action_name)
+        # only catch the KeyError/AttributeError for the controller/action
+        # search
+        except (KeyError, AttributeError):
+            raise exc.HTTPNotFound("Missing Controller or Action")
+
+        return controller, handler
 
     def __call__(self, environ, start_response):
         '''
@@ -106,7 +133,7 @@ class Router(object):
         Router is the most *framework-like* component of Pybald. In addition to
         dispatching urls to controllers, it also allows 'method override'
         behavior allowing other HTTP methods to be invoked such as ``put`` and
-        ``delete``.
+        ``delete`` from web clients that don't support them natively.
         '''
         req = Request(environ)
         #method override
@@ -146,6 +173,7 @@ class Router(object):
         environ['wsgiorg.routing_args'] = ((url), match)
         environ['routes.route'] = route
         environ['routes.url'] = url
+        environ['pybald.router'] = self
 
         # Add pybald extension, normally gets assigned to controller object
         environ['pybald.extension'] = environ.get('pybald.extension', {})
@@ -180,28 +208,31 @@ class Router(object):
 
         req.urlvars = urlvars
         environ['urlvars'] = urlvars
+
         if urlvars:
-            controller = urlvars["controller"]
-            action = urlvars["action"]
-
-            #methods starting with underscore can't be used as actions
-            if self.has_underscore.match(action):
-                raise exc.HTTPNotFound("Invalid Action")
-
-            if debug:
-                print "\n".join(['''{0}: {1}'''.format(key, value)
-                                for key, value in urlvars.items()])
-
-            try:
-                # create controller instance from controllers dictionary
-                # using routes 'controller' returned from the match
-                controller = getattr(self.controllers[controller]['module'],
-                                     self.controllers[controller]['name'])()
-                handler = getattr(controller, action)
-            # only catch the KeyError/AttributeError for the controller/action
-            # search
-            except (KeyError, AttributeError):
-                raise exc.HTTPNotFound("Missing Controller or Action")
+            controller, handler = self.get_handler(urlvars)
+        # if urlvars:
+        #     controller = urlvars["controller"]
+        #     action = urlvars["action"]
+        # 
+        #     #methods starting with underscore can't be used as actions
+        #     if self.has_underscore.match(action):
+        #         raise exc.HTTPNotFound("Invalid Action")
+        # 
+        #     if debug:
+        #         print "\n".join(['''{0}: {1}'''.format(key, value)
+        #                         for key, value in urlvars.items()])
+        # 
+        #     try:
+        #         # create controller instance from controllers dictionary
+        #         # using routes 'controller' returned from the match
+        #         controller = getattr(self.controllers[controller]['module'],
+        #                              self.controllers[controller]['name'])()
+        #         handler = getattr(controller, action)
+        #     # only catch the KeyError/AttributeError for the controller/action
+        #     # search
+        #     except (KeyError, AttributeError):
+        #         raise exc.HTTPNotFound("Missing Controller or Action")
 
         # No URL vars means nothing matched in the mapper function
         else:
