@@ -1,10 +1,12 @@
-Getting Started
+Quick Start
 ===============
 
 We'll start with a quick tutorial on running your first Pybald Web Application and then show how the various pieces work together.
 
-Installation
+Installing
 ------------
+
+First we fetch and install pybald. This example uses ``virtualenv`` so you can isolate experimenting with pybald (and its dependencies) from the rest of your python environment. It's not required but recommended.
 
 .. code-block:: sh
 
@@ -23,10 +25,12 @@ Installation
       greenlet MarkupSafe
       Cleaning up...
     (pyb_test)~$ sudo cp -R pyb_test/src/pybald/pybald/project_template/ ./test_project
-    (pyb_test)~/test_project$ cd test_project
+    (pyb_test)~$ cd test_project
     (pyb_test)~/test_project$ python project.py
 
-.. code-block:: python
+The command ``python project.py`` starts the pybald console for this project. The console allows you to interact with your application in various ways including simulating requests, exploring models, prototyping new functionality and other tasks.
+
+.. code-block:: pycon
 
     Route name Methods Path                       
     home               /                          
@@ -36,19 +40,23 @@ Installation
                        /*(url)/                   
     Welcome to the pybald interactive console
      ** project: test_project **
-    >>> r = Request.blank("/")      # create a blank webob request
-    >>> resp = r.get_response(app)  # run the wsgi application using the webob request
+    >>> response = c.get("/")
     ============= / ==============
     Method: GET
     action: index
     controller: home
-    >>> print resp
+    >>> print response
     200 OK
     Content-Type: text/html; charset=utf-8
     Content-Length: 18
 
     Pybald is working.
-    >>>
+
+When debugging is turned on, the routing layer of Pybald will display all of the configured routes for the project first, then a small welcome message.
+
+The console has a small testing / convenience client ``c`` that lets you issue simulated web requests to your application. Here we've fetched the "/" url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were invoked. Finally we print the response from that url which is the simple web response message that pybald is working!
+
+Pow! You're running a Pybald application, although not a very interesting one I'll grant you.
 
 
 Running your first Pybald Application

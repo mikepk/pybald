@@ -18,9 +18,9 @@ import project
 site.addsitedir(project.toplevel)
 
 from pybald.core.router import Router
+from pybald.core.errors import ErrorMiddleware
 # from pybald.core.sessions import SessionManager
 # from pybald.core.users import UserManager
-# from pybald.core.errors import ErrorMiddleware
 # from pybald.core.pybald_logger import PybaldLogger
 
 # Load the project specified in the project file
@@ -48,7 +48,7 @@ from pybald.core.db_middleware import DbMiddleware
 app = Router(routes=my_project.app.urls.map)
 # app = UserManager(app, user_class=User)
 # app = SessionManager(app, session_class=Session)
-# app = ErrorMiddleware(app, error_controller=None)
+app = ErrorMiddleware(app, error_controller=None)
 app = DbMiddleware(app)
 # ----------------------------------
 #    ↑↑↑                  ↓↓↓

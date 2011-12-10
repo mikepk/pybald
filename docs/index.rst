@@ -16,7 +16,13 @@ Contents:
 
    intro
    getting_started
+   running_an_app
    magic
+   configuration
+   routing
+   controllers
+   models
+   forms
    error_handling
    api_reference
 
