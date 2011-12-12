@@ -28,7 +28,11 @@ First we fetch and install pybald. This example uses ``virtualenv`` so you can i
     (pyb_test)~$ cd test_project
     (pyb_test)~/test_project$ python project.py
 
-The command ``python project.py`` starts the pybald console for this project. The console allows you to interact with your application in various ways including simulating requests, exploring models, prototyping new functionality and other tasks.
+
+Running your first Pybald Application
+-------------------------------------
+
+The command ``python project.py`` starts the pybald console for this project. The console is a standard python console but it also allows you to interact with your application in various ways including simulating requests, exploring models, prototyping new functionality and other tasks.
 
 .. code-block:: pycon
 
@@ -52,17 +56,13 @@ The command ``python project.py`` starts the pybald console for this project. Th
 
     Pybald is working.
 
-When debugging is turned on, the routing layer of Pybald will display all of the configured routes for the project first, then a small welcome message.
+When debugging is turned on, the routing layer of Pybald will display all of the configured url routes for the project first, then a small welcome message.
 
-The console has a small testing / convenience client ``c`` that lets you issue simulated web requests to your application. Here we've fetched the "/" url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were invoked. Finally we print the response from that url which is the simple web response message that pybald is working!
+The console has a testing / convenience client ``c`` that allows you to issue simulated web requests to your application. Here we've fetched the "/" url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were invoked. Finally we print the response from that url which is the simple web response message that pybald is working!
 
 Pow! You're running a Pybald application, although not a very interesting one I'll grant you.
 
 
-Running your first Pybald Application
--------------------------------------
-
-**!! Coming soon !!**
 
 
 Structure of a Pybald Application
@@ -92,8 +92,10 @@ A Pybald application is configured, at least partially, by the directory structu
   Web server configuration, startup scripts.
 ``./utilities``
   Project utility scripts.
-``./viewscache``
-  *temporary* The template engine's file cache for views
+``./tmp``
+  Temporary files
+    ``./viewscache``
+      *temporary* The template engine's file cache for views
 ``./wsgi``
   The directory containing the primary WSGI application
     ``./myapp.py``
@@ -127,7 +129,7 @@ The heart of a Pybald application is the *WSGI pipeline*. The pipeline is define
     app = Router(routes=my_project.app.urls.map)
     # app = UserManager(app, user_class=User)
     # app = SessionManager(app, session_class=Session)
-    # app = ErrorMiddleware(app, error_controller=None)
+    app = ErrorMiddleware(app, error_controller=None)
     app = DbMiddleware(app)
     # ----------------------------------
     #    ↑↑↑                  ↓↓↓
