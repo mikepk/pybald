@@ -327,8 +327,10 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
     def __init__(cls, name, bases, ns):
         try:
             if Model not in bases:
+                # Allow for inheritance of the Model for concrete inherita
+                super(ModelMeta, cls).__init__(name, bases, ns)
                 return
-        except NameError:
+        except NameError, er:
             return
         # set the tablename, if it's user set, use that, otherwise use a function to create one
         cls.__tablename__ = getattr(cls, "__tablename__" , pluralize( camel_to_underscore(name) ))
