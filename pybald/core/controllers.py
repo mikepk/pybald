@@ -177,9 +177,9 @@ class BaseController(object):
         '''Code to run after any action.'''
         pass
 
-    def _redirect_to(self, url, *pargs, **kargs):
+    def _redirect_to(self, *pargs, **kargs):
         '''Redirect the controller'''
-        return redirect_to(url,*pargs,**kargs)
+        return redirect_to(*pargs,**kargs)
 
     def _not_found(self, text=None):
         raise exc.HTTPNotFound(text)
@@ -201,7 +201,7 @@ class BaseController(object):
         return view_engine(data)
 
     def _JSON(self, data, status=200):
-        '''Return JSON object with the proper headers.'''
+        '''Return JSON object with the proper-ish headers.'''
         res = Response( body=json.dumps(data),
             status=status,
             # wonky Cache-Control headers to stop IE6 from caching content

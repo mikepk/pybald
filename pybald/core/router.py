@@ -211,28 +211,6 @@ class Router(object):
 
         if urlvars:
             controller, handler = self.get_handler(urlvars)
-        # if urlvars:
-        #     controller = urlvars["controller"]
-        #     action = urlvars["action"]
-        # 
-        #     #methods starting with underscore can't be used as actions
-        #     if self.has_underscore.match(action):
-        #         raise exc.HTTPNotFound("Invalid Action")
-        # 
-        #     if debug:
-        #         print "\n".join(['''{0}: {1}'''.format(key, value)
-        #                         for key, value in urlvars.items()])
-        # 
-        #     try:
-        #         # create controller instance from controllers dictionary
-        #         # using routes 'controller' returned from the match
-        #         controller = getattr(self.controllers[controller]['module'],
-        #                              self.controllers[controller]['name'])()
-        #         handler = getattr(controller, action)
-        #     # only catch the KeyError/AttributeError for the controller/action
-        #     # search
-        #     except (KeyError, AttributeError):
-        #         raise exc.HTTPNotFound("Missing Controller or Action")
 
         # No URL vars means nothing matched in the mapper function
         else:
