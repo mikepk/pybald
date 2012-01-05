@@ -2,9 +2,6 @@
 # encoding: utf-8
 """
 static_serve.py
-
-Created by mikepk on 2009-11-17.
-Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 """
 
 import sys
@@ -16,10 +13,12 @@ import mimetypes
 
 class static_serve:
     def __init__(self, application, path):
-        """ path is directory where static files are stored
+        """ 
+        Dirt simple WSGI static file server. 
+        *** WARNING! NOT INTENDED FOR PRODUCTION USE ***
+        Path is directory where static files are stored
         """
-        project_path = project.path
-        self.path = os.path.join(project_path,path)
+        self.path = os.path.join(project.path, path)
         self.application = application
 
 

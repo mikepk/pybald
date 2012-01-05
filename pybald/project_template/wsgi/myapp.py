@@ -63,8 +63,17 @@ application = app
 # requires python paste be installed
 def main():
     '''A simple server startup if module is called directly'''
-    port = 8080
-    host = '0.0.0.0'
+    # port = 8080
+    # host = '0.0.0.0'
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("--host", default="0.0.0.0",
+                      dest="host",
+                      help="host ip to run")
+    parser.add_option("-p", "--port",
+                      dest="port", default=8080,
+                      help="the port to run on.")
+    (options, args) = parser.parse_args()
     try:
         import paste
         from paste import httpserver
@@ -73,7 +82,7 @@ def main():
         # add the static server component
         from static_serve import static_serve
         my_app = static_serve(app, path='public')
-        httpserver.serve(my_app, host=host, port=port)
+        httpserver.serve(my_app, host=options.host, port=options.port)
         sys.exit(1)
     except ImportError:
         pass
@@ -82,8 +91,8 @@ def main():
     # add the static server component
     from static_serve import static_serve
     my_app = static_serve(app, path='public')
-    httpd = make_server(host, port, my_app)
-    print "Serving on port {0}...".format(port)
+    httpd = make_server(options.host, options.port, my_app)
+    print "Serving on port {0}...".format(options.port)
     httpd.serve_forever()
     sys.exit(1)
 
