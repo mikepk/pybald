@@ -116,7 +116,7 @@ A Pybald application consists of the following parts:
 
 * Static content: images, css, javascript
 
-The heart of a Pybald application is the *WSGI pipeline*. The pipeline is defined in the file ``./wsgi/myapp.py``. The WSGI pipeline is how your webserver will communicate with your application. `myapp.py` can be used to connect to Apache, or it can be run directly which invokes the paste.httpserver from the command line. 
+The heart of a Pybald application is the *WSGI pipeline*. The pipeline is defined in the file ``./wsgi/myapp.py``. The WSGI pipeline is how your webserver will communicate with your application. `myapp.py` can be used to connect to any WSGI compliant webserver (Apache, nginx, uWSGI, etc...), or it can be run directly which invokes the paste.httpserver from the command line. 
 
 .. code-block:: python
 
@@ -137,3 +137,15 @@ The heart of a Pybald application is the *WSGI pipeline*. The pipeline is define
     #   Request              Response
 
 
+Invoking the development web server from the command line should look similar to executing the console (in fact the same code executes). The webserver log is dumped to the console so you can monitor transactions.
+
+.. code-block:: sh
+
+    ~/test_project$ python wsgi/myapp.py
+    Route name Methods Path                       
+    home               /                          
+    base               /{controller}/{action}/{id}
+                       /{controller}/{action}     
+                       /{controller}              
+                       /*(url)/                   
+    serving on 0.0.0.0:8080 view at http://127.0.0.1:8080

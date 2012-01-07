@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Pybald'
-copyright = u'2011, Michael Kowalchik'
+copyright = u'2012, Michael Kowalchik'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -108,7 +108,9 @@ html_theme = 'haiku'
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = ['themes']
-
+html_theme_options = {
+    "full_logo": "true"
+}
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 #html_title = None
@@ -118,7 +120,7 @@ html_theme_path = ['themes']
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+html_logo = "pybald.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32

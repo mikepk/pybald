@@ -1,20 +1,8 @@
 Introduction
 ============
 
-Pybald is a light weight, python, `MVC <http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller>`_ style web framework. It is inspired by work done by `Ian Bicking <http://blog.ianbicking.org/>`_, and builds upon the concepts presented in `Another do-it-yourself framework <http://pythonpaste.org/webob/do-it-yourself.html>`_. It is also takes design inspiration from `Ruby on Rails <http://rubyonrails.org>`_ and `Django <http://www.djangoproject.com/>`_. 
-
-Pybald began life as an ultra-bare-bones framework but has evolved over time  adding convenience methods, components and glue:
-
-  * `Routes <http://routes.groovie.org/>`_ for dispatching and URL parsing
-  * `Mako <http://www.makotemplates.org/>`_ as the template engine.
-  * `SqlAlchemy <http://sqlalchemy.org/>`_ for data persistence and object mapping
-  * `FormAlchemy <http://docs.formalchemy.org/>`_ for automated form generation and validation
-  * A more complex WSGI decorator
-  * Some deploy infrastructure such as Apache and Nginx configuration templates
-  * Session Management, Simple Logging, and template helper functions
-
-Goals
------
+Overview and Goals
+------------------
 
 *For lazy hackers that know what they're doing.*
 
@@ -36,12 +24,12 @@ What Pybald is **not**\ :
 * Not Performance Tested
 * Not Designed for maximum configurability. It's relatively trivial to use a different template engine or url dispatcher but that's not the goal of the project. There are other frameworks that serve that need like `Pylons / Pyramid <http://pylonshq.com>`_ 
 
-Requirements
+Dependencies
 ------------
 
 It has only been tested on Python 2.5 and 2.6.
 
-Pybald currently uses the following projects:
+Pybald currently depends on, and will automatically install, the following projects:
 
 * `Mako Templates <http://www.makotemplates.org/>`_
 * `Routes <http://routes.groovie.org/>`_
