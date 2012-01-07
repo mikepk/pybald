@@ -10,6 +10,38 @@ from webob import Request, Response
 import logging
 import logging.handlers
 
+from textwrap import TextWrapper
+class WrappedStream(object):
+    def __init__(self):
+        self.sql_wrapper = TextWrapper(width=100,
+                                       initial_indent=' '*15+'sql> ',
+                                       subsequent_indent=' '*20)
+    def write(self, text):
+        wrapped_text = "{0}\n".format(self.sql_wrapper.fill(text))
+        sys.stderr.write(wrapped_text)
+
+    def flush(self, *pargs, **kargs):
+        pass
+
+# custom stream handler that indents and formats SQL
+h = logging.StreamHandler(WrappedStream())
+formatter = logging.Formatter("%(message)s")
+h.setFormatter(formatter)
+
+def enable_sql_log():
+    '''Function to turn on debug SQL output for SQLAlchemy'''
+    engine_log = logging.getLogger('sqlalchemy.engine')
+    # logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.ERROR)
+    engine_log.setLevel(logging.INFO)   
+    engine_log.addHandler(h)
+
+def disable_sql_log():
+    '''Function to turn off debug SQL output for SQLAlchemy'''
+    engine_log = logging.getLogger('sqlalchemy.engine')
+    engine_log.setLevel(logging.ERROR) 
+    # engine_log.removeHandler(h)
+
+
 class PybaldLogger(object):
     def __init__(self, application=None, log_file='/tmp/pybald.log',
                        level="DEBUG", project_name="Pybald"):
