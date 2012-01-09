@@ -83,6 +83,7 @@ def action(method):
         # object
         extension = req.environ.get('pybald.extension', None)
         if extension:
+            extension["request"] = req
             for key, value in extension.items():
                 setattr(self, key, value)
 
