@@ -156,90 +156,90 @@ Base = declarative_base(bind=engine)
 # from sqlalchemy.ext.declarative import declared_attr, declarative_base
 # from sqlalchemy import event
 # import re
-# 
+#
 # @event.listens_for(mapper, "mapper_configured")
 # def _setup_deferred_properties(mapper, class_):
 #     """Listen for finished mappers and apply DeferredProp
 #     configurations."""
-# 
+#
 #     for key, value in class_.__dict__.items():
 #         if isinstance(value, DeferredProp):
 #             value._config(class_, key)
-# 
+#
 # class DeferredProp(object):
 #     """A class attribute that generates a mapped attribute
 #     after mappers are configured."""
-# 
+#
 #     def _setup_reverse(self, key, rel, target_cls):
 #         """Setup bidirectional behavior between two relationships."""
-# 
+#
 #         reverse = self.kw.get('reverse')
 #         if reverse:
 #             reverse_attr = getattr(target_cls, reverse)
 #             if not isinstance(reverse_attr, DeferredProp):
 #                 reverse_attr.property._add_reverse_property(key)
 #                 rel._add_reverse_property(reverse)
-# 
+#
 # class FKRelationship(DeferredProp):
 #     """Generates a one to many or many to one relationship."""
-# 
+#
 #     def __init__(self, target, fk_col, **kw):
 #         self.target = target
 #         self.fk_col = fk_col
 #         self.kw = kw
-# 
+#
 #     def _config(self, cls, key):
 #         """Create a Column with ForeignKey as well as a relationship()."""
-# 
+#
 #         target_cls = cls._decl_class_registry[self.target]
-# 
+#
 #         pk_target, fk_target = self._get_pk_fk(cls, target_cls)
 #         pk_table = pk_target.__table__
 #         pk_col = list(pk_table.primary_key)[0]
-# 
+#
 #         if hasattr(fk_target, self.fk_col):
 #             fk_col = getattr(fk_target, self.fk_col)
 #         else:
 #             fk_col = Column(self.fk_col, pk_col.type, ForeignKey(pk_col))
 #             setattr(fk_target, self.fk_col, fk_col)
-# 
+#
 #         rel = relationship(target_cls,
 #                 primaryjoin=fk_col==pk_col,
 #                 collection_class=self.kw.get('collection_class', set)
 #             )
 #         setattr(cls, key, rel)
 #         self._setup_reverse(key, rel, target_cls)
-# 
+#
 # class one_to_many(FKRelationship):
 #     """Generates a one to many relationship."""
-# 
+#
 #     def _get_pk_fk(self, cls, target_cls):
 #         return cls, target_cls
-# 
+#
 # class many_to_one(FKRelationship):
 #     """Generates a many to one relationship."""
-# 
+#
 #     def _get_pk_fk(self, cls, target_cls):
 #         return target_cls, cls
-# 
+#
 # class many_to_many(DeferredProp):
 #     """Generates a many to many relationship."""
-# 
+#
 #     def __init__(self, target, tablename, local, remote, **kw):
 #         self.target = target
 #         self.tablename = tablename
 #         self.local = local
 #         self.remote = remote
 #         self.kw = kw
-# 
+#
 #     def _config(self, cls, key):
 #         """Create an association table between parent/target
 #         as well as a relationship()."""
-# 
+#
 #         target_cls = cls._decl_class_registry[self.target]
 #         local_pk = list(cls.__table__.primary_key)[0]
 #         target_pk = list(target_cls.__table__.primary_key)[0]
-# 
+#
 #         t = Table(
 #                 self.tablename,
 #                 cls.metadata,
@@ -253,7 +253,7 @@ Base = declarative_base(bind=engine)
 #             )
 #         setattr(cls, key, rel)
 #         self._setup_reverse(key, rel, target_cls)
-# 
+#
 # # =====================================
 # # end of zzzeek's code for "Magic" ORM
 # # =====================================
@@ -261,9 +261,9 @@ Base = declarative_base(bind=engine)
 
 class MutationDict(Mutable, dict):
     '''
-    A dictionary that automatically emits change events for SQA 
+    A dictionary that automatically emits change events for SQA
     change tracking.
-    
+
     Lifted almost verbatim from the SQA docs.
     '''
     @classmethod
@@ -302,7 +302,7 @@ class MutationDict(Mutable, dict):
 
     def __setstate__(self, state):
         '''
-        Set state assumes a plain dictionary and then re-constitutes a 
+        Set state assumes a plain dictionary and then re-constitutes a
         Mutable dict.
         '''
         self.update(state)
@@ -329,8 +329,10 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         except NameError, er:
             return
 
-        # set the tablename, if it's user set, use that, otherwise use a function to create one
-        cls.__tablename__ = getattr(cls, "__tablename__" , pluralize( camel_to_underscore(name) ))
+        # set the tablename, if it's user set, use that, otherwise use a
+        # function to create one
+        cls.__tablename__ = getattr(cls, "__tablename__" ,
+                                        pluralize( camel_to_underscore(name) ))
         # tableargs adds autoload to create schema reflection
         cls.__table_args__ = getattr(cls, "__table_args__", {})
 
@@ -419,11 +421,12 @@ class Model(Base):
 
     def flush(self):
         '''
-        Syncs all pending SQL changes (including other pending objects) to the underlying
-        data store within the current transaction.
+        Syncs all pending SQL changes (including other pending objects) to
+        the underlying data store within the current transaction.
 
-        Flush emits all the relevant SQL to the underlying store, but does **not** commit the
-        current transaction or close the current database session.
+        Flush emits all the relevant SQL to the underlying store, but does
+        **not** commit the current transaction or close the current
+        database session.
         '''
         session.flush()
         return self
@@ -433,10 +436,10 @@ class Model(Base):
         '''
         Commits the entire database session (including other pending objects).
 
-        This emits all relevant SQL to the databse, commits the current transaction,
-        and closes the current session (and database connection) and returns it to the
-        connection pool. Any data operations after this will pull a new database
-        session from the connection pool.
+        This emits all relevant SQL to the databse, commits the current
+        transaction, and closes the current session (and database connection)
+        and returns it to the connection pool. Any data operations after this
+        will pull a new database session from the connection pool.
         '''
         session.commit()
         return self
