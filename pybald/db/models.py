@@ -73,12 +73,17 @@ from sqlalchemy.orm import (
     eagerload,
     eagerload_all,
     joinedload,
-    synonym
+    synonym,
+    object_session
     )
 
 from sqlalchemy.orm.attributes import (
     instance_state
     )
+
+from sqlalchemy.orm.util import (
+    has_identity
+)
 
 from sqlalchemy.orm.exc import (
     NoResultFound,
@@ -272,6 +277,15 @@ class MutationDict(Mutable, dict):
         else:
             return value
 
+    def update(self, *args, **kwargs):
+        '''
+        Updates the current dictionary with kargs or a passed in dict.
+        Calls the internal setitem for the update method to maintain
+        mutation tracking.
+        '''
+        for k, v in dict(*args, **kwargs).iteritems():
+            self[k] = v
+
     def __setitem__(self, key, value):
         "Detect dictionary set events and emit change events."
         dict.__setitem__(self, key, value)
@@ -348,11 +362,25 @@ class Model(Base):
     # automatically assign id to the table/class
     # id = Column(Integer, nullable=False, primary_key=True)
     def is_modified(self):
+        '''Check if SQLAlchemy believes this instance is modified.'''
+        # TODO: Using this internal falg, is this a private internal
+        # behavior? Is there a better, public-api way of getting this info?
         return instance_state(self).modified
 
     def clear_modified(self):
+        '''
+        Unconditionally clear all modified state from the attibutes on
+        this instance.
+        '''
+        # Uses this method: http://www.sqlalchemy.org/docs/orm/internals.html?highlight=commit_all#sqlalchemy.orm.state.InstanceState.commit_all
         return instance_state(self).commit_all({})
 
+    def is_persisted(self):
+        '''
+        Check if this instance has ever been persisted. Means it is either
+        `detached` or `persistent`.
+        '''
+        return has_identity(self)
 
     def save(self, commit=False):
         '''
