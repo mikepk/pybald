@@ -100,13 +100,17 @@ from sqlalchemy.sql.expression import (
     literal_column
     )
 
+from sqlalchemy.ext.hybrid import (
+                    hybrid_property,
+                    hybrid_method
+    )
+
 from sqlalchemy import func
 
 import re
 from pybald.db import engine, dump_engine
 from pybald.util import camel_to_underscore, pluralize
 
-# for green operation
 import project
 from project import mc
 
@@ -132,9 +136,6 @@ session_args = {}
 if project.green:
     from SAGreen import eventlet_greenthread_scope
     session_args['scopefunc'] = eventlet_greenthread_scope
-
-# if project.session_caching:
-#     session_args['extension'] = SessionCachingExtension()
 
 session = scoped_session(sessionmaker(bind=engine, **session_args))
 
@@ -297,7 +298,7 @@ class MutationDict(Mutable, dict):
         self.changed()
 
     def __getstate__(self):
-        '''Get state returns a plain dictionary for picking purposes.'''
+        '''Get state returns a plain dictionary for pickling purposes.'''
         return dict(self)
 
     def __setstate__(self, state):
@@ -361,12 +362,13 @@ class Model(Base):
     # exception aliases
     NotFound = sqlalchemy.orm.exc.NoResultFound
     MultipleFound = sqlalchemy.orm.exc.MultipleResultsFound
-    # automatically assign id to the table/class
-    # id = Column(Integer, nullable=False, primary_key=True)
+
     def is_modified(self):
         '''Check if SQLAlchemy believes this instance is modified.'''
         # TODO: Using this internal falg, is this a private internal
         # behavior? Is there a better, public-api way of getting this info?
+        # alternatively is session.is_modified(self) although will this fail
+        # if the instance isn't part of the session?
         return instance_state(self).modified
 
     def clear_modified(self):
