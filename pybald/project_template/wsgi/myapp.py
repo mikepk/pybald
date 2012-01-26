@@ -48,8 +48,8 @@ from pybald.core.db_middleware import DbMiddleware
 app = Router(routes=my_project.app.urls.map)
 # app = UserManager(app, user_class=User)
 # app = SessionManager(app, session_class=Session)
-app = ErrorMiddleware(app, error_controller=None)
 app = DbMiddleware(app)
+app = ErrorMiddleware(app, error_controller=None)
 # ----------------------------------
 #    ↑↑↑                  ↓↓↓
 #    ↑↑↑                  ↓↓↓

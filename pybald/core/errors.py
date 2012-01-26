@@ -11,25 +11,25 @@ import datetime
 
 from webob import Request, Response, exc
 from mako import exceptions
-from sqlalchemy.exc import SQLAlchemyError
+# from sqlalchemy.exc import SQLAlchemyError
 
-class SAException(SQLAlchemyError):
-    def __init__(self, *pargs, **kargs):
-        if kargs.get('error_controller'):
-            self.error_controller = kargs.get('error_controller')
-            del kargs["error_controller"]
-        else:
-            self.error_controller = None
-        super(SAException, self).__init__(*pargs, **kargs)
+# class SAException(SQLAlchemyError):
+#     def __init__(self, *pargs, **kargs):
+#         if kargs.get('error_controller'):
+#             self.error_controller = kargs.get('error_controller')
+#             del kargs["error_controller"]
+#         else:
+#             self.error_controller = None
+#         super(SAException, self).__init__(*pargs, **kargs)
 
-    def __call__(self, environ, start_response):
-        if self.error_controller:
-            return self.error_controller(environ, start_response)
+#     def __call__(self, environ, start_response):
+#         if self.error_controller:
+#             return self.error_controller(environ, start_response)
 
 class ErrorMiddleware:
     '''
     Handles web exceptions
-    
+
     Implemented as WSGI middleware.
     '''
     def __init__(self, application=None, error_controller=None):
@@ -68,15 +68,15 @@ class ErrorMiddleware:
             else:
                 return err(environ,start_response)
         # special case, when there's a SQLAlchemyError
-        except SQLAlchemyError, err:
-            # run the error controller and the re-raise an exception
-            # passing the response up the chain (so we don't lose)
-            # the original stack trace)
-            controller = self.error_controller()
-            handler = controller
-            controller.message=str(err)
-            resp = req.get_response(handler)
-            raise SAException(error_controller=resp)
+        # except SQLAlchemyError, err:
+        #     # run the error controller and the re-raise an exception
+        #     # passing the response up the chain (so we don't lose)
+        #     # the original stack trace)
+        #     controller = self.error_controller()
+        #     handler = controller
+        #     controller.message=str(err)
+        #     resp = req.get_response(handler)
+        #     raise SAException(error_controller=resp)
         # Not a web or SA exception. Use the general error display.
         except Exception, err:
             if self.error_controller:
