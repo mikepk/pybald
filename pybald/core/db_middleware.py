@@ -3,17 +3,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from pybald.db import models
 import sys
 
-# class DbRemoveSessionMiddleware(object):
-#     def __init__(self, application):
-#         self.application = application
-
-#     def __call__(self, environ, start_response):
-#         req = Request(environ)
-#         try:
-#             return req.get_response(self.application)(environ, start_response)
-#         finally:
-#             # always, always, ALWAYS close the session regardless
-#             models.session.remove()
 
 class EndPybaldMiddleware(object):
     def __init__(self, application):
@@ -22,7 +11,7 @@ class EndPybaldMiddleware(object):
     def __call__(self, environ, start_response):
         try:
             return self.application(environ,
-                                    self._sr_callback(start_response))
+                                          self._sr_callback(start_response))
         finally:
             # always, always, ALWAYS close the session regardless
             models.session.remove()
