@@ -56,7 +56,7 @@ app = ErrorMiddleware(app, error_controller=None)
 #   Request              Response
 
 
-# mod_wsgi looks for 'application'
+# apache / mod_wsgi looks for 'application'
 application = app
 
 # called directly enable the interactive debugger

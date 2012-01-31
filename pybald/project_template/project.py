@@ -95,10 +95,6 @@ def get_toplevel():
     '''Return the outer project path.'''
     return toplevel
 
-package_name = os.path.split(path)[-1]
-models_module = "{0}.app.models".format(package_name)
-controllers_module = "{0}.app.controllers".format(package_name)
-
 # check for the environment file, if there, override options
 # with the environment
 if os.path.isfile(os.path.join(path, "environment.py")):

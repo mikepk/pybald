@@ -20,15 +20,14 @@ from pybald.util import camel_to_underscore, underscore_to_camel
 # load the controllers from the project defined path
 # change this to passed in value to the Router. That way it can
 # be project specific
-try:
-    controllers = __import__(project.controllers_module, globals(), locals(),
-                        [project.controllers_module], 1)
-except (ImportError, ValueError), e:
-    controllers = []
-    sys.stderr.write(("**Warning**\nException: "
-                     "{exception}\n"
-              "No controllers detected for project.\n").format(exception=e))
-
+# Load the project specified in the project file
+my_project = __import__(project.package_name, globals(), locals(),
+                                                            ['app'], 1)
+# add the project package name to the global symbol table
+# to avoid any double imports
+globals()[project.package_name] = my_project
+__import__('{project}.app'.format(project=project.package_name),
+                      globals(), locals(), ['controllers'], 1)
 
 class Router(object):
     # class method match patterns
@@ -78,15 +77,15 @@ class Router(object):
         '''
 
         controller_names = []
-        for controller in controllers.__all__:
+        for controller in my_project.app.controllers.__all__:
+            controller_name = camel_to_underscore(controller)
             controller_path_name = self.controller_pattern.search(
-                                                           controller).group(1)
+                                                      controller_name).group(1)
             controller_names.append(controller_path_name)
             # self.controllers holds paths to map to modules and controller
             # names
-            self.controllers[controller_path_name] = {
-                                    'name':underscore_to_camel(controller),
-                                    'module':getattr(controllers, controller)}
+            self.controllers[controller_path_name] = getattr(my_project.app.controllers,
+                                                                    controller)
 
         # register the controller module names
         # with the mapper, creates the internal regular
@@ -111,8 +110,7 @@ class Router(object):
         try:
             # create controller instance from controllers dictionary
             # using routes 'controller' returned from the match
-            controller = getattr(self.controllers[controller_name]['module'],
-                                 self.controllers[controller_name]['name'])()
+            controller = self.controllers[controller_name]()
             handler = getattr(controller, action_name)
         # only catch the KeyError/AttributeError for the controller/action
         # search

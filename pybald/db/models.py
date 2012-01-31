@@ -355,6 +355,9 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         super(ModelMeta, cls).__init__(name, bases, ns)
 
 
+class NonDbModel(object):
+    pass
+
 class Model(Base):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
     __metaclass__ = ModelMeta
