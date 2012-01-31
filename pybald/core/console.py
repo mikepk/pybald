@@ -39,8 +39,10 @@ class Console(code.InteractiveConsole):
         console_symbols = proj.wsgi.myapp.__dict__
         console_symbols.update({proj_package:proj})
         console_symbols.update({"models":pybald.db.models})
-        console_symbols.update(proj.app.models.__dict__)
-        console_symbols.update(proj.app.controllers.__dict__)
+        console_symbols.update(dict([(i,getattr(proj.app.models, i)) for i
+                                                 in proj.app.models.__all__]) )
+        console_symbols.update(dict([(i,getattr(proj.app.controllers, i)) for i
+                                            in proj.app.controllers.__all__]) )
         # add webob Req/Resp objects to the console for conv
         console_symbols.update({"Request":webob.Request,
                                 "Response":webob.Response})
