@@ -45,18 +45,13 @@ class DbMiddleware(object):
             excpt, detail, tb = sys.exc_info()
             models.session.rollback()
 
-            # # if err is a callable, try returning the
-            # # the WSGI app version of the error
-            # if callable(err):
-            #     return err(environ, start_response)
-            # else:
-            #     # reraise the original details
-            #     # can't use raw 'raise' because SA + eventlet
-            #     # nukes sys_info
+            # reraise the original details
+            # can't use raw 'raise' because SA + eventlet
+            # nukes sys_info
             raise excpt, detail, tb
         else:
             return resp
-        # finally:
-        #     # always, always, ALWAYS close the session regardless
-        #     models.session.remove()
-        #     del tb
+        finally:
+            # always, always, ALWAYS close the session regardless
+            # models.session.remove()
+            del tb

@@ -2,9 +2,9 @@
 # encoding: utf-8
 # """
 # BaseController.py
-# 
+#
 # Base Controller that all Pybald controllers inherit from.
-# 
+#
 # Created by mikepk on 2009-06-29.
 # Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 # """
@@ -35,6 +35,8 @@ from pybald.db import models
 
 import json
 
+controller_pattern = re.compile(r'(\w+)Controller')
+
 # action / method decorator
 def action(method):
     '''
@@ -42,20 +44,24 @@ def action(method):
 
     :param method: A method to turn into a pybald-style action.
 
-    This decorator is usually used to take the method of a controller instance 
+    This decorator is usually used to take the method of a controller instance
     and add some syntactic sugar around it to allow the method to use WebOb
-    Request and Response objects. It will work with any method that 
+    Request and Response objects. It will work with any method that
     implements the WSGI spec.
-    
+
     It allows actions to work with WebOb request / response objects and handles
-    default behaviors, such as displaying the view when nothing is returned, 
-    or setting up a plain text Response if a string is returned. It also 
+    default behaviors, such as displaying the view when nothing is returned,
+    or setting up a plain text Response if a string is returned. It also
     assigns instance variables from the ``pybald.extension`` environ variables
     that can be set from other parts of the WSGI pipeline.
-    
+
     This decorator is optional but recommended for making working
     with requests and responses easier.
     '''
+    template_name = method.__name__
+    if template_name in ('index','__call__'):
+        template_name = ''
+
     @wraps(method)
     def action_wrapper(self, environ, start_response):
         req = Request(environ)
@@ -69,38 +75,38 @@ def action(method):
         # this code defines the template id to match against
         # template path = controller name + '/' + action name (except in the case of)
         # index
-        if not hasattr(self, "template_id"):
-            if method.__name__ not in ('index','__call__'):
-                self.template_id = "{0}/{1}".format(camel_to_underscore(
-                         self.controller_pattern.search(self.__class__.__name__
-                                                  ).group(1)), method.__name__)
-            else:
-                self.template_id = camel_to_underscore(
-                         self.controller_pattern.search(self.__class__.__name__
-                                                  ).group(1))
+        try:
+            template_root_name = camel_to_underscore(
+                      controller_pattern.search(self.__class__.__name__
+                                           ).group(1))
+        except AttributeError:
+            template_root_name = ''
+
+        self.template_id = "/".join(filter(lambda x: x != '', [template_root_name, template_name]))
 
         # add the pybald extension dict to the controller
         # object
-        extension = req.environ.get('pybald.extension', None)
-        if extension:
-            extension["request"] = req
-            for key, value in extension.items():
-                setattr(self, key, value)
+        for key, value in req.environ.get('pybald.extension', {}).items():
+            setattr(self, key, value)
+        setattr(self, 'request', req)
 
         # Return either the controllers _pre code, whatever
         # is returned from the controller
         # or the view. So pre has precedence over
         # the return which has precedence over the view
-        resp = self._pre(req) or method(self, req) or self._view()
+        none_func = lambda *pargs, **kargs: None
+        pre = getattr(self, '_pre', none_func)
+        post = getattr(self, '_post', none_func)
+        view = getattr(self, '_view', none_func)
+
+        resp = pre(req) or method(self, req) or view()
 
         # if the response is currently a string
         # wrap it in a response object
         if isinstance(resp, basestring):
             resp = Response(body=resp, charset="utf-8")
-
         # run the controllers post code
-        self._post(req, resp)
-
+        post(req, resp)
         return resp(environ, start_response)
     return action_wrapper
 
@@ -139,12 +145,10 @@ class Safe(object):
 class BaseController(object):
     '''Base controller that includes the view and a default index method.'''
 
-    controller_pattern = re.compile(r'(\w+)Controller')
-
     def __init__(self):
         '''
-        Initialize the base controller with a page object. 
-        
+        Initialize the base controller with a page object.
+
         Page dictionary controls title, headers, etc...
         '''
         self.page = Page()
@@ -195,10 +199,11 @@ class BaseController(object):
         # from the controller
         data = user_dict or self.__dict__ or {}
         # prob should check for keyerror
-        if data['template_id'] is None:
-            data['template_id'] = self.template_id
-        if helpers:
-            data.update(helpers)
+        data['template_id'] = data.get('template_id', getattr(self, "template_id", None))
+        # ] is None:
+        #     data['template_id'] = self.template_id
+        # if helpers:
+        #     data.update(helpers)
         return view_engine(data)
 
     def _JSON(self, data, status=200):

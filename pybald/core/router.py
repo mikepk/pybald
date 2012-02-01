@@ -79,8 +79,11 @@ class Router(object):
         controller_names = []
         for controller in my_project.app.controllers.__all__:
             controller_name = camel_to_underscore(controller)
-            controller_path_name = self.controller_pattern.search(
+            try:
+                controller_path_name = self.controller_pattern.search(
                                                       controller_name).group(1)
+            except AttributeError:
+                controller_path_name = controller_name
             controller_names.append(controller_path_name)
             # self.controllers holds paths to map to modules and controller
             # names
