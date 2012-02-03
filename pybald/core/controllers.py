@@ -37,6 +37,7 @@ import json
 
 controller_pattern = re.compile(r'(\w+)Controller')
 
+
 # action / method decorator
 def action(method):
     '''
@@ -65,7 +66,6 @@ def action(method):
     @wraps(method)
     def action_wrapper(self, environ, start_response):
         req = Request(environ)
-
         # add any url variables as members of the controller
         for key in req.urlvars.keys():
             #Set the controller object to contain the url variables
@@ -81,7 +81,6 @@ def action(method):
                                            ).group(1))
         except AttributeError:
             template_root_name = ''
-
         self.template_id = "/".join(filter(lambda x: x != '', [template_root_name, template_name]))
 
         # add the pybald extension dict to the controller
@@ -89,6 +88,7 @@ def action(method):
         for key, value in req.environ.get('pybald.extension', {}).items():
             setattr(self, key, value)
         setattr(self, 'request', req)
+        setattr(self, 'request_url', req.url)
 
         # Return either the controllers _pre code, whatever
         # is returned from the controller
@@ -109,6 +109,56 @@ def action(method):
         post(req, resp)
         return resp(environ, start_response)
     return action_wrapper
+
+import hashlib
+import base64
+
+def caching_pre(keys, method_name):
+    '''Decorator for pybald _pre to return cached responses if available.'''
+    def pre_wrapper(pre):
+        def replacement(self, req):
+            if keys:
+                val = ":".join([str(getattr(self, k, '')) for
+                        k in keys]+[method_name])
+                self.cache_key = base64.urlsafe_b64encode(
+                                    hashlib.md5(val).digest()
+                                    ).rstrip("=")
+            else:
+                self.cache_key = method_name
+            resp = project.mc.get(self.cache_key)
+            if resp:
+                return resp
+            return pre(req)
+        return replacement
+    return pre_wrapper
+
+def caching_post(time=0):
+    '''Decorator for pybald _post to cache/store responses.'''
+    def post_wrapper(post):
+        def replacement(self, req, resp):
+            post(req, resp)
+            if 'X-Cache' not in resp.headers:
+                resp.headerlist.append(('X-Cache', 'MISS'))
+                project.mc.set(self.cache_key, resp, time)
+            else:
+                resp.headers['X-Cache']='HIT'
+        return replacement
+    return post_wrapper
+
+# memcache for actions
+def action_cached(keys=None, time=0):
+    if keys is None:
+        keys = []
+    def cached_wrapper(my_action_method):
+        @wraps(my_action_method)
+        def replacement(self, environ, start_response):
+            # bind newly wrapped methods to self
+            self._pre = caching_pre(keys, my_action_method.__name__)(self._pre).__get__(self, self.__class__)
+            self._post = caching_post(time)(self._post).__get__(self, self.__class__)
+            return my_action_method(self, environ, start_response)
+        return replacement
+    return cached_wrapper
+
 
 asset_tag_cache = {}
 class Page(dict):
