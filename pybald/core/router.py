@@ -22,7 +22,7 @@ from pybald.util import camel_to_underscore, underscore_to_camel
 # be project specific
 # Load the project specified in the project file
 my_project = __import__(project.package_name, globals(), locals(),
-                                                            ['app'], 1)
+                                                            ['app'], -1)
 # add the project package name to the global symbol table
 # to avoid any double imports
 globals()[project.package_name] = my_project
