@@ -27,7 +27,7 @@ my_project = __import__(project.package_name, globals(), locals(),
 # to avoid any double imports
 globals()[project.package_name] = my_project
 __import__('{project}.app'.format(project=project.package_name),
-                      globals(), locals(), ['controllers'], 1)
+                      globals(), locals(), ['controllers'], -1)
 
 class Router(object):
     # class method match patterns
