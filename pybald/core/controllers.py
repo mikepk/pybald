@@ -113,14 +113,14 @@ def action(method):
 import hashlib
 import base64
 
-def caching_pre(keys, method_name):
+def caching_pre(keys, method_name, prefix=''):
     '''Decorator for pybald _pre to return cached responses if available.'''
     def pre_wrapper(pre):
         def replacement(self, req):
             if keys:
                 val = ":".join([str(getattr(self, k, '')) for
                         k in keys]+[method_name])
-                self.cache_key = base64.urlsafe_b64encode(
+                self.cache_key = prefix + ":" + base64.urlsafe_b64encode(
                                     hashlib.md5(val).digest()
                                     ).rstrip("=")
             else:
@@ -146,7 +146,7 @@ def caching_post(time=0):
     return post_wrapper
 
 # memcache for actions
-def action_cached(keys=None, time=0):
+def action_cached(prefix='', keys=None, time=0):
     if keys is None:
         keys = []
     def cached_wrapper(my_action_method):
