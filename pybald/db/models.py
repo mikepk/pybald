@@ -55,6 +55,7 @@ from sqlalchemy.types import (
     TIMESTAMP,
     Text,
     Time,
+    TypeDecorator,
     Unicode,
     UnicodeText,
     VARCHAR,
@@ -111,6 +112,7 @@ from sqlalchemy.ext.hybrid import (
 
 from sqlalchemy import func
 
+import json
 import re
 from pybald.db import engine, dump_engine
 from pybald.util import camel_to_underscore, pluralize
@@ -262,6 +264,28 @@ Base = declarative_base(bind=engine)
 # # =====================================
 # # end of zzzeek's code for "Magic" ORM
 # # =====================================
+
+class JSONEncodedDict(TypeDecorator):
+    "Represents a structure as a json-encoded string."
+    impl = VARCHAR
+
+    def process_bind_param(self, value, dialect):
+        '''
+        Turn a dictionary into a JSON encoded string on the way into
+        the database.
+        '''
+        if value is not None:
+            value = json.dumps(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        '''
+        Turn a JSON encoded string into a dictionary on the way out
+        of the database.
+        '''
+        if value is not None:
+            value = json.loads(value)
+        return value
 
 
 class MutationDict(Mutable, dict):
