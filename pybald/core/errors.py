@@ -11,20 +11,6 @@ import datetime
 
 from webob import Request, Response, exc
 from mako import exceptions
-# from sqlalchemy.exc import SQLAlchemyError
-
-# class SAException(SQLAlchemyError):
-#     def __init__(self, *pargs, **kargs):
-#         if kargs.get('error_controller'):
-#             self.error_controller = kargs.get('error_controller')
-#             del kargs["error_controller"]
-#         else:
-#             self.error_controller = None
-#         super(SAException, self).__init__(*pargs, **kargs)
-
-#     def __call__(self, environ, start_response):
-#         if self.error_controller:
-#             return self.error_controller(environ, start_response)
 
 class ErrorMiddleware:
     '''
@@ -67,17 +53,6 @@ class ErrorMiddleware:
                     raise
             else:
                 return err(environ,start_response)
-        # special case, when there's a SQLAlchemyError
-        # except SQLAlchemyError, err:
-        #     # run the error controller and the re-raise an exception
-        #     # passing the response up the chain (so we don't lose)
-        #     # the original stack trace)
-        #     controller = self.error_controller()
-        #     handler = controller
-        #     controller.message=str(err)
-        #     resp = req.get_response(handler)
-        #     raise SAException(error_controller=resp)
-        # Not a web or SA exception. Use the general error display.
         except Exception, err:
             if self.error_controller:
                 controller = self.error_controller()
@@ -90,24 +65,35 @@ class ErrorMiddleware:
 
 def pybald_error_template():
     '''Lifts the Mako Exception Error template and adds an environment dump.'''
-    return mako.template.Template(r"""
+    return mako.template.Template(r"""\
 <%!
     from mako.exceptions import RichTraceback
-%>
-<%page args="full=True, css=True, error=None, traceback=None, req=None"/>
+%>\
+<%page args="full=True, css=True, error=None, traceback=None, req=None"/>\
 % if full:
 <html>
 <head>
     <title>Pybald Runtime Error</title>
 % endif
 % if css:
+    <meta name="viewport" content="480px" />
     <style>
         body { 
            font-family:Helvetica,Arial,verdana,sans-serif; 
            font-size: 1.2em; 
-           margin:10px 30px 10px 30px;
+           margin:0; padding: 0;
            background-color: #FFE;
            }
+        @media only screen and (max-device-width: 480px) {
+                body {
+                    width: 550px;
+                }
+            }
+        ul { margin: 0; padding: 0; list-style: none; }
+        #main { background-color: #FFB; border-bottom: 2px solid #CC9; }
+        #urlvars { background-color: #FFF; border-bottom: 2px solid #EEE; }
+        h3 { margin: 0; padding: 0; }
+        .section { padding: 10px 20px 5px; }
         .stacktrace { margin:5px 5px 5px 5px; }
         .highlight { padding:0px 10px 0px 10px; background-color:gold; font-weight: bold; }
         .nonhighlight { padding:0px; background-color:#EFEFEF; }
@@ -115,11 +101,14 @@ def pybald_error_template():
         .sampleline { padding:0px 10px 0px 10px; }
         .sourceline { margin:5px 5px 10px 5px; font-family:monospace;}
         .location { font-size:80%; }
-        .env_key { display: inline-block; text-algin: right; width: 300px }
-        .environment div { border-bottom: 1px dotted #EEE }
-        #exception { }
-        table { border-collapse: collapse; width: 400px; }
-        table td { vertical-align: top; border: 1px solid #DDD; }
+        .key { font-weight: bold; word-wrap:break-word; display: inline-block; text-align: right; width: 10em; }
+        .value {  width: 70%; word-wrap:break-word; }
+        #environment { font-size: 0.65em; background: #CCC; border-bottom: 1px dotted #EEE }
+        #environment span { font-size: 0.65em; word-wrap:break-word; }
+        #exception { color: #555555; font-size: 1.5em; letter-spacing: -1px; margin-bottom: 0.1em; }
+        #environment table { table-layout: fixed; border-collapse: collapse; width: 100%; }
+        #environment table td { vertical-align: top; border: 1px solid #DDD; }
+        .env_key { font-weight: bold; }
     </style>
 % endif
 % if full:
@@ -136,14 +125,30 @@ def pybald_error_template():
     else:
         lines = None
 %>
+<div class="section" id="main">
 <h3 id="exception">${tback.errorname}: ${tback.message}</h3>
 % if req:
-<div>method: <span class="sourceline">${req.environ.get("REQUEST_METHOD")|h}</span></div>
-<div>url: <span class="sourceline">${req.environ.get("PATH_INFO")|h}</span></div>
+<ul>
+<li><span class="key">request url:</span> <span class="sourceline">${req.url|h}</span></li>
+<li><span class="key">request method:</span> <span class="sourceline">${req.environ.get("REQUEST_METHOD")|h}</span></li>
+<li><span class="key">user:</span> <span class="sourceline">\
+%try:
+${req.remote_user.email|h}\
+%except:
+None\
+%endtry
+</span></li>
+</ul>
+</div>
+<div class="section" id="urlvars">
+<ul>
 % for label, val in req.environ.get("urlvars",{}).items():
-<div>${label|h}: <span class="sourceline">${val|h}</span></div>
+<li><span class="key">${label|h}:</span><span class="sourceline">${val|h}</span></li>
 % endfor
+</ul>
+</div>
 % endif
+<div class="section" id="stacktrace">
 % if lines:
     <div class="sample">
     <div class="nonhighlight">
@@ -164,27 +169,33 @@ def pybald_error_template():
     <div class="sourceline">${line | h}</div>
 % endfor
 </div>
+</div>
 %if req:
+<div class="section" id="environment">
 <h3>Environment</h3>
-<div class="environment">
 <table>
 <tbody>
 %for key in sorted(req.environ.keys()):
 <tr><td>
-<span class="env_key">${key|h}</span></td>
-<td><span class="env_value">${str(req.environ[key])|h}</span></td>
+<span class="env_key">
+%try:
+${key|h}\
+%except Exception, err:
+---${err}---\
+%endtry
+</span></td>
+<td><span class="env_value">\
+%try:
+${str(req.environ[key])|h}
+%except Exception, err:
+---${err}---\
+%endtry
+</span></td>
 </tr>
 %endfor
 </tbody>
 </table>
 </div>
-
-% if req.environ.get('pybald.extension') and req.environ.get('pybald.extension').get('dbg_log'):
-<h3>Debug Log</h3>
-<div class="debug">
-<pre>${req.environ['pybald.extension']['dbg_log'] | h}</pre>
-</div>
-%endif
 %if full:
 </body>
 </html>
