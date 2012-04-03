@@ -120,9 +120,9 @@ def caching_pre(keys, method_name, prefix=''):
             if keys:
                 val = ":".join([str(getattr(self, k, '')) for
                         k in keys]+[method_name])
-                self.cache_key = prefix + ":" + base64.urlsafe_b64encode(
+                self.cache_key = "{0}{1}".format(prefix, base64.urlsafe_b64encode(
                                     hashlib.md5(val).digest()
-                                    ).rstrip("=")
+                                    ))
             else:
                 self.cache_key = method_name
             resp = project.mc.get(self.cache_key)
@@ -153,7 +153,7 @@ def action_cached(prefix='', keys=None, time=0):
         @wraps(my_action_method)
         def replacement(self, environ, start_response):
             # bind newly wrapped methods to self
-            self._pre = caching_pre(keys, my_action_method.__name__)(self._pre).__get__(self, self.__class__)
+            self._pre = caching_pre(keys, my_action_method.__name__, prefix=prefix)(self._pre).__get__(self, self.__class__)
             self._post = caching_post(time)(self._post).__get__(self, self.__class__)
             return my_action_method(self, environ, start_response)
         return replacement
