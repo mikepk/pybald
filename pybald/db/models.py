@@ -102,6 +102,7 @@ from sqlalchemy.sql import (
 from sqlalchemy.sql.expression import (
     asc,
     desc,
+    literal,
     literal_column
     )
 
