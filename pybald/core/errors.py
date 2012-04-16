@@ -126,7 +126,7 @@ def pybald_error_template():
         lines = None
 %>
 <div class="section" id="main">
-<h3 id="exception">${tback.errorname}: ${tback.message}</h3>
+<h3 id="exception">${tback.errorname}: ${tback.message[:1024]}</h3>
 % if req:
 <ul>
 <li><span class="key">request url:</span> <span class="sourceline">${req.url|h}</span></li>
@@ -202,3 +202,40 @@ ${str(req.environ[key])|h}
 %endif
 %endif
 """, output_encoding=sys.getdefaultencoding(), encoding_errors='htmlentityreplace')
+
+
+def send_error_email(host=None, html=None, text=None):
+    if host:
+        host = ': {0}'.format(host)
+    else:
+        host = ''
+
+    me = "sysadmin@smarterer.com"
+    you = "ops@smarterer.com"
+    password = "thej7oyct5yoarg5"
+
+    msg = MIMEMultipart('alternative')
+    if text:
+        msg.attach(MIMEText(text, 'text'))
+
+    if html:
+        msg.attach(MIMEText(html, 'html'))
+
+    msg['Subject'] = '''Smarterer Exception'''.format(host)
+    msg['From'] = "System Error{0} <{1}>".format(host, me)
+    msg['To'] = you
+
+    AuthUser=me #"sysadmin@smarterer.com"
+    AuthPass=password #"thej7oyct5yoarg5"
+
+    gmail = smtplib.SMTP('smtp.gmail.com',587)
+    gmail.ehlo()
+    gmail.starttls()
+    gmail.ehlo()
+    gmail.login(AuthUser, AuthPass)
+
+    gmail.sendmail(me, [you], msg.as_string())
+    gmail.close()
+
+    return True
+
