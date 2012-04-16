@@ -115,16 +115,14 @@ import base64
 
 def caching_pre(keys, method_name, prefix=''):
     '''Decorator for pybald _pre to return cached responses if available.'''
+    if keys is None:
+        keys = []
+
     def pre_wrapper(pre):
         def replacement(self, req):
-            if keys:
-                val = ":".join([str(getattr(self, k, '')) for
-                        k in keys]+[method_name])
-                self.cache_key = "{0}{1}".format(prefix, base64.urlsafe_b64encode(
-                                    hashlib.md5(val).digest()
-                                    ))
-            else:
-                self.cache_key = method_name
+            val = ":".join([prefix] + [str(getattr(self, k, '')) for
+                        k in keys] + [method_name])
+            self.cache_key = base64.urlsafe_b64encode(hashlib.md5(val).digest())
             resp = project.mc.get(self.cache_key)
             if resp:
                 return resp
