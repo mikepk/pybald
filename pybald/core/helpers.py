@@ -113,3 +113,31 @@ def humanize(date_string):
         return "%s minute%s ago" % (str(minutes),plural)
     else:
         return "just a moment ago"
+
+# From django.utils.html: Javascript escape characters
+_base_js_escapes = (
+    ('\\', '\\u005C'),
+    ('\'', '\\u0027'),
+    ('"', '\\u0022'),
+    ('>', '\\u003E'),
+    ('<', '\\u003C'),
+    ('&', '\\u0026'),
+    ('=', '\\u003D'),
+    ('-', '\\u002D'),
+    (';', '\\u003B'),
+    ('\u2028', '\\u2028'),
+    ('\u2029', '\\u2029')
+)
+
+# From django.utils.html: Escape every ASCII character with a value less than 32.
+_js_escapes = (_base_js_escapes +
+               tuple([('%c' % z, '\\u%04X' % z) for z in range(32)]))
+
+def js_escape(value):
+    """
+    Hex encodes characters for use in JavaScript strings.
+    (from django.utils.html)
+    """
+    for bad, good in _js_escapes:
+        value = value.replace(bad, good)
+    return value
