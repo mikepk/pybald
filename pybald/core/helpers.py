@@ -138,6 +138,7 @@ def js_escape(value):
     Hex encodes characters for use in JavaScript strings.
     (from django.utils.html)
     """
-    for bad, good in _js_escapes:
-        value = value.replace(bad, good)
+    if value:
+        for bad, good in _js_escapes:
+            value = value.replace(bad, good)
     return value
