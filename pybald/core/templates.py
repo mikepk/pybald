@@ -11,7 +11,7 @@ from mako.template import Template
 from mako.lookup import TemplateLookup
 
 # base tempalte helpers all pybald projects have
-template_helpers = ['from pybald.core.helpers import img, link, humanize, js_escape',
+template_helpers = ['from pybald.core.helpers import img, link, humanize, js_escape, as_p',
                     'from pybald.core.helpers import js_escape as js',
                     'from mako.filters import html_escape']
 
