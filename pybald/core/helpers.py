@@ -72,6 +72,12 @@ class link(tag):
         self.url = url_for(*pargs, **kargs)
         return self
 
+    def to_raw_url(self, url):
+        # Link directly with no url_for processing
+        # (url_for can't deal with unicode!)
+        self.url = url
+        return self
+
     def __str__(self):
         '''Return the link in string form.'''
         attr = " ".join(self.attribs)
