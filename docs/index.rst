@@ -31,6 +31,7 @@ Table of Contents
 
   intro
   getting_started
+  using
   running_an_app
   magic
   configuration
