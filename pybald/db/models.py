@@ -1,5 +1,7 @@
 from sqlalchemy import dialects
 
+# load sqlalchemy modules proxied through the models object
+# this is mostly for convenience
 from sqlalchemy import (
     MetaData,
     INT as Int,
@@ -267,7 +269,9 @@ Base = declarative_base(bind=engine)
 # # =====================================
 
 class JSONEncodedDict(TypeDecorator):
-    "Represents a structure as a json-encoded string."
+    '''
+    Represents a dictionary as a json-encoded string in the database.
+    '''
     impl = VARCHAR
 
     def process_bind_param(self, value, dialect):
