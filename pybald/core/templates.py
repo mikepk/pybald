@@ -12,6 +12,7 @@ from mako.lookup import TemplateLookup
 
 # base tempalte helpers all pybald projects have
 template_helpers = ['from pybald.core.helpers import img, link, humanize, js_escape, as_p',
+                    'from pybald.core import page',
                     'from pybald.core.helpers import js_escape as js',
                     'from mako.filters import html_escape']
 
@@ -54,37 +55,33 @@ class TemplateEngine:
                                      filesystem_checks=fs_test)
 
 
-    def form_render(self, template_name=None, **kargs):
+    def form_render(self, template_name=None, format="form", **kargs):
         '''
         Render the form for a specific model using formalchemy.
 
         :param template_name: The name of the template to search for and
                               render for a form
-        :param **kargs: the data to render in the context of the form
+        :param kargs: the data to render in the context of the form
                         template
         '''
         data = kargs
         try:
-            data['template_id'] = kargs['fieldset'].template_id
+            template_id = kargs['fieldset'].template_id
         except (KeyError, AttributeError):
-            data['template_id'] = 'forms/{0}'.format(template_name)
+            template_id = 'forms/{0}'.format(template_name)
 
-        # get passed in form if it's in the data
-        # but more likely we'll use the form extension
-        format = data.get("format", None) or "form"
-
-        mytemplate = self._get_template(data, format)
+        mytemplate = self._get_template(template_id, format)
         # We use the render_unicode to return a native unicode
         # string for inclusion in another Mako template
         return mytemplate.render_unicode(**data)
 
 
-    def _get_template(self, data, format=None):
+    def _get_template(self, template, format="html"):
         '''
         Retrieves the proper template from the Mako template system.
 
-        :param data: A dictionary containing the ``template_id`` and ``format``
-                     for the template lookup.
+        :param template: The name of the template in the filesystem to retrieve
+                         for rendering.
         :param format: A string specifying the format for the template (html,
                        json, xml, etc...), overrides the format specified in
                        the data dictionary.
@@ -93,29 +90,29 @@ class TemplateEngine:
         name based on the template_id and the format and retrieves it from the
         Mako template system.
         '''
-        # if the data dictionary has a format, use that,
-        # otherwise default to the passed in value or html
-        format = format or data.get("format", None) or "html"
 
         # TODO: Add memc caching of rendered templates
         # also need to check if the internal caching is good enough
-        return self.lookup.get_template("/{0}.{1}.template".format(data['template_id'].lower(), format.lower()))
+        return self.lookup.get_template("/{0}.{1}.template".format(template.lower(), format.lower()))
 
 
-    def __call__(self, data, format=None):
+    def __call__(self, template=None, data={}, format="html"):
         '''
         Renders the template.
 
+        :param template: The name of the template in the filesystem to retrieve
+                         for rendering.
         :param data: A dictionary that represents the context to render inside
-                     the template. Items in this dictionary will be available
+                     the template. Keys in this dictionary will be available
                      to the template.
-        :param format: A string specifying the format type to return, this
-                       overrides a format specified in the data dictionary
+        :param format: A string specifying the format type to return (e.g. 'html',
+                       'json', 'xml')
 
         Calls _get_template to retrieve the template and then renders it.
         '''
-        mytemplate = self._get_template(data, format)
-        return mytemplate.render(**data)
+        template_data = dict(project.page_options.items() + data.items())
+        mytemplate = self._get_template(template, format)
+        return mytemplate.render(**template_data)
 
 #module scope singleton, should this be changed?
 engine = TemplateEngine()

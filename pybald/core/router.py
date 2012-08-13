@@ -96,7 +96,7 @@ class Router(object):
         self.map.create_regs(controller_names)
 
     def __repr__(self):
-        return u"<Pybald Router Object>"
+        return "<Pybald Router Object>"
 
     def get_handler(self, urlvars=None):
         controller_name = urlvars["controller"]

@@ -26,11 +26,11 @@ class ErrorMiddleware:
             self.applicaion = Response()
         self.error_controller = error_controller
 
-    def __call__(self,environ,start_response):
+    def __call__(self, environ, start_response):
         req = Request(environ)
         #pass through if no exceptions occur
         try:
-            return req.get_response(self.application)(environ,start_response)
+            return req.get_response(self.application)(environ, start_response)
         # handle HTTP errors
         except exc.HTTPException, err:
             # if the middleware is configured with an error controller
@@ -48,20 +48,20 @@ class ErrorMiddleware:
                 try:
                     # try executing error_handler code
                     # otherwise re-raise the exception
-                    return handler(environ,start_response)
+                    return handler(environ, start_response)
                 except Exception:
                     raise
             else:
-                return err(environ,start_response)
+                return err(environ, start_response)
         except Exception, err:
             if self.error_controller:
                 controller = self.error_controller()
                 handler = controller
                 controller.message=str(err)
-                return handler(environ,start_response)
+                return handler(environ, start_response)
             else:
                 # create a generic HTTP server Error webob exception
-                return exc.HTTPServerError()(environ,start_response)
+                return exc.HTTPServerError()(environ, start_response)
 
 def pybald_error_template():
     '''Lifts the Mako Exception Error template and adds an environment dump.'''

@@ -53,5 +53,5 @@ class DbMiddleware(object):
             return resp
         finally:
             # always, always, ALWAYS close the session regardless
-            # models.session.remove()
+            models.session.remove()
             del tb

@@ -16,7 +16,7 @@ import unittest
 import os.path
 
 from functools import update_wrapper, wraps
-from pybald.core.templates import engine as view_engine
+from pybald.core.templates import engine as render_view
 
 from webob import Request, Response
 from webob import exc
@@ -27,6 +27,10 @@ from pybald.util import camel_to_underscore
 
 from routes import redirect_to
 import project
+
+import hashlib
+import base64
+
 media_version = project.media_version
 project_path = project.path
 page_options = project.page_options
@@ -36,6 +40,28 @@ from pybald.db import models
 import json
 
 controller_pattern = re.compile(r'(\w+)Controller')
+
+# a no-op placeholder
+noop_func = lambda *pargs, **kargs: None
+
+def get_template_name(instance, method_name):
+    # this code defines the template id to match against
+    # template path = controller name + '/' + action name (except in the case of)
+    # index
+    # if the template is specified as part of the processed object
+    # return that, short circuiting any other template name processing
+    # This form may removed later, considered a candidate for deprecation
+    t = getattr(instance, 'template_id', None)
+    if t:
+        return t
+    # build a default template name if one isn't explicitly set
+    try:
+        template_root_name = camel_to_underscore(
+                  controller_pattern.search(instance.__class__.__name__
+                                       ).group(1))
+    except AttributeError:
+        template_root_name = ''
+    return "/".join(filter(lambda x: x != '', [template_root_name, method_name]))
 
 
 # action / method decorator
@@ -59,7 +85,12 @@ def action(method):
     This decorator is optional but recommended for making working
     with requests and responses easier.
     '''
+    # the default template name is the controller class + method name
+    # the method name is pulled during decoration and stored for use
+    # in template lookups
     template_name = method.__name__
+    # special case where 'call' or 'index' use the base class name
+    # for the template otherwise use the base name
     if template_name in ('index','__call__'):
         template_name = ''
 
@@ -68,38 +99,31 @@ def action(method):
         req = Request(environ)
         # add any url variables as members of the controller
         for key in req.urlvars.keys():
-            #Set the controller object to contain the url variables
+            # Set the controller object to contain the url variables
             # parsed from the dispatcher / router
             setattr(self, key, req.urlvars[key])
-
-        # this code defines the template id to match against
-        # template path = controller name + '/' + action name (except in the case of)
-        # index
-        try:
-            template_root_name = camel_to_underscore(
-                      controller_pattern.search(self.__class__.__name__
-                                           ).group(1))
-        except AttributeError:
-            template_root_name = ''
-        self.template_id = "/".join(filter(lambda x: x != '', [template_root_name, template_name]))
 
         # add the pybald extension dict to the controller
         # object
         for key, value in req.environ.get('pybald.extension', {}).items():
             setattr(self, key, value)
+
+        # TODO: fixme this is a hack
         setattr(self, 'request', req)
         setattr(self, 'request_url', req.url)
 
-        # Return either the controllers _pre code, whatever
+        # set pre/post/view to a no-op if they don't exist
+        pre = getattr(self, '_pre', noop_func)
+        post = getattr(self, '_post', noop_func)
+
+        # The response is either the controllers _pre code, whatever
         # is returned from the controller
         # or the view. So pre has precedence over
         # the return which has precedence over the view
-        none_func = lambda *pargs, **kargs: None
-        pre = getattr(self, '_pre', none_func)
-        post = getattr(self, '_post', none_func)
-        view = getattr(self, '_view', none_func)
-
-        resp = pre(req) or method(self, req) or view()
+        resp = ( pre(req) or
+                 method(self, req) or
+                 render_view(template=get_template_name(self, template_name),
+                      data=self.__dict__ or {}) )
 
         # if the response is currently a string
         # wrap it in a response object
@@ -110,8 +134,7 @@ def action(method):
         return resp(environ, start_response)
     return action_wrapper
 
-import hashlib
-import base64
+
 
 def caching_pre(keys, method_name, prefix=''):
     '''Decorator for pybald _pre to return cached responses if available.'''
@@ -158,101 +181,72 @@ def action_cached(prefix='', keys=None, time=0):
     return cached_wrapper
 
 
-asset_tag_cache = {}
-class Page(dict):
-    def __init__(self, version=None):
-        self['title'] = None
-        self['metas'] = []
-        self['headers'] = []
-        self.version = media_version
-        self['asset_tags'] = {}
-
-        #self.sm = project.registry.sm
-
-    def _compute_asset_tag(self, filename):
-         asset_tag = asset_tag_cache.get(filename, None)
-         try:
-             if not asset_tag:
-                 asset_tag = str(int(round(os.path.getmtime(os.path.join(project_path,"public",filename.lstrip("/"))) )) )
-                 asset_tag_cache[filename] = asset_tag
-         except OSError:
-            asset_tag_cache[filename] = "xxx"
-         return "?v={0}".format(asset_tag)
-
-    def add_js(self, filename):
-        return '''<script type="text/javascript" src="{0}{1}"></script>'''.format(filename, self._compute_asset_tag(filename) )
-
-    def add_css(self, filename, media="screen"):
-        return '''<link type="text/css" href="{0}{2}" media="{1}" rel="stylesheet" />'''.format(filename, str(media), self._compute_asset_tag(filename) )
-
-
-
-class Safe(object):
-    pass
-
 class BaseController(object):
     '''Base controller that includes the view and a default index method.'''
+    # pass
 
-    def __init__(self):
-        '''
-        Initialize the base controller with a page object.
+    # def __init__(self):
+    #     '''
+    #     Initialize the base controller with a page object.
 
-        Page dictionary controls title, headers, etc...
-        '''
-        self.page = Page()
-        self.error = None
-        self.user = None
-        self.session = None
+    #     Page dictionary controls title, headers, etc...
+    #     '''
+    #     # # self.page = Page()
+    #     # self.error = None
+    #     # self.user = None
+    #     # self.session = None
 
-        if page_options:
-            for key in page_options.keys():
-                setattr(self, key, page_options[key])
-    @action
-    def index(self,req):
-        '''default index action'''
-        pass
-
-
-    def __before__(self, req):
-        '''Code to run before any action.'''
-        return self._pre(req)
-
-    def __after__(self, req, resp):
-        '''Code to run after any action.'''
-        return self._post(req, resp)
+    #     if page_options:
+    #         for key in page_options.keys():
+    #             setattr(self, key, page_options[key])
+    # @action
+    # def index(self, req):
+    #     '''default index action'''
+    #     pass
 
 
-    def _pre(self, req):
-        '''Code to run before any action.'''
-        pass
+    # def __before__(self, req):
+    #     '''Code to run before any action.'''
+    #     return self._pre(req)
 
-    def _post(self, req, resp):
-        '''Code to run after any action.'''
-        pass
+    # def __after__(self, req, resp):
+    #     '''Code to run after any action.'''
+    #     return self._post(req, resp)
+
+
+    # def _pre(self, req):
+    #     '''Code to run before any action.'''
+    #     pass
+
+    # def _post(self, req, resp):
+    #     '''Code to run after any action.'''
+    #     pass
 
     def _redirect_to(self, *pargs, **kargs):
         '''Redirect the controller'''
         return redirect_to(*pargs,**kargs)
 
     def _not_found(self, text=None):
+        '''Raise the 404 http_client_error exception.'''
         raise exc.HTTPNotFound(text)
 
     def _status(self, code):
+        '''Raise an http_client_error exception using a specific code'''
         raise exc.status_map[int(code)]
 
-    def _view(self, user_dict=None, helpers=None):
-        '''Method to invoke the template engine and display a view'''
-        # view = engine
-        # user supplied dictionary, otherwise create a dictionary
-        # from the controller
-        data = user_dict or self.__dict__ or {}
-        # prob should check for keyerror
-        data['template_id'] = data.get('template_id', getattr(self, "template_id", None))
-        # ] is None:
-        #     data['template_id'] = self.template_id
-        # if helpers:
-        #     data.update(helpers)
-        return view_engine(data)
+    # def _view(self, user_dict=None, helpers=None):
+    #     '''Method to invoke the template engine and display a view'''
+    #     # view = engine
+    #     # user supplied dictionary, otherwise create a dictionary
+    #     # from the controller
+    #     data = user_dict or self.__dict__ or {}
+    #     # prob should check for keyerror
+    #     data['template_id'] = data.get('template_id', getattr(self, "template_id", None))
+    #     # ] is None:
+    #     #     data['template_id'] = self.template_id
+    #     # if helpers:
+    #     #     data.update(helpers)
+    #     return view_engine(data)
 
     def _JSON(self, data, status=200):
         '''Return JSON object with the proper-ish headers.'''
