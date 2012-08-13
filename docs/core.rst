@@ -23,7 +23,7 @@ Pybald Core
 -------------------------------------------------------------------------------------------
 
 .. autoclass:: BaseController
-  :members: index, _pre, _post, _redirect_to, _status, _not_found, _view
+  :members: _redirect_to, _status, _not_found
   :undoc-members:
   
 

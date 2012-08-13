@@ -4,7 +4,7 @@ Quick Start
 Installing
 ------------
 
-It's recommended you use ``virtualenv`` so you can isolate experimenting with pybald (and its dependencies) from the rest of your python environment.
+It's recommended that you use ``virtualenv`` to allow you to isolate experimenting with pybald (and its dependencies) from the rest of your python environment. First we setup a new virtualenv, then we install pybald, finally we copy the empty project_template to a new project name.
 
 .. code-block:: sh
 
@@ -30,7 +30,7 @@ It's recommended you use ``virtualenv`` so you can isolate experimenting with py
 Running your first Pybald Application
 -------------------------------------
 
-The command ``python project.py`` starts the pybald :ref:`console <console>` for this project. The console is a standard python console but also allows you to interact with your application in various ways including simulating requests, exploring models, prototyping new functionality and other tasks.
+The command ``python project.py`` starts the pybald :ref:`console <console>` for this project. The console is a standard python console but also initializes your project, loads the application code, and allows you to interact with your application in various ways including simulating requests, exploring models, prototyping new functionality and other tasks.
 
 .. code-block:: pycon
 
@@ -58,14 +58,13 @@ When debugging is turned on, the routing layer of Pybald will display all of the
 
 The console has a testing / convenience client ``c`` that allows you to issue simulated web requests to your application. Here we've fetched the "/" url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were invoked. Finally we print the response from that url which is the simple web response message that pybald is working!
 
-Pow! You're running a Pybald application.
-
+Pow! You're running a pybald application.
 
 
 Structure of a Pybald Application
 ---------------------------------
 
-A Pybald application is configured, at least partially, by the directory structure. Placing files with certain naming conventions in certain paths will "activate" them for use.
+A Pybald application is configured, at least partially, by the directory structure of the *project*. The pybald router will look for files in certain paths and will "activate" them for use.
 
 ``./app``
   This is the primary application directory containing the controllers, views and models

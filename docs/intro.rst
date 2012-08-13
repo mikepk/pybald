@@ -20,8 +20,6 @@ The goals behind Pybald:
 
 What Pybald is **not**\ :
 
-* Not Battle Tested
-* Not Performance Tested
 * Not Designed for maximum configurability. It's relatively trivial to use a different template engine or url dispatcher but that's not the goal of the project. There are other frameworks that serve that need like `Pylons / Pyramid <http://pylonshq.com>`_ 
 
 Dependencies
