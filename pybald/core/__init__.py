@@ -9,40 +9,77 @@ import sys
 import os
 import re
 
+from inspect import isclass
+
 class PybaldImportError(ImportError):
     pass
 
-modname_pattern = re.compile(r'^([a-z]+[a-z_]*)\.py$', re.I)
+PYTHON_MODULE_NAME_PATTERN = re.compile(r'^([a-z][0-9a-z_]*)\.py$', re.I)
+PYTHON_MAGIC_VARIABLE_PATTERN = re.compile(r'^__.*__$')
 # TODO, use walk to have this recursively walk up the models path
 # finding all interesting classes.
 def pybald_class_loader(path, classes, module_globals, module_locals, recursive=False):
+    '''
+    Take a set of special class names, a path, and scan the path loading classes
+    that match or inherit from the list them into the provided
+    scope.
+
+    This is used by pybald to search for special "Controller" classes to load
+    into the router object for the entire project. It's also used to auto-load
+    all models in the project under the models namespace for less typing.
+
+    This is a somewhat expensive function so is only executed on first startup
+    of the project.
+
+    Note: The second auto-model loading use of this function  may be too
+    "magical" and may be deprecated in a future release.
+    '''
     loaded_classes = []
     for dirpath, dirnames, filenames in os.walk(path):
         for filename in sorted(filenames):
-            match = modname_pattern.search(filename)
-            if match:
-                imp_modname = match.group(1)
-                # maybe pass on PybaldImportError?
+            match = PYTHON_MODULE_NAME_PATTERN.search(filename)
+            if not match:
+                continue
+            import_module_name = match.group(1)
+            try:
+                # # import import_module_name
+                # # create package list
+                # nested = os.path.relpath(dirpath, path)
+                # if nested != '.':
+                #     nested = nested.replace("/",'.')
+                #     import_module_name = '.'.join((nested,import_module_name))
+                model_module = __import__(import_module_name,
+                                          module_globals,
+                                          module_locals,
+                                          [],
+                                          1)
+            except ImportError, ie:
+                ie.args = ("\nThe automatic pybald class loader "
+                "failed while attempting to load the module {0} from {1}. "
+                "Orignal message: {2}\n".format(filename, dirpath, ie.args[0]),)
+                raise ie
+            for classname in filter(lambda attribute_name: (
+                    not PYTHON_MAGIC_VARIABLE_PATTERN.search(attribute_name) and
+                                   attribute_name not in loaded_classes
+                                   ),
+                                                             dir(model_module)):
                 try:
-                    model_module = __import__(imp_modname, module_globals, module_locals, [], 1)
-                except ImportError, ie:
-                    ie.args = ("\nThe automatic pybald class loader "
-                    "failed while attempting to load the module {0} from {1}. "
-                    "Orignal message: {2}\n".format(filename, dirpath, ie.args[0]),)
-                    raise
-                    # raise PybaldImportError, sys.exc_info()[1], sys.exc_info()[2]
-                for classname in dir(model_module):
-                    if classname in loaded_classes:
+                    module_class = getattr(model_module, classname)
+                    # only process class definitions from the modules
+                    # not strictly necessary? Allow TypeError to catch non
+                    # classes?
+                    if not isclass(module_class):
                         continue
-                    try:
-                        module_class = getattr(model_module, classname)
-                        pybald_model = issubclass(module_class, classes)
-                    except TypeError:
-                        # if the module member is not a class
-                        continue
-                    if pybald_model:
-                        module_globals[classname] = module_class
-                        loaded_classes.append(classname)
+                    is_pybald_auto_loaded_module = issubclass(module_class,
+                                                                       classes)
+                # if the module member is not a class then skip
+                except TypeError:
+                    continue
+                # if the module is one of the tracked class types
+                # add the name to the provided scope
+                if is_pybald_auto_loaded_module:
+                    module_globals[classname] = module_class
+                    loaded_classes.append(classname)
         if not recursive:
             break
     return loaded_classes
