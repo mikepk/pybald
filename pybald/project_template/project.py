@@ -7,99 +7,80 @@ A module to hold project specific members and configuration.
 """
 import sys
 import os
-import logging
+
+# Configure the project path and package name
+path = os.path.dirname( os.path.realpath( __file__ ) )
+toplevel = os.path.split(path)[0]
+package_name = os.path.split(path)[-1]
+
+# project name (otherwise default to the the project's path name)
+project_name = package_name
 
 # debug information
 debug = True
 env_name = "Development"
 
-# using eventlet (co-routines / greenthreads)
-# green = False
+# Memcached, localhost only at the moment
+memcached_clients = ['127.0.0.1:11211']
+
+# Feature Flags
+# =============================
 
 # options that are passed into the view
 # directly
-page_options = {'analytics' : False}
+# page_options = {'analytics' : False}
+page_options = {}
 
-path = os.path.dirname( os.path.realpath( __file__ ) )
-# Project name
-toplevel = os.path.split(path)[0]
-package_name = os.path.split(path)[-1]
-project_name = package_name
+# additional template helpers to add to the context for all tempaltes
+template_helpers = ['from pybald.core import page']
 
 # route email to a local smtp server
 smtp_config = {"smtp_server":"127.0.0.1",
                "smtp_port":1025,
                "use_tls":False,
-               "AuthUser":"root@localhost",
+               "AuthUser":"USER@HOST",
                "AuthPass":""}
 
 # sqlalchemy engine string examples:
-# mysql -         "mysql://user:passwd@host/dbname"
-# sqllite -       "sqlite:///filename"
-# sqllite (alt) - "sqlite:///%s" % os.path.join(path,'%s.sqlite' % project_name)
+# mysql -         "mysql://{user}:{password}@{host}/{database}"
+# postgres - postgresql://{username}:{password}@{host}:{port}/{database}'
+# sqllite -       "sqlite:///{filename}"
 # sqllite mem -   "sqlite:///:memory:"
 
-# local db connection settings
+# local database connection settings
 # default to a sqllite file database based on the project name
+database_engine_uri_format = 'sqlite:///{filename}'
 db_config = {'filename':os.path.join(path,
              '{project}.sqlite'.format(project=project_name))}
-database_engine_uri = "sqlite:///{filename}".format(**db_config)
+
+# create the db engine uri
+database_engine_uri = database_engine_uri_format.format(**db_config)
 
 #sqlalchemy engine arguments
+# database_engine_args = {'pool_recycle':3600,
+#                         'pool_size':50,
+#                         'max_overflow':9,
+#                         'encoding':'utf-8' }
 database_engine_args = {}
-    # MySQL table arguments
-    # 'pool_recycle':3600,
-    # 'pool_size':50,
-    # 'max_overflow':9,
-    # 'encoding':'utf-8' }
 
 # use SQLAlchemy's Schema Reflection on all models
 # this will load the table definitions on startup and define your models
-# schema_reflection = False
+schema_reflection = False
 
-# mysql global table arguments
-# global_table_args = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
-
-# FIXME - This needs to be cleaned up. Not sure what the design for pybald
-# model logging should be
-def set_logging():
-    '''Temporary method to make logging optional.'''
-    # experimental logging handling
-    from textwrap import TextWrapper
-    class WrappedStream(object):
-        def __init__(self):
-            self.sql_wrapper = TextWrapper(width=100,
-                                           initial_indent=' '*15+'sql> ',
-                                           subsequent_indent=' '*20)
-        def write(self, text):
-            wrapped_text = "{0}\n".format(self.sql_wrapper.fill(text))
-            sys.stderr.write(wrapped_text)
-
-        def flush(self, *pargs, **kargs):
-            pass
-
-    engine_log = logging.getLogger('sqlalchemy.engine')
-    logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.ERROR)
-
-    h = logging.StreamHandler(WrappedStream())
-    engine_log.setLevel(logging.INFO)
-    formatter = logging.Formatter("%(message)s")
-    h.setFormatter(formatter)
-    engine_log.addHandler(h)
-
-
-def stop_logging():
-    logging.disable(logging.WARN)
-
-def get_toplevel():
-    '''Return the outer project path.'''
-    return toplevel
+# Arguements applied to all SQLAlchemy tables
+# useful mysql global args: {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
+global_table_args = {}
 
 # check for the environment file, if there, override options
 # with the environment
 if os.path.isfile(os.path.join(path, "environment.py")):
     from environment import *
     sys.stderr.write("LOADED ENVIRONMENT: {0}\n".format(env_name))
+
+
+import memcache
+# load memcached after the environment is loaded
+mc = memcache.Client(memcached_clients, debug=0)
 
 # HACK: this allows project.X to return a default of None when
 # undefined attributes are called (or setup from environment)
@@ -112,8 +93,9 @@ class ConfigWrapper(object):
     def __dir__(self):
         return dir(self.wrapped)
 
+from pybald.core.logs import enable_sql_log
 if debug:
-    set_logging()
+    enable_sql_log()
 
 # Runs the project console. Allows interacting with the models and controllers.
 if __name__ == '__main__':

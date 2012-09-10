@@ -1,19 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
-# """
-# BaseController.py
-#
-# Base Controller that all Pybald controllers inherit from.
-#
-# Created by mikepk on 2009-06-29.
-# Copyright (c) 2009 Michael Kowalchik. All rights reserved.
-# """
 
-import sys
-import os
 import unittest
-
-import os.path
 
 from functools import update_wrapper, wraps
 from pybald.core.templates import engine as render_view
@@ -31,10 +19,6 @@ import project
 import hashlib
 import base64
 
-media_version = project.media_version
-project_path = project.path
-page_options = project.page_options
-
 from pybald.db import models
 
 import json
@@ -46,9 +30,8 @@ noop_func = lambda *pargs, **kargs: None
 
 def get_template_name(instance, method_name):
     # this code defines the template id to match against
-    # template path = controller name + '/' + action name (except in the case of)
-    # index
-    # if the template is specified as part of the processed object
+    # template path = controller name + '/' + action name (except in the case
+    # of) index if the template is specified as part of the processed object
     # return that, short circuiting any other template name processing
     # This form may removed later, considered a candidate for deprecation
     t = getattr(instance, 'template_id', None)
@@ -124,7 +107,6 @@ def action(method):
                  method(self, req) or
                  render_view(template=get_template_name(self, template_name),
                       data=self.__dict__ or {}) )
-
         # if the response is currently a string
         # wrap it in a response object
         if isinstance(resp, basestring):
@@ -162,7 +144,7 @@ def caching_post(time=0):
                 resp.headerlist.append(('X-Cache', 'MISS'))
                 project.mc.set(self.cache_key, resp, time)
             else:
-                resp.headers['X-Cache']='HIT'
+                resp.headers['X-Cache'] = 'HIT'
         return replacement
     return post_wrapper
 
@@ -174,8 +156,12 @@ def action_cached(prefix='', keys=None, time=0):
         @wraps(my_action_method)
         def replacement(self, environ, start_response):
             # bind newly wrapped methods to self
-            self._pre = caching_pre(keys, my_action_method.__name__, prefix=prefix)(self._pre).__get__(self, self.__class__)
-            self._post = caching_post(time)(self._post).__get__(self, self.__class__)
+            self._pre = caching_pre(keys,
+                                    my_action_method.__name__,
+                                    prefix=prefix)(self._pre
+                                                 ).__get__(self, self.__class__)
+            self._post = caching_post(time)(self._post).__get__(self,
+                                                                 self.__class__)
             return my_action_method(self, environ, start_response)
         return replacement
     return cached_wrapper
@@ -183,44 +169,6 @@ def action_cached(prefix='', keys=None, time=0):
 
 class BaseController(object):
     '''Base controller that includes the view and a default index method.'''
-    # pass
-
-    # def __init__(self):
-    #     '''
-    #     Initialize the base controller with a page object.
-
-    #     Page dictionary controls title, headers, etc...
-    #     '''
-    #     # # self.page = Page()
-    #     # self.error = None
-    #     # self.user = None
-    #     # self.session = None
-
-    #     if page_options:
-    #         for key in page_options.keys():
-    #             setattr(self, key, page_options[key])
-    # @action
-    # def index(self, req):
-    #     '''default index action'''
-    #     pass
-
-
-    # def __before__(self, req):
-    #     '''Code to run before any action.'''
-    #     return self._pre(req)
-
-    # def __after__(self, req, resp):
-    #     '''Code to run after any action.'''
-    #     return self._post(req, resp)
-
-
-    # def _pre(self, req):
-    #     '''Code to run before any action.'''
-    #     pass
-
-    # def _post(self, req, resp):
-    #     '''Code to run after any action.'''
-    #     pass
 
     def _redirect_to(self, *pargs, **kargs):
         '''Redirect the controller'''
@@ -234,19 +182,6 @@ class BaseController(object):
         '''Raise an http_client_error exception using a specific code'''
         raise exc.status_map[int(code)]
 
-    # def _view(self, user_dict=None, helpers=None):
-    #     '''Method to invoke the template engine and display a view'''
-    #     # view = engine
-    #     # user supplied dictionary, otherwise create a dictionary
-    #     # from the controller
-    #     data = user_dict or self.__dict__ or {}
-    #     # prob should check for keyerror
-    #     data['template_id'] = data.get('template_id', getattr(self, "template_id", None))
-    #     # ] is None:
-    #     #     data['template_id'] = self.template_id
-    #     # if helpers:
-    #     #     data.update(helpers)
-    #     return view_engine(data)
 
     def _JSON(self, data, status=200):
         '''Return JSON object with the proper-ish headers.'''
