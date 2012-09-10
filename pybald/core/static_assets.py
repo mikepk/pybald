@@ -13,9 +13,9 @@ class StaticAssetManager(object):
     def set_req(self, req):
         if project.s3:
             if 'gzip' in req.accept_encoding:
-                self.static_prefix = "http://staticz.smarterer.com"
+                self.static_prefix = "http://staticz.XXXX"
             else:
-                self.static_prefix = "http://static.smarterer.com"
+                self.static_prefix = "http://static.XXXX"
 
     def js(self, filename):
         return '''<script type="text/javascript" src="{0}"></script>'''.format(self.gen_url(filename))
