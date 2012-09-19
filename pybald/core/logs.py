@@ -12,19 +12,20 @@ import logging.handlers
 
 from textwrap import TextWrapper
 class WrappedStream(object):
-    def __init__(self):
+    def __init__(self, stream=sys.stderr):
+        self.stream = stream
         self.sql_wrapper = TextWrapper(width=100,
                                        initial_indent=' '*15+'sql> ',
                                        subsequent_indent=' '*20)
     def write(self, text):
         wrapped_text = "{0}\n".format(self.sql_wrapper.fill(text))
-        sys.stderr.write(wrapped_text)
+        self.stream.write(wrapped_text)
 
     def flush(self, *pargs, **kargs):
-        pass
+        self.stream.flush(*pargs, **kargs)
 
 # custom stream handler that indents and formats SQL
-h = logging.StreamHandler(WrappedStream())
+h = logging.StreamHandler(WrappedStream(sys.stderr))
 formatter = logging.Formatter("%(message)s")
 h.setFormatter(formatter)
 
@@ -32,13 +33,13 @@ def enable_sql_log():
     '''Function to turn on debug SQL output for SQLAlchemy'''
     engine_log = logging.getLogger('sqlalchemy.engine')
     # logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.ERROR)
-    engine_log.setLevel(logging.INFO)   
+    engine_log.setLevel(logging.INFO)
     engine_log.addHandler(h)
 
 def disable_sql_log():
     '''Function to turn off debug SQL output for SQLAlchemy'''
     engine_log = logging.getLogger('sqlalchemy.engine')
-    engine_log.setLevel(logging.ERROR) 
+    engine_log.setLevel(logging.ERROR)
     # engine_log.removeHandler(h)
 
 
@@ -54,7 +55,7 @@ class PybaldLogger(object):
 
         # Set up a specific logger with our desired output level
         self.my_logger = logging.getLogger(project_name)
-        log_level = getattr(logging,level)
+        log_level = getattr(logging, level)
         self.my_logger.setLevel(log_level)
 
         # Add the log message handler to the logger
