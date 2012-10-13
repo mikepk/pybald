@@ -351,7 +351,9 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
     MetaClass that sets up some common behaviors for pybald models.
 
     Will assign tablename if not defined based on pluralization rules. Also
-    applies project global table arguments
+    applies project global table arguments. Lastly this will assign a
+    numeric primary key id to the table if no primary key was defined
+    in the model class.
     '''
     def __init__(cls, name, bases, ns):
         try:
