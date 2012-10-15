@@ -43,7 +43,7 @@ setup(name='pybald',
           "Routes==1.12.5dev",
           "FormAlchemy>=1.4", "SqlAlchemy>=0.7.0",
           "WebOb>=1.0", "Eventlet>=0.9.13.dev1", "Spawning>=0.9.4",
-          "Mako>=0.5.0", "python-memcached>=1.47"
+          "Mako>=0.5.0", "python-memcached>=1.47", "webassets>=0.7.1"
       ],
     dependency_links = [
         'http://github.com/mikepk/pybald-routes/tarball/master#egg=Routes-1.12.5dev'
