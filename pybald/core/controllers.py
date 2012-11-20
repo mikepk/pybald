@@ -3,30 +3,24 @@
 
 import unittest
 
-from functools import update_wrapper, wraps
+from functools import wraps
 from pybald.core.templates import engine as render_view
 
 from webob import Request, Response
 from webob import exc
 import re
-
-from pybald.db.models import session
 from pybald.util import camel_to_underscore
-
 from routes import redirect_to
 import project
-
 import hashlib
 import base64
-
-from pybald.db import models
-
 import json
 
 controller_pattern = re.compile(r'(\w+)Controller')
 
 # a no-op placeholder
 noop_func = lambda *pargs, **kargs: None
+
 
 def get_template_name(instance, method_name):
     # this code defines the template id to match against
@@ -74,7 +68,7 @@ def action(method):
     template_name = method.__name__
     # special case where 'call' or 'index' use the base class name
     # for the template otherwise use the base name
-    if template_name in ('index','__call__'):
+    if template_name in ('index', '__call__'):
         template_name = ''
 
     @wraps(method)
@@ -103,10 +97,10 @@ def action(method):
         # is returned from the controller
         # or the view. So pre has precedence over
         # the return which has precedence over the view
-        resp = ( pre(req) or
+        resp = (pre(req) or
                  method(self, req) or
                  render_view(template=get_template_name(self, template_name),
-                      data=self.__dict__ or {}) )
+                             data=self.__dict__ or {}))
         # if the response is currently a string
         # wrap it in a response object
         if isinstance(resp, basestring):
@@ -115,7 +109,6 @@ def action(method):
         post(req, resp)
         return resp(environ, start_response)
     return action_wrapper
-
 
 
 def caching_pre(keys, method_name, prefix=''):
@@ -135,6 +128,7 @@ def caching_pre(keys, method_name, prefix=''):
         return replacement
     return pre_wrapper
 
+
 def caching_post(time=0):
     '''Decorator for pybald _post to cache/store responses.'''
     def post_wrapper(post):
@@ -148,10 +142,12 @@ def caching_post(time=0):
         return replacement
     return post_wrapper
 
+
 # memcache for actions
 def action_cached(prefix='', keys=None, time=0):
     if keys is None:
         keys = []
+
     def cached_wrapper(my_action_method):
         @wraps(my_action_method)
         def replacement(self, environ, start_response):
@@ -172,7 +168,7 @@ class BaseController(object):
 
     def _redirect_to(self, *pargs, **kargs):
         '''Redirect the controller'''
-        return redirect_to(*pargs,**kargs)
+        return redirect_to(*pargs, **kargs)
 
     def _not_found(self, text=None):
         '''Raise the 404 http_client_error exception.'''
@@ -182,22 +178,37 @@ class BaseController(object):
         '''Raise an http_client_error exception using a specific code'''
         raise exc.status_map[int(code)]
 
-
     def _JSON(self, data, status=200):
         '''Return JSON object with the proper-ish headers.'''
-        res = Response( body=json.dumps(data),
+        res = Response(body=json.dumps(data),
             status=status,
             # wonky Cache-Control headers to stop IE6 from caching content
             cache_control="max-age=0,no-cache,no-store,post-check=0,pre-check=0",
-            expires = "Mon, 26 Jul 1997 05:00:00 GMT",
-            content_type = "application/json",
-            charset = 'UTF-8'
+            expires="Mon, 26 Jul 1997 05:00:00 GMT",
+            content_type="application/json",
+            charset='UTF-8'
             )
         return res
+
+    def _view(self, data=None):
+        '''
+        This method is a shim between the old view rendering code and the new
+        template rendering methods. It should not be used and is present only
+        to maintain backward compatibility.
+
+        This is targeted for deprecation.
+        '''
+        if data is None:
+            data = self.__dict__
+        template_name = data.pop('template_id', None) or getattr(self, 'template_id', None)
+        return render_view(template=template_name,
+                             data=data)
+
 
 class BaseControllerTests(unittest.TestCase):
     def setUp(self):
         pass
+
 
 if __name__ == '__main__':
     unittest.main()
