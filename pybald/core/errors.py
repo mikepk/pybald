@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import mako.template
-
-import unittest
-import datetime
-
 from webob import Request, Response, exc
-from mako import exceptions
+from pybald.core.templates import engine as template_engine
+
 
 class ErrorMiddleware:
     '''
@@ -38,9 +34,9 @@ class ErrorMiddleware:
                     controller.status_code = err.code
                     action = self.error_controller.error_map[err.code]
                     handler = getattr(controller, action, None) or err
-                except (KeyError,AttributeError), ex:
+                except (KeyError, AttributeError):
                     handler = err
-                except Exception, ex:
+                except Exception:
                     handler = err
                 try:
                     # try executing error_handler code
@@ -54,11 +50,12 @@ class ErrorMiddleware:
             if self.error_controller:
                 controller = self.error_controller()
                 handler = controller
-                controller.message=str(err)
+                controller.message = str(err)
                 return handler(environ, start_response)
             else:
                 # create a generic HTTP server Error webob exception
                 return exc.HTTPServerError()(environ, start_response)
+
 
 def send_error_email(host=None, html=None, text=None):
     if host:
@@ -96,3 +93,13 @@ def send_error_email(host=None, html=None, text=None):
 
     return True
 
+
+def pybald_error_template():
+    '''
+    This method is a shim between the old view error template function and the
+    new template rendering methods. It should not be used and is present only
+    to maintain backward compatibility.
+
+    This is targeted for deprecation.
+    '''
+    return template_engine._get_template('stack_trace')
