@@ -5,8 +5,34 @@
 import os
 import project
 
-# singleton asset_tag_cache
+from urlparse import urlparse, ParseResult
+# from routes import url_for
+from routes import request_config
+
+
+# parse result keys
+class AssetUrl(dict):
+    keys = ("scheme", "netloc", "path", "params", "query", "fragment")
+
+    def __init__(self, url):
+        self.raw_url = url
+        super(AssetUrl, self).__init__(**dict(zip(self.keys, urlparse(url))))
+
+    def __str__(self):
+        if not project.debug:
+            if project.CDN_HOST:
+                # host_num = hash(self.raw_url) % len(project.STATIC_HOSTS)
+                # host = project.STATIC_HOSTS[host_num]
+                # self['netloc'] = host
+                self['netloc'] = project.CDN_HOST
+            if self['netloc'] and not self['scheme']:
+                # get the protocol for the current request
+                self['scheme'] = request_config().protocol
+        return ParseResult(**self).geturl()
+
+
 asset_tag_cache = {}
+
 
 def compute_asset_tag(filename):
     asset_tag = asset_tag_cache.get(filename, None)
@@ -23,13 +49,27 @@ def compute_asset_tag(filename):
         asset_tag_cache[filename] = "xxx"
     return "?v={0}".format(asset_tag)
 
+
 def add_js(filename):
-    return '''<script type="text/javascript" src="{0}{1}"></script>'''.format(
-                                                filename,
-                                                compute_asset_tag(filename) )
+    return '''<script type="text/javascript" src="{0}"></script>'''.format(
+                                                AssetUrl(filename),
+                                                # filename,
+                                                compute_asset_tag(filename))
+
 
 def add_css(filename, media="screen"):
-    return '''<link type="text/css" href="{0}{2}" media="{1}" rel="stylesheet" />'''.format(
-                                                filename,
+    return ('''<link type="text/css" href="{0}"'''
+            ''' media="{1}" rel="stylesheet" />''').format(
+                                                AssetUrl(filename),
+                                                # filename,
                                                 str(media),
-                                                compute_asset_tag(filename) )
+                                                compute_asset_tag(filename))
+
+
+def add_extern_css(filename, media="screen"):
+    return ('''<link type="text/css" href="{0}"'''
+            ''' media="{1}" rel="stylesheet" />''').format(
+                                                filename,
+                                                # filename,
+                                                str(media),
+                                                compute_asset_tag(filename))
