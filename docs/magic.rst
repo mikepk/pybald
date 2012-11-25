@@ -7,32 +7,39 @@ Pybald only has a few 'magical' behaviors. This documentation explains how they 
 Loading Controllers
 -------------------
 
-Pybald uses the idea of convention over configuration. It assumes that a  project's files will be organized in a specific way. Borrowing from Ruby on Rails, application controllers are assumed to be stored in the project's ``./app/controllers`` directory. Within this path, you can organize your controllers any way you wish, but generally the convention is to place one controller per module with a filename that matches the name of the contained controller. So, for example, a HomeController class may be located in a file named: ``./app/controllers/hello_controller.py``.
+Pybald relies on the use of convention over configuration. It assumes that a  project's files will be organized in a pre-defined way. Borrowing from Ruby on Rails, the main application lives under the ``./app`` path and application controllers are assumed to be stored in the project's ``./app/controllers`` path. Within this path, you can organize your controllers any way you wish, but generally the convention is to place one controller per module with a filename that matches the name of the contained controller. So, for example, a HomeController class may be located in a file named: ``./app/controllers/hello_controller.py``.
 
-It's also recommended that you follow the Python style guide (`PEP8 <http://www.python.org/dev/peps/pep-0008/>`_), controller module names are expected to be all lowercase, using underscores to separate words. Controller class names are expected to follow the  CapWords convention.
+It's also recommended that you follow the Python style guide (`PEP8 <http://www.python.org/dev/peps/pep-0008/>`_). Controller module names are expected to be all lowercase, using underscores to separate words. Controller class names are expected to follow the  CapWords convention.
 
-The only magic is that, on startup, the pybald router will scan the controllers path and look for classes that inherit from ``BaseController``. Any module that inherits from BaseController will be included in the projects lookup table. The class name will be converted to underscore separated, lowercase and the word "controller" is stripped. 
+On startup, when the pybald Router is first instantiated, but before the web application starts, the Router's ``load`` method is called. This method loads the app.controllers module.
 
-For example, to create a controller for blog posts you might have a module like ``./app/controllers/post_controller.py`` and the class would look something like this:
+The app.controllers package will scan the controllers path and look for classes that inherit from ``BaseController``. Any module that inherits from BaseController will be included in the package as well as the project's controller lookup table. The class name will be converted to underscore separated, lowercase text and the word "controller" will be stripped.
+
+For example, to create a controller for blog post comments you might have a module like ``./app/controllers/post_comment_controller.py`` and a class defined like this:
 
 .. code-block:: python
 
   from pybald.core.controller import BaseController
 
-  class PostController(BaseController):
+  class PostCommentController(BaseController):
       pass
 
 
-When the app.controllers module is loaded, a special ``pybald_class_loader`` function is called. This function scans a path looking for classes that inherit from a list of passed in classes. For controllers, the ``./app/controllers`` path is passed in with a list of ``(BaseController,)`` as the list of matching class names. Any module in the path that inherits from ``BaseController`` will be included in the list of exported classes.
+This class would be loaded into the routers controller lookup table as 'post_comment'.
+
+How does this work?
+
+When the app.controllers package is loaded, a special ``pybald_class_loader`` function is called. This function recursively scans a path looking for classes that inherit from a pre-set list of target classes.
+
+For controllers, the ``./app/controllers`` path is scanned with a list of ``(BaseController,)`` as the list of matching class names. Any module in the path that inherits from ``BaseController`` will be included in the list of exported classes. These are automatically pre-loaded into the package and exported in the ``__all__`` python 'magic method' of the package.
 
 .. literalinclude:: /pybald_src/core/__init__.py
    :pyobject: pybald_class_loader
 
-When the Router is first created, but before the web application starts, the Router's ``load`` method is called. This method scans the ``./app/controllers`` directory and loads all of the controller modules it finds into the Router object. 
 
+Again taking cues from Ruby on Rails, the initial project is configured with a default route ``/{controller}/{action}/{id}``. This default route means that just by defining a new class, inheriting from ``BaseClass`` in the ``./app/controllers`` path, a URL will become immediately available at the 'lookup' value without any further configuration or additional route creation.
 
-
-Again taking cues from Ruby on Rails, the initial project tempalte is configured with a default route ``/{controller}/{action}/{id}``. This default route means that just by creating a new **name**\_controller.py file in the ./app/controllers project directory, the URL will become immediately available without any further configuration or additional route creation.
+In the above example ``/post_comment`` would become available as a project route and the router would instantiate a PostCommentController object to handle the request.
 
 
 
