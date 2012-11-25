@@ -30,10 +30,10 @@ class ErrorMiddleware:
             # use that to display the errors
             if self.error_controller:
                 try:
-                    controller = self.error_controller()
-                    controller.status_code = err.code
-                    action = self.error_controller.error_map[err.code]
-                    handler = getattr(controller, action, None) or err
+                    handler = self.error_controller(status_code=err.code)
+                    # controller.status_code = err.code
+                    # action = self.error_controller.error_map[err.code]
+                    # handler = controller #getattr(controller, action, None) or err
                 except (KeyError, AttributeError):
                     handler = err
                 except Exception:

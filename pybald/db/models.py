@@ -440,7 +440,7 @@ class Model(Base):
 
         session.add(self)
 
-        if commit:
+        if flush:
             self.flush()
         return self
 
@@ -454,10 +454,9 @@ class Model(Base):
         the database and commit the transaction.
         '''
         session.delete(self)
-        if commit:
+        if flush:
             self.flush()
         return self
-
 
     def flush(self):
         '''
@@ -470,7 +469,6 @@ class Model(Base):
         '''
         session.flush()
         return self
-
 
     def commit(self):
         '''
