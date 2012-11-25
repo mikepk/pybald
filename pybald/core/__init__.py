@@ -18,7 +18,8 @@ PYTHON_MODULE_NAME_PATTERN = re.compile(r'^([a-z][0-9a-z_]*)\.py$', re.I)
 PYTHON_MAGIC_VARIABLE_PATTERN = re.compile(r'^__.*__$')
 # TODO, use walk to have this recursively walk up the models path
 # finding all interesting classes.
-def pybald_class_loader(path, classes, module_globals, module_locals, recursive=False):
+def pybald_class_loader(path, classes, module_globals, module_locals,
+                                                               recursive=True):
     '''
     Take a set of special class names, a path, and scan the path loading classes
     that match or inherit from the list. Then these are returned into the provided
@@ -33,6 +34,19 @@ def pybald_class_loader(path, classes, module_globals, module_locals, recursive=
 
     Note: The second auto-model loading use of this function  may be too
     "magical" and may be deprecated in a future release.
+
+    :param path: The path to scan for matching classes.
+
+    :param classes: A list of classes to use for matching.
+
+    :param module_globals: The globals member of the package from which this
+         method is called.
+
+    :param module_locals: The locals member of the package from which this
+         method is called.
+
+    :param recursve: Whether to scan the path recursively looking for
+         matching classes.
     '''
     loaded_classes = []
     for dirpath, dirnames, filenames in os.walk(path):

@@ -424,7 +424,7 @@ class Model(Base):
         '''
         return has_identity(self)
 
-    def save(self, commit=False):
+    def save(self, flush=False):
         '''
         Saves (adds) this instance in the current databse session.
 
@@ -433,9 +433,9 @@ class Model(Base):
         If something causes a rollback before the session is committed,
         these changes will be lost.
 
-        When commit is `True`, flushes the data to the database immediately.
-        This does not commit the transaction, for that use
-        :py:meth:`~pybald.db.models.Model.commit`)
+        When flush is `True`, flushes the data to the database immediately
+        **within the same transaction**. This does not commit the transaction,
+        for that use :py:meth:`~pybald.db.models.Model.commit`)
         '''
 
         session.add(self)
@@ -444,7 +444,7 @@ class Model(Base):
             self.flush()
         return self
 
-    def delete(self, commit=False):
+    def delete(self, flush=False):
         '''
         Delete this instance from the current database session.
 
