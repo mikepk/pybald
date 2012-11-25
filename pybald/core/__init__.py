@@ -21,8 +21,8 @@ PYTHON_MAGIC_VARIABLE_PATTERN = re.compile(r'^__.*__$')
 def pybald_class_loader(path, classes, module_globals, module_locals, recursive=False):
     '''
     Take a set of special class names, a path, and scan the path loading classes
-    that match or inherit from the list them into the provided
-    scope.
+    that match or inherit from the list. Then these are returned into the provided
+    module scope.
 
     This is used by pybald to search for special "Controller" classes to load
     into the router object for the entire project. It's also used to auto-load
@@ -36,23 +36,30 @@ def pybald_class_loader(path, classes, module_globals, module_locals, recursive=
     '''
     loaded_classes = []
     for dirpath, dirnames, filenames in os.walk(path):
+        print dirpath, path
+        if dirpath != path:
+            # turn nested path into package notation
+            nested = os.path.relpath(dirpath, path
+                                        ).replace('/', '.').lstrip('.')
+        else:
+            nested = None
         for filename in sorted(filenames):
             match = PYTHON_MODULE_NAME_PATTERN.search(filename)
             if not match:
                 continue
             import_module_name = match.group(1)
             try:
-                # # import import_module_name
-                # # create package list
-                # nested = os.path.relpath(dirpath, path)
-                # if nested != '.':
-                #     nested = nested.replace("/",'.')
-                #     import_module_name = '.'.join((nested,import_module_name))
-                model_module = __import__(import_module_name,
-                                          module_globals,
-                                          module_locals,
-                                          [],
-                                          1)
+                if not nested:
+                    import_package_name = import_module_name
+                    import_list = ()
+                else:
+                    import_list = (import_module_name,)
+                    import_package_name = '.'.join((nested, import_module_name))
+                scan_module = __import__(import_package_name,
+                                         module_globals,
+                                         module_locals,
+                                         import_list,
+                                         1)
             except ImportError, ie:
                 ie.args = ("\nThe automatic pybald class loader "
                 "failed while attempting to load the module {0} from {1}. "
@@ -62,9 +69,9 @@ def pybald_class_loader(path, classes, module_globals, module_locals, recursive=
                     not PYTHON_MAGIC_VARIABLE_PATTERN.search(attribute_name) and
                                    attribute_name not in loaded_classes
                                    ),
-                                                             dir(model_module)):
+                                                             dir(scan_module)):
                 try:
-                    module_class = getattr(model_module, classname)
+                    module_class = getattr(scan_module, classname)
                     # only process class definitions from the modules
                     # not strictly necessary? Allow TypeError to catch non
                     # classes?
