@@ -9,7 +9,7 @@ import sys
 import os
 
 # Configure the project path and package name
-path = os.path.dirname( os.path.realpath( __file__ ) )
+path = os.path.dirname(os.path.realpath(__file__))
 toplevel = os.path.split(path)[0]
 package_name = os.path.split(path)[-1]
 

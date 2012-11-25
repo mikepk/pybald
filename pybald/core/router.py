@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import sys
-import os
 import unittest
 import re
 
@@ -15,7 +13,7 @@ from mako import exceptions
 import project
 debug = project.debug
 
-from pybald.util import camel_to_underscore, underscore_to_camel
+from pybald.util import camel_to_underscore
 
 # load the controllers from the project defined path
 # change this to passed in value to the Router. That way it can
@@ -142,7 +140,7 @@ class Router(object):
         # for REST architecture, this allows a POST parameter of _method
         # to be used to override POST with alternate HTTP verbs (PUT, DELETE)
         req.errors = 'ignore'
-        params = req.POST
+        # params = req.POST
         if '_method' in req.params:
             environ['REQUEST_METHOD'] = req.params['_method'].upper()
             try:
@@ -155,11 +153,9 @@ class Router(object):
             except:
                 pass
 
-
             if debug:
                 print "Changing request method to {0}".format(
                                                      environ["REQUEST_METHOD"])
-
 
         # routes config object, this must be done on every request.
         # sets the mapper and allows link_to and redirect_to to
@@ -187,7 +183,7 @@ class Router(object):
 
         # debug print messages
         if debug:
-            print ''.join(['============= ',req.path,' =============='])
+            print ''.join(['============= ', req.path, ' =============='])
             print 'Method: {0}'.format(req.method)
 
         # use routes to match the url to a path
@@ -206,7 +202,6 @@ class Router(object):
                             status=route.redirect_status
                             )(environ, start_response)
 
-
         req.urlvars = urlvars
         environ['urlvars'] = urlvars
 
@@ -219,7 +214,7 @@ class Router(object):
 
         try:
             # call the action we determined from the mapper
-            return handler(environ,start_response)
+            return handler(environ, start_response)
         # This is a mako 'missing template' exception
         except exceptions.TopLevelLookupException:
             raise exc.HTTPNotFound("Missing Template")

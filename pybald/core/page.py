@@ -12,6 +12,9 @@ from routes import request_config
 
 # parse result keys
 class AssetUrl(dict):
+    '''Wraps urls and returns URL transformations when necessary. Examples
+    include when running static assets on a CDN.
+    '''
     keys = ("scheme", "netloc", "path", "params", "query", "fragment")
 
     def __init__(self, url):

@@ -54,6 +54,9 @@ def pluralize(text):
     '''
     Returns a pluralized from of the input text following simple naive
     english language pluralization rules.
+
+    Smart enough to turn fox into foxes and quiz into quizzes. Does not catch
+    all pluralization rules, however.
     '''
     for rule in plural_rules:
         result = rule(text)
@@ -61,15 +64,15 @@ def pluralize(text):
             return result
 
 
-def strip_accents(s):
+def strip_accents(text):
     '''
-    Strip diacriticals from characters. This will change the meaning but for
-    urls we want to keep them straight ASCII and francais looks better than
-    fran-ais.
+    Strip diacriticals from characters. This will change the meaning of words
+    but for places where unicode can't be used (or ASCII only) francais looks
+    better than fran-ais or fran?ais.
     '''
-    if isinstance(s, str):
-        return unicode(s, errors='ignore')
-    return ''.join((c for c in unicodedata.normalize('NFD', s) if
+    if isinstance(text, str):
+        return unicode(text, errors='ignore')
+    return ''.join((c for c in unicodedata.normalize('NFD', text) if
                                               unicodedata.category(c) != 'Mn'))
 
 
@@ -78,6 +81,10 @@ file_modification_times = {}
 
 
 def is_modified(filename):
+    '''
+    Returns True if the filen referenced by filename has been modified
+    since the last time this funciton was called, otherwise False.
+    '''
     new_modified_time = os.path.getmtime(filename)
     last_modified_time = file_modification_times.get(filename, None)
     if last_modified_time is None:
@@ -91,6 +98,11 @@ def is_modified(filename):
 
 
 def watch_module_files(pid=None):
+    '''
+    Continuously monitors all loaded modules and issues a POSIX SIGHUP if 
+    any of the files associated with the loaded modules are changed during
+    runtime.
+    '''
     while True:
         changed = False
         for filename in filter(None, (getattr(module, '__file__', None) for

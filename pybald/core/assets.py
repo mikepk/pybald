@@ -10,7 +10,7 @@ import project
 import os
 from urlparse import urlparse
 
-env = Environment(os.path.join(project.path, "public"),
+env = Environment(os.path.join(project.path or '', "public"),
                   '',
                   debug=project.debug)
 

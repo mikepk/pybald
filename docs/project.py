@@ -1,4 +1,7 @@
 import sys
+
+package_name = "pybald.project_template"
+
 class ConfigWrapper(object):
     def __init__(self, wrapped):
         self.wrapped = wrapped
