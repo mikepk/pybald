@@ -23,11 +23,9 @@ Pybald began life as an ultra-bare-bones framework but has evolved over time  ad
   * Session Management, Simple Logging, and template helper functions
 
 
-Table of Contents
-=================
-
 .. toctree::
   :maxdepth: 2
+  :hidden:
 
   intro
   getting_started

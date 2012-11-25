@@ -98,6 +98,8 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
 # html_theme = 'sphinxdoc'
+# html_theme = 'bootstrap' 
+# html_theme = 'solar' 
 html_theme = 'haiku'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -108,9 +110,9 @@ html_theme = 'haiku'
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = ['themes']
-html_theme_options = {
-    "full_logo": "true"
-}
+#html_theme_options = {
+#    "full_logo": "true"
+#}
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 #html_title = None
