@@ -70,7 +70,7 @@ release = pybald.__version__
 # for source files.
 exclude_trees = ['_build']
 
-exclude_patterns = ['._*']
+exclude_patterns = ['**/._*', '**/README.rst']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
