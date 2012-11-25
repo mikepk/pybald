@@ -5,17 +5,19 @@
 # Created by mikepk on 2009-07-24.
 # Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 
-import sys
 import os
 import re
 
 from inspect import isclass
+
 
 class PybaldImportError(ImportError):
     pass
 
 PYTHON_MODULE_NAME_PATTERN = re.compile(r'^([a-z][0-9a-z_]*)\.py$', re.I)
 PYTHON_MAGIC_VARIABLE_PATTERN = re.compile(r'^__.*__$')
+
+
 # TODO, use walk to have this recursively walk up the models path
 # finding all interesting classes.
 def pybald_class_loader(path, classes, module_globals, module_locals,
@@ -50,7 +52,6 @@ def pybald_class_loader(path, classes, module_globals, module_locals,
     '''
     loaded_classes = []
     for dirpath, dirnames, filenames in os.walk(path):
-        print dirpath, path
         if dirpath != path:
             # turn nested path into package notation
             nested = os.path.relpath(dirpath, path
