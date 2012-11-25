@@ -56,10 +56,11 @@ def bundle(input_text):
     process them into webasset bundles.
     '''
     # XML parse the fragments
-    string_buffer = []
+    output_buffer = []
     xml_template = u'''<fragments>{0}</fragments>'''
     root = etree.fromstring(xml_template.format(input_text))
     for elem in root:
+        # parse all bundles
         if elem.tag == 'bundle':
             bundle_tag = elem
             bundle = _parse_bundle(bundle_tag)
@@ -68,9 +69,10 @@ def bundle(input_text):
             link_func = getattr(page, asset_type)
             # construct the asset urls
             assets = [link_func(url) for url in bundle.urls(env=env)]
-            string_buffer.extend(assets)
+            output_buffer.extend(assets)
             if bundle_tag.tail is not None:
-                string_buffer.append(bundle_tag.tail)
+                output_buffer.append(bundle_tag.tail)
+        # just dump out anything that's not a bundle
         else:
-            string_buffer.append(etree.tostring(elem))
-    return ''.join([unicode(item) for item in string_buffer])
+            output_buffer.append(etree.tostring(elem))
+    return u'\n'.join([unicode(item) for item in output_buffer])
