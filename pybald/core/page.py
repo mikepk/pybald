@@ -22,15 +22,14 @@ class AssetUrl(dict):
         super(AssetUrl, self).__init__(**dict(zip(self.keys, urlparse(url))))
 
     def __str__(self):
-        if not project.debug:
-            if project.CDN_HOST:
-                # host_num = hash(self.raw_url) % len(project.STATIC_HOSTS)
-                # host = project.STATIC_HOSTS[host_num]
-                # self['netloc'] = host
-                self['netloc'] = project.CDN_HOST
-            if self['netloc'] and not self['scheme']:
-                # get the protocol for the current request
-                self['scheme'] = request_config().protocol
+        if (project.USE_CDN and project.CDN_HOST) or not project.debug:
+            # host_num = hash(self.raw_url) % len(project.STATIC_HOSTS)
+            # host = project.STATIC_HOSTS[host_num]
+            # self['netloc'] = host
+            self['netloc'] = project.CDN_HOST
+        if self['netloc'] and not self['scheme']:
+            # get the protocol for the current request
+            self['scheme'] = request_config().protocol
         return ParseResult(**self).geturl()
 
 

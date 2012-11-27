@@ -115,7 +115,26 @@ class TemplateEngine:
         return mytemplate.render(**template_data)
 
 #module scope singleton, should this be changed?
-engine = TemplateEngine()
+# engine = TemplateEngine()
+render = TemplateEngine()
+
+
+class CompatibilityProxy(object):
+    '''A proxy to re-write the __call__ method.'''
+
+    def __init__(self, obj):
+        """The initializer."""
+        self._obj = obj
+
+    def __getattr__(self, attrib):
+        return getattr(self._obj, attrib)
+
+    def __call__(self, data, format="html", template=None):
+        template_name = template or data.pop('template_id', '')
+        return self._obj(template=template_name, data=data, format=format)
+
+engine = CompatibilityProxy(render)
+
 
 class TemplateEngineTests(unittest.TestCase):
     def setUp(self):

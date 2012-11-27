@@ -4,7 +4,7 @@
 import unittest
 
 from functools import wraps
-from pybald.core.templates import engine as render_view
+from pybald.core.templates import render as render_view
 
 from webob import Request, Response
 from webob import exc
@@ -93,13 +93,16 @@ def action(method):
         pre = getattr(self, '_pre', noop_func)
         post = getattr(self, '_post', noop_func)
 
+        # set the template_id for this request
+        self.template_id = get_template_name(self, template_name)
+
         # The response is either the controllers _pre code, whatever
         # is returned from the controller
         # or the view. So pre has precedence over
         # the return which has precedence over the view
         resp = (pre(req) or
                  method(self, req) or
-                 render_view(template=get_template_name(self, template_name),
+                 render_view(template=self.template_id,
                              data=self.__dict__ or {}))
         # if the response is currently a string
         # wrap it in a response object
@@ -166,6 +169,12 @@ def action_cached(prefix='', keys=None, time=0):
 class BaseController(object):
     '''Base controller that includes the view and a default index method.'''
 
+    def _pre(self, req):
+        pass
+
+    def _post(self, req, resp):
+        pass
+
     def _redirect_to(self, *pargs, **kargs):
         '''Redirect the controller'''
         return redirect_to(*pargs, **kargs)
@@ -199,11 +208,10 @@ class BaseController(object):
         This is targeted for deprecation.
         '''
         if data is None:
-            data = self.__dict__
+            data = self.__dict__ or {}
         template_name = data.pop('template_id', None) or getattr(self, 'template_id', None)
         return render_view(template=template_name,
                              data=data)
-
 
 class BaseControllerTests(unittest.TestCase):
     def setUp(self):

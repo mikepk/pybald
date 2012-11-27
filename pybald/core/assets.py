@@ -12,8 +12,7 @@ from urlparse import urlparse
 
 env = Environment(os.path.join(project.path or '', "public"),
                   '',
-                  debug=project.debug)
-
+                  debug=(not project.BUNDLE_ASSETS) and project.debug)
 
 class AssetBundleSyntaxError(Exception):
     pass
