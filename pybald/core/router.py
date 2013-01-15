@@ -13,7 +13,10 @@ from mako import exceptions
 import project
 debug = project.debug
 
-from pybald.util import camel_to_underscore
+import logging
+console = logging.getLogger('pybald.core.router')
+
+from pybald.util import camel_to_underscore, underscore_to_camel
 
 # load the controllers from the project defined path
 # change this to passed in value to the Router. That way it can
@@ -104,9 +107,8 @@ class Router(object):
         if self.has_underscore.match(action_name):
             raise exc.HTTPNotFound("Invalid Action")
 
-        if debug:
-            print "\n".join(['''{0}: {1}'''.format(key, value)
-                            for key, value in urlvars.items()])
+        for key, value in urlvars.items():
+            console.debug('''{0}: {1}'''.format(key, value))
 
         try:
             # create controller instance from controllers dictionary
@@ -153,9 +155,8 @@ class Router(object):
             except:
                 pass
 
-            if debug:
-                print "Changing request method to {0}".format(
-                                                     environ["REQUEST_METHOD"])
+            console.debug("Changing request method to {0}".format(
+                                                    environ["REQUEST_METHOD"]))
 
         # routes config object, this must be done on every request.
         # sets the mapper and allows link_to and redirect_to to
@@ -182,9 +183,8 @@ class Router(object):
         config.redirect = lambda url: Response(location=url, status=302)
 
         # debug print messages
-        if debug:
-            print ''.join(['============= ', req.path, ' =============='])
-            print 'Method: {0}'.format(req.method)
+        console.debug('=' * 20 + req.path + '=' * 20)
+        console.debug('Method: {0}'.format(req.method))
 
         # use routes to match the url to a path
         # urlvars will contain controller + other non query string

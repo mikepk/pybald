@@ -9,6 +9,7 @@ from webob import Request, Response
 
 import logging
 import logging.handlers
+# import logging.Formatter
 
 from textwrap import TextWrapper
 class WrappedStream(object):
@@ -24,23 +25,37 @@ class WrappedStream(object):
     def flush(self, *pargs, **kargs):
         self.stream.flush(*pargs, **kargs)
 
+engine_log = logging.getLogger('sqlalchemy.engine')
+
+class WrappedFormatter(logging.Formatter):
+    def __init__(self, *pargs, **kargs):
+        logging.Formatter.__init__(self, *pargs, **kargs)
+        self.sql_wrapper = TextWrapper(width=100,
+                                       initial_indent=' ' * 15 + 'sql> ',
+                                       subsequent_indent=' ' * 20)
+
+    def format(self, record):
+        # fmt = super(WrappedFormatter, self)
+        fmt = logging.Formatter.format(self, record)
+        wrapped_text = "{0}".format(self.sql_wrapper.fill(fmt))
+        return wrapped_text
+
 # custom stream handler that indents and formats SQL
-h = logging.StreamHandler(WrappedStream(sys.stderr))
-formatter = logging.Formatter("%(message)s")
+h = logging.StreamHandler() #WrappedStream(sys.stderr))
+formatter = WrappedFormatter("%(message)s")
 h.setFormatter(formatter)
+engine_log.addHandler(h)
+
 
 def enable_sql_log():
     '''Function to turn on debug SQL output for SQLAlchemy'''
-    engine_log = logging.getLogger('sqlalchemy.engine')
     # logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.ERROR)
     engine_log.setLevel(logging.INFO)
-    engine_log.addHandler(h)
+
 
 def disable_sql_log():
     '''Function to turn off debug SQL output for SQLAlchemy'''
-    engine_log = logging.getLogger('sqlalchemy.engine')
     engine_log.setLevel(logging.ERROR)
-    # engine_log.removeHandler(h)
 
 
 class PybaldLogger(object):
