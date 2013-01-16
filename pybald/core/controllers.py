@@ -34,6 +34,7 @@ page_options = project.page_options
 from pybald.db import models
 
 import json
+import random
 
 controller_pattern = re.compile(r'(\w+)Controller')
 
@@ -143,8 +144,15 @@ def caching_post(time=0):
         return replacement
     return post_wrapper
 
+
 # memcache for actions
-def action_cached(prefix='', keys=None, time=0):
+def action_cached(prefix=hex(random.randrange(0, 2 ** 32 - 1)), keys=None, time=0):
+    '''
+    The default prefix is reset whenever the code is reloaded.
+
+    This provides a nice way to cache static content for the duration of the
+    application lifespan.
+    '''
     if keys is None:
         keys = []
     def cached_wrapper(my_action_method):
