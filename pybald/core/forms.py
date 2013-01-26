@@ -37,9 +37,9 @@ class BaseForm(FieldSet):
         self.template_id = os.path.join('forms', template)
 
 
-class MultiFieldSet(object):
+class MultiFieldSet(list):
     def __init__(self, *pargs, **kargs):
-        self.fieldsets = []
+        super(MultiFieldSet, self).__init__()
         if pargs and inspect.isclass(pargs[0]):
             klass_name = pargs[0].__name__
         else:
@@ -60,12 +60,8 @@ class MultiFieldSet(object):
             transposed = zip(*fields)
 
             for data in [dict(x) for x in transposed]:
-                self.fieldsets.append(BaseForm(data=data, *pargs, **kargs))
+                self.append(BaseForm(data=data, *pargs, **kargs))
         else:
-            self.fieldsets.append(BaseForm(data=None, *pargs, **kargs))
+            self.append(BaseForm(data=None, *pargs, **kargs))
 
-    def __iter__(self):
-        '''Iterator to return fieldset groups'''
-        for fieldset in self.fieldsets:
-            yield fieldset
 
