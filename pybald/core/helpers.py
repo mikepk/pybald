@@ -102,21 +102,31 @@ def humanize(date_string):
     plural = 's'
     if delta.days < 0:
         return "in the future"
+    elif delta.days >= 30:
+        format = "%d %b"
+        if date.year != datetime.now().year:
+            format += " '%y"
+        return str(date.strftime(format).lstrip('0'))
+    elif delta.days >= 14:
+        weeks = delta.days / 7
+        if weeks == 1:
+            plural = ''
+        return "%s week%s ago" % (str(weeks),plural)
     elif delta.days >= 1:
         if delta.days == 1:
             plural = ''
-        return "%s day%s ago" % (str(delta.days),plural)
+        return "%s day%s ago" % (str(delta.days), plural)
     # > 1 hour, display in hours
     elif delta.seconds > 3600:
         hours = int(round(delta.seconds / 3600.0))
         if hours == 1:
             plural = ''
-        return "%s hour%s ago" % (str(hours),plural)
+        return "%s hour%s ago" % (str(hours), plural)
     elif delta.seconds > 60:
         minutes = int(round(delta.seconds / 60.0))
         if minutes == 1:
             plural = ''
-        return "%s minute%s ago" % (str(minutes),plural)
+        return "%s minute%s ago" % (str(minutes), plural)
     else:
         return "just a moment ago"
 

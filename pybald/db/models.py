@@ -363,6 +363,7 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
                 super(ModelMeta, cls).__init__(name, bases, ns)
                 return
         except NameError, er:
+            # if this is the Model class, then just return
             return
 
         # set the tablename, if it's user set, use that, otherwise use a
@@ -381,9 +382,9 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         # check if the class has at least one primary key
         # if not, automatically generate one.
         has_primary = reduce(lambda x,y: x or y,
-                            [cls.__dict__[key].primary_key
-                                            for key in cls.__dict__
-                                    if isinstance(cls.__dict__[key], Column)])
+                            [False] + [value.primary_key
+                                          for value in cls.__dict__.values()
+                                    if isinstance(value, Column)])
         if not has_primary:
             cls.id = Column(Integer, nullable=False, primary_key=True)
 

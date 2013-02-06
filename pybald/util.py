@@ -82,7 +82,7 @@ file_modification_times = {}
 
 def is_modified(filename):
     '''
-    Returns True if the filen referenced by filename has been modified
+    Returns True if the file referenced by filename has been modified
     since the last time this funciton was called, otherwise False.
     '''
     new_modified_time = os.path.getmtime(filename)
