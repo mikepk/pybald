@@ -3,7 +3,8 @@
 
 from webob import Request, Response, exc
 from pybald.core.templates import engine as template_engine
-
+import logging
+console = logging.getLogger(__name__)
 
 class ErrorMiddleware:
     '''
@@ -28,6 +29,7 @@ class ErrorMiddleware:
         except exc.HTTPException, err:
             # if the middleware is configured with an error controller
             # use that to display the errors
+            console.debug("HTTP Exception thrown {0}".format(err))
             if self.error_controller:
                 try:
                     handler = self.error_controller(status_code=err.code)
@@ -47,6 +49,7 @@ class ErrorMiddleware:
             else:
                 return err(environ, start_response)
         except Exception, err:
+            console.exception("General Exception thrown")
             if self.error_controller:
                 controller = self.error_controller()
                 handler = controller

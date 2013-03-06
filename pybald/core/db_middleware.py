@@ -51,6 +51,9 @@ class DbMiddleware(object):
             return resp
         finally:
             # always, always, ALWAYS close the session regardless
-            models.session.remove()
+            # This remove() call has been moved higher in the WSGI stack
+            # so that other things needing db sessions can still access the
+            # db (like error reporting)
+            # models.session.remove()
             del tb
 
