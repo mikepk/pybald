@@ -1,4 +1,3 @@
-from webob import Request, Response
 from sqlalchemy.exc import SQLAlchemyError
 from pybald.db import models
 import sys
@@ -10,16 +9,15 @@ class EndPybaldMiddleware(object):
 
     def __call__(self, environ, start_response):
         try:
-            return self.application(environ,
-                                          self._sr_callback(start_response))
+            return self.application(environ, callback)
         finally:
             # always, always, ALWAYS close the session regardless
             models.session.remove()
 
-    def _sr_callback(self, start_response):
-        def callback(status, headers, exc_info=None):
-            start_response(status, headers, exc_info)
-        return callback
+    # def _sr_callback(self, start_response):
+    #     def callback(status, headers, exc_info=None):
+    #         start_response(status, headers, exc_info)
+    #     return callback
 
 
 class DbMiddleware(object):
@@ -31,15 +29,15 @@ class DbMiddleware(object):
             self.applicaion = Response()
 
     def __call__(self, environ, start_response):
-        req = Request(environ)
+        # req = Request(environ)
         tb = None
         #pass through if no exceptions occur, commit sessions on complete
         try:
-            resp = req.get_response(self.application)(environ,start_response)
+            resp = self.application(environ, start_response)
             # commit any outstanding sql
             models.session.commit()
         # on any SQLAlchemy Errors, rollback the transaction
-        except SQLAlchemyError, err:
+        except SQLAlchemyError:
             # This pattern can cause memory leaks, so hopefully db errors
             # will be scrubbed from the code so this won't be hit
             excpt, detail, tb = sys.exc_info()
@@ -55,3 +53,4 @@ class DbMiddleware(object):
             # always, always, ALWAYS close the session regardless
             models.session.remove()
             del tb
+
