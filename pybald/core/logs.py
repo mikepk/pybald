@@ -2,30 +2,15 @@
 # encoding: utf-8
 
 import sys
-import os
 import unittest
 
 from webob import Request, Response
 
 import logging
 import logging.handlers
-# import logging.Formatter
-
+import project
 from textwrap import TextWrapper
-class WrappedStream(object):
-    def __init__(self, stream=sys.stderr):
-        self.stream = stream
-        self.sql_wrapper = TextWrapper(width=100,
-                                       initial_indent=' '*15+'sql> ',
-                                       subsequent_indent=' '*20)
-    def write(self, text):
-        wrapped_text = "{0}\n".format(self.sql_wrapper.fill(text))
-        self.stream.write(wrapped_text)
 
-    def flush(self, *pargs, **kargs):
-        self.stream.flush(*pargs, **kargs)
-
-engine_log = logging.getLogger('sqlalchemy.engine')
 
 class WrappedFormatter(logging.Formatter):
     def __init__(self, *pargs, **kargs):
@@ -40,11 +25,27 @@ class WrappedFormatter(logging.Formatter):
         wrapped_text = "{0}".format(self.sql_wrapper.fill(fmt))
         return wrapped_text
 
-# custom stream handler that indents and formats SQL
-h = logging.StreamHandler() #WrappedStream(sys.stderr))
-formatter = WrappedFormatter("%(message)s")
-h.setFormatter(formatter)
-engine_log.addHandler(h)
+# sqlalchemy engine logger
+engine_log = logging.getLogger('sqlalchemy.engine')
+
+
+def default_debug_log():
+    # log all debug messages
+    root = logging.getLogger()
+    root.setLevel(logging.DEBUG)
+    h = logging.StreamHandler()
+    root.addHandler(h)
+
+    # setup indented logging for SQL output
+    # remove propagation to avoid repeat messages
+    h2 = logging.StreamHandler()
+    formatter = WrappedFormatter("%(message)s")
+    h2.setFormatter(formatter)
+    engine_log.setLevel(logging.INFO)
+    engine_log.addHandler(h2)
+    # avoid repeat log entries
+    # we're handling it
+    engine_log.propagate = False
 
 
 def enable_sql_log():
