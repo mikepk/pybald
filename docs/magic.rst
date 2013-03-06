@@ -7,9 +7,9 @@ Pybald only has a few 'magical' behaviors. This documentation explains how they 
 Loading Controllers
 -------------------
 
-Pybald relies on the use of convention over configuration. It assumes that a  project's files will be organized in a pre-defined way. Borrowing from Ruby on Rails, the main application lives under the ``./app`` path and application controllers are assumed to be stored in the project's ``./app/controllers`` path. Within this path, you can organize your controllers any way you wish, but generally the convention is to place one controller per module with a filename that matches the name of the contained controller. So, for example, a HomeController class may be located in a file named: ``./app/controllers/hello_controller.py``.
+Pybald relies on the use of convention over configuration. It assumes that a  project's files will be organized in a pre-defined way. Borrowing from Ruby on Rails, the main application lives under the ``./app`` path and application controllers are assumed to be stored in the project's ``./app/controllers`` path. Within this path, you can organize your controllers any way you wish, but generally the convention is to place one controller per module with a filename that matches the name of the contained controller. So, for example, a HomeController class may be located in a file named: ``./app/controllers/home_controller.py``.
 
-It's also recommended that you follow the Python style guide (`PEP8 <http://www.python.org/dev/peps/pep-0008/>`_). Controller module names are expected to be all lowercase, using underscores to separate words. Controller class names are expected to follow the  CapWords convention.
+It's also recommended that you follow the Python style guide (`PEP8 <http://www.python.org/dev/peps/pep-0008/>`_). Controller module (file) names are expected to be all lowercase, using underscores to separate words. Controller class names are expected to follow the CapWords convention.
 
 On startup, when the pybald Router is first instantiated, but before the web application starts, the Router's ``load`` method is called. This method loads the app.controllers module.
 
@@ -27,7 +27,7 @@ For example, to create a controller for blog post comments you might have a modu
 
 This class would be loaded into the routers controller lookup table as 'post_comment'.
 
-How does this work?
+*How does this work?*
 
 When the app.controllers package is loaded, a special ``pybald_class_loader`` function is called. This function recursively scans a path looking for classes that inherit from a pre-set list of target classes.
 
