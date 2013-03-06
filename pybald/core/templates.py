@@ -6,6 +6,8 @@ import os
 import unittest
 
 import project
+import logging
+console = logging.getLogger(__name__)
 
 from mako.template import Template
 from mako.lookup import TemplateLookup
@@ -90,10 +92,11 @@ class TemplateEngine:
         name based on the template_id and the format and retrieves it from the
         Mako template system.
         '''
-
+        template_file = "/{0}.{1}.template".format(template.lower(), format.lower())
+        console.debug("Using template: {0}".format(template_file))
         # TODO: Add memc caching of rendered templates
         # also need to check if the internal caching is good enough
-        return self.lookup.get_template("/{0}.{1}.template".format(template.lower(), format.lower()))
+        return self.lookup.get_template(template_file)
 
 
     def __call__(self, template=None, data={}, format="html"):
@@ -112,6 +115,7 @@ class TemplateEngine:
         '''
         template_data = dict(project.page_options.items() + data.items())
         mytemplate = self._get_template(template, format)
+        # console.debug("="*10 + " Rendering template " + "="*10)
         return mytemplate.render(**template_data)
 
 #module scope singleton, should this be changed?

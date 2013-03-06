@@ -183,7 +183,7 @@ class Router(object):
         config.redirect = lambda url: Response(location=url, status=302)
 
         # debug print messages
-        console.debug('=' * 20 + req.path + '=' * 20)
+        console.debug(''.join(['=' * 20, ' ',req.path, ' ', '=' * 20]))
         console.debug('Method: {0}'.format(req.method))
 
         # use routes to match the url to a path
