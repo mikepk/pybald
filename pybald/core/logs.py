@@ -8,7 +8,6 @@ from webob import Request, Response
 
 import logging
 import logging.handlers
-import project
 from textwrap import TextWrapper
 
 
