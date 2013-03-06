@@ -9,7 +9,7 @@ class EndPybaldMiddleware(object):
 
     def __call__(self, environ, start_response):
         try:
-            return self.application(environ, callback)
+            return self.application(environ, start_response)
         finally:
             # always, always, ALWAYS close the session regardless
             models.session.remove()
