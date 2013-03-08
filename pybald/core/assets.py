@@ -14,6 +14,7 @@ env = Environment(os.path.join(project.path or '', "public"),
                   '',
                   debug=(not project.BUNDLE_ASSETS) and project.debug)
 
+
 class AssetBundleSyntaxError(Exception):
     pass
 

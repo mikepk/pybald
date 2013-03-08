@@ -14,6 +14,7 @@ from datetime import datetime
 from routes import url_for
 from mako import filters
 
+from pybald.core.page import AssetUrl
 # from markdown import markdown
 
 def as_p(input_str):
@@ -27,7 +28,7 @@ class tag(object):
 
 
 class img(tag):
-    def __init__(self,src='', **kargs):
+    def __init__(self, src='', **kargs):
         self.img_src = src
         self.attribs = []
         self.set(**kargs)
@@ -36,7 +37,8 @@ class img(tag):
 
     def __str__(self):
         '''Return the image in string form.'''
-        return u'''<img src="{0}" {1} />'''.format(self.img_src, " ".join(self.attribs) )
+        return u'''<img src="{0}" {1} />'''.format(AssetUrl(str(self.img_src)),
+                                                   " ".join(self.attribs) )
 
 
 class anchor(tag):

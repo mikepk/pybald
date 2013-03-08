@@ -28,10 +28,12 @@ class WrappedFormatter(logging.Formatter):
 engine_log = logging.getLogger('sqlalchemy.engine')
 
 
-def default_debug_log():
+# TODO: change thie default level to ERROR and always
+# enable logging
+def default_debug_log(level=logging.DEBUG):
     # log all debug messages
     root = logging.getLogger()
-    root.setLevel(logging.DEBUG)
+    root.setLevel(level)
     h = logging.StreamHandler()
     root.addHandler(h)
 
@@ -40,16 +42,22 @@ def default_debug_log():
     h2 = logging.StreamHandler()
     formatter = WrappedFormatter("%(message)s")
     h2.setFormatter(formatter)
-    engine_log.setLevel(logging.INFO)
+    # For SQL log, INFO is better than DEBUG
+    if level == logging.DEBUG:
+        engine_log.setLevel(logging.INFO)
+    else:
+        engine_log.setLevel(logging.ERROR)
     engine_log.addHandler(h2)
     # avoid repeat log entries
     # we're handling it
     engine_log.propagate = False
 
+    # unit of work logging, not usually necessary
+    # logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.ERROR)
+
 
 def enable_sql_log():
     '''Function to turn on debug SQL output for SQLAlchemy'''
-    # logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.ERROR)
     engine_log.setLevel(logging.INFO)
 
 

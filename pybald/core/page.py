@@ -6,7 +6,6 @@ import os
 import project
 
 from urlparse import urlparse, ParseResult
-# from routes import url_for
 from routes import request_config
 
 
@@ -22,14 +21,15 @@ class AssetUrl(dict):
         super(AssetUrl, self).__init__(**dict(zip(self.keys, urlparse(url))))
 
     def __str__(self):
+        '''Return a transformed URL if necessary (appending protocol and CDN)'''
         if (project.USE_CDN and project.CDN_HOST) or not project.debug:
-            # host_num = hash(self.raw_url) % len(project.STATIC_HOSTS)
-            # host = project.STATIC_HOSTS[host_num]
-            # self['netloc'] = host
             self['netloc'] = project.CDN_HOST
-        if self['netloc'] and not self['scheme']:
-            # get the protocol for the current request
-            self['scheme'] = request_config().protocol
+            if self['netloc'] and not self['scheme']:
+                # get the protocol for the current request
+                # this requires the custom HTTP header X-Forwarded-Proto
+                # set if running behind a proxy (or if SSL is terminated
+                # upstream)
+                self['scheme'] = request_config().protocol
         return ParseResult(**self).geturl()
 
 
@@ -41,10 +41,9 @@ def compute_asset_tag(filename):
     try:
         if not asset_tag:
             asset_tag = str(
-                int(
-                   round(os.path.getmtime(
-                    os.path.join(project.path, "public", filename.lstrip("/")))
-                    )
+                int(round(os.path.getmtime(os.path.join(project.path,
+                                                        "public",
+                                                        filename.lstrip("/"))))
                 ))
         asset_tag_cache[filename] = asset_tag
     except OSError:
