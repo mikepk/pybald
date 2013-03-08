@@ -74,5 +74,5 @@ def bundle(input_text):
                 output_buffer.append(bundle_tag.tail)
         # just dump out anything that's not a bundle
         else:
-            output_buffer.append(etree.tostring(elem))
+            output_buffer.append(etree.tostring(elem, method="html"))
     return u'\n'.join([unicode(item) for item in output_buffer])
