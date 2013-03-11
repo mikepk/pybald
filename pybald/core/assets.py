@@ -10,9 +10,10 @@ import project
 import os
 from urlparse import urlparse
 
+
 env = Environment(os.path.join(project.path or '', "public"),
                   '',
-                  debug=(not project.BUNDLE_ASSETS) and project.debug)
+                  debug=(not project.BUNDLE_ASSETS))
 
 
 class AssetBundleSyntaxError(Exception):
@@ -50,6 +51,22 @@ def _parse_bundle(elem, parent_bundle=None):
     return new_bundle
 
 
+class memoize_bundles(object):
+    '''
+    Store the result of the XML parse and return it on subsequent
+    requests.
+    '''
+    def __init__(self, method):
+        self.method = method
+        self.cached = None
+
+    def __call__(self, input_text):
+        if not self.cached:
+            self.cached = self.method(input_text)
+        return self.cached
+
+
+@memoize_bundles
 def bundle(input_text):
     '''
     Parse XML fragments from a string looking for asset bundles and
