@@ -8,6 +8,18 @@ import project
 from urlparse import urlparse, ParseResult
 from routes import request_config
 
+import logging
+console = logging.getLogger(__name__)
+try:
+    import pyhash
+    hashfunc = pyhash.super_fast_hash()
+except ImportError:
+    console.warn("!"*10 + '''  Using python built-in hash() for asset URL \
+generation. This is system implementation specific and may result in different \
+hosts mapping static assets to different static hosts. That may cause \
+inefficient use of browser caches.''')
+    hashfunc = hash
+
 
 # parse result keys
 class AssetUrl(dict):
@@ -22,8 +34,13 @@ class AssetUrl(dict):
 
     def __str__(self):
         '''Return a transformed URL if necessary (appending protocol and CDN)'''
-        if (project.USE_CDN and project.CDN_HOST) or not project.debug:
-            self['netloc'] = project.CDN_HOST
+        if (project.USE_CDN and (project.CDN_HOST or project.STATIC_HOSTS)):
+            protocol = request_config().protocol
+            if protocol is not "https" and project.STATIC_HOSTS:
+                self['netloc'] = project.STATIC_HOSTS[hashfunc(self.raw_url) %
+                                                      len(project.STATIC_HOSTS)]
+            else:
+                self['netloc'] = project.CDN_HOST
             if self['netloc'] and not self['scheme']:
                 # get the protocol for the current request
                 # this requires the custom HTTP header X-Forwarded-Proto
@@ -48,29 +65,23 @@ def compute_asset_tag(filename):
         asset_tag_cache[filename] = asset_tag
     except OSError:
         asset_tag_cache[filename] = "xxx"
-    return "?v={0}".format(asset_tag)
+    return "{0}?v={1}".format(filename, asset_tag)
 
 
 def add_js(filename):
     return '''<script type="text/javascript" src="{0}"></script>'''.format(
-                                                AssetUrl(filename),
-                                                # filename,
-                                                compute_asset_tag(filename))
+                                        AssetUrl(compute_asset_tag(filename)))
 
 
 def add_css(filename, media="screen"):
     return ('''<link type="text/css" href="{0}"'''
             ''' media="{1}" rel="stylesheet" />''').format(
-                                                AssetUrl(filename),
-                                                # filename,
-                                                str(media),
-                                                compute_asset_tag(filename))
+                                                AssetUrl(compute_asset_tag(filename)),
+                                                str(media))
 
 
 def add_extern_css(filename, media="screen"):
     return ('''<link type="text/css" href="{0}"'''
             ''' media="{1}" rel="stylesheet" />''').format(
                                                 filename,
-                                                # filename,
-                                                str(media),
-                                                compute_asset_tag(filename))
+                                                str(media))
