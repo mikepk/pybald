@@ -5,15 +5,18 @@ from lxml import etree
 
 from webassets.env import Environment
 from webassets import Bundle
+from webassets.exceptions import BundleError
 from pybald.core import page
 import project
 import os
 from urlparse import urlparse
-
+import logging
+console = logging.getLogger(__name__)
 
 env = Environment(os.path.join(project.path or '', "public"),
                   '',
-                  debug=(not project.BUNDLE_ASSETS))
+                  debug=(not project.BUNDLE_ASSETS),
+                  auto_build=False)
 
 
 class AssetBundleSyntaxError(Exception):
@@ -58,12 +61,12 @@ class memoize_bundles(object):
     '''
     def __init__(self, method):
         self.method = method
-        self.cached = None
+        self.cached = {}
 
     def __call__(self, input_text):
-        if not self.cached:
-            self.cached = self.method(input_text)
-        return self.cached
+        if not self.cached.get(hash(input_text), None):
+            self.cached[hash(input_text)] = self.method(input_text)
+        return self.cached[hash(input_text)]
 
 
 @memoize_bundles
@@ -85,8 +88,15 @@ def bundle(input_text):
             asset_type = bundle_tag.attrib.get('asset_type', 'add_js')
             link_func = getattr(page, asset_type)
             # construct the asset urls
-            assets = [link_func(url) for url in bundle.urls(env=env)]
+            try:
+                assets = [link_func(url) for url in bundle.urls(env=env)]
+            except BundleError:
+                console.warning("!"*10 + " Warning, missing static assets " + "!"*10)
+                env.debug = True
+                assets = [link_func(url) for url in bundle.urls(env=env)]
             output_buffer.extend(assets)
+            # add any text nodes that got glommed onto
+            # the node
             if bundle_tag.tail is not None:
                 output_buffer.append(bundle_tag.tail)
         # just dump out anything that's not a bundle
