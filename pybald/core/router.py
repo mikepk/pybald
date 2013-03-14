@@ -14,7 +14,7 @@ import project
 debug = project.debug
 
 import logging
-console = logging.getLogger('pybald.core.router')
+console = logging.getLogger(__name__)
 
 from pybald.util import camel_to_underscore, underscore_to_camel
 

@@ -41,7 +41,7 @@ setup(name='pybald',
       package_data={'pybald': ['*.template', 'core/default_templates/forms/*.template']},
       install_requires=[
           "Routes==1.12.5dev",
-          "FormAlchemy>=1.4", "SqlAlchemy==0.7.7",
+          "FormAlchemy>=1.4", "SqlAlchemy==0.7.10",
           "WebOb>=1.0", "Eventlet>=0.9.13.dev1", "Spawning>=0.9.4",
           "Mako>=0.5.0", "python-memcached>=1.47", "webassets>=0.7.1",
           "lxml==2.3.2"
