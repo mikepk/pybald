@@ -14,10 +14,15 @@ try:
     import pyhash
     hashfunc = pyhash.super_fast_hash()
 except ImportError:
-    console.warn("!"*10 + '''  Using python built-in hash() for asset URL \
-generation. This is system implementation specific and may result in different \
-hosts mapping static assets to different static hosts. That may cause \
-inefficient use of browser caches.''')
+    console.warn("!"*10 + '''  Using python built-in hash() for asset URL
+generation. This is system implementation specific and may result in different
+hosts mapping static assets to different static hosts. That may cause
+inefficient use of browser caches. Optionally you can install pyhash to
+install additional fast, non-cryptographic, hashes that are not system
+dependent.
+
+pip install pyhash
+''')
     hashfunc = hash
 
 

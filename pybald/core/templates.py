@@ -12,7 +12,7 @@ console = logging.getLogger(__name__)
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
-# base tempalte helpers all pybald projects have
+# base template helpers all pybald projects have
 template_helpers = ['from pybald.core.helpers import img, link, humanize, js_escape, as_p',
                     'from pybald.core import page',
                     'from pybald.core.helpers import js_escape as js',
@@ -115,7 +115,7 @@ class TemplateEngine:
         '''
         template_data = dict(project.page_options.items() + data.items())
         mytemplate = self._get_template(template, format)
-        # console.debug("="*10 + " Rendering template " + "="*10)
+        console.debug("Rendering template")
         return mytemplate.render(**template_data)
 
 #module scope singleton, should this be changed?

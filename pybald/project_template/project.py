@@ -31,7 +31,7 @@ memcached_clients = ['127.0.0.1:11211']
 # page_options = {'analytics' : False}
 page_options = {}
 
-# additional template helpers to add to the context for all tempaltes
+# additional template helpers to add to the context for all templates
 template_helpers = ['from pybald.core import page']
 
 # route email to a local smtp server
