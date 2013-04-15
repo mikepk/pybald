@@ -105,7 +105,8 @@ from sqlalchemy.sql.expression import (
     asc,
     desc,
     literal,
-    literal_column
+    literal_column,
+    null
     )
 
 from sqlalchemy.ext.hybrid import (

@@ -165,10 +165,13 @@ def action_cached(prefix=hex(random.randrange(0, 2 ** 32 - 1)), keys=None, time=
             self._pre = caching_pre(keys,
                                     my_action_method.__name__,
                                     prefix=prefix)(self._pre
-                                                 ).__get__(self, self.__class__)
-            self._post = caching_post(time)(self._post).__get__(self,
-                                                                 self.__class__)
+                                        ).__get__(self, self.__class__)
+            self._post = caching_post(time)(self._post
+                                        ).__get__(self, self.__class__)
             return my_action_method(self, environ, start_response)
+        # don't enable caching if in debug mode
+        if project.debug:
+            return my_action_method
         return replacement
     return cached_wrapper
 
