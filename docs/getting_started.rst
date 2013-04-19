@@ -98,7 +98,7 @@ A Pybald application is configured, at least partially, by the directory structu
       The WSGI app.
       
 
-Most of your application code will be in the ``app`` directory which contains three directories ``controllers``, ``views``, and ``models``.
+Most of your application code will be in the ``app`` directory which should contain at least these three directories ``controllers``, ``views``, and ``models``.
 
 
 A Pybald application consists of the following parts:
@@ -112,7 +112,7 @@ A Pybald application consists of the following parts:
 
 * Static content: images, css, javascript
 
-The heart of a Pybald application is the *WSGI pipeline*. The pipeline is defined in the file ``./wsgi/myapp.py``. The WSGI pipeline is how your webserver will communicate with your application. `myapp.py` can be used to connect to any WSGI compliant webserver (Apache, nginx, uWSGI, etc...), or it can be run directly which invokes the paste.httpserver from the command line. 
+The heart of a Pybald application is the *WSGI pipeline*. The pipeline is defined in the file ``./wsgi/myapp.py``. The WSGI pipeline is your application as well as how your webserver of choice will communicate with your application. `myapp.py` can be used to connect to any WSGI compliant webserver (Apache, nginx, uWSGI, etc...), or it can be run directly which invokes a built-in testing server from the command line.
 
 .. code-block:: python
 
@@ -125,15 +125,15 @@ The heart of a Pybald application is the *WSGI pipeline*. The pipeline is define
     app = Router(routes=my_project.app.urls.map)
     # app = UserManager(app, user_class=User)
     # app = SessionManager(app, session_class=Session)
-    app = ErrorMiddleware(app, error_controller=None)
-    app = DbMiddleware(app)
+    # app = ErrorMiddleware(app, error_controller=None)
+    # app = DbMiddleware(app)
     # ----------------------------------
     #    ↑↑↑                  ↓↓↓
     #    ↑↑↑                  ↓↓↓
     #   Request              Response
 
 
-Invoking the development web server from the command line should look similar to executing the console (in fact the same code executes). The webserver log is dumped to the console so you can monitor transactions.
+Invoking the development web server from the command line should look similar to starting the console (in fact the same code executes). The webserver log is dumped to the console so you can monitor transactions.
 
 .. code-block:: sh
 
