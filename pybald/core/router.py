@@ -64,6 +64,8 @@ class Router(object):
         # initialize Router
         self.map = Mapper(explicit=False)
         routes(self.map)
+        # debug print the whole URL map
+        console.debug(str(self.map))
         self.load()
 
     def load(self):
@@ -183,7 +185,7 @@ class Router(object):
         config.redirect = lambda url: Response(location=url, status=302)
 
         # debug print messages
-        console.debug(''.join(['=' * 20, ' ',req.path, ' ', '=' * 20]))
+        console.debug(''.join(['=' * 20, ' ',req.path_qs, ' ', '=' * 20]))
         console.debug('Method: {0}'.format(req.method))
 
         # use routes to match the url to a path
