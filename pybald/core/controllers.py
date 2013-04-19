@@ -76,10 +76,10 @@ def action(method):
     def action_wrapper(self, environ, start_response):
         req = Request(environ)
         # add any url variables as members of the controller
-        for key in req.urlvars.keys():
+        for varname, value in req.urlvars.items():
             # Set the controller object to contain the url variables
             # parsed from the dispatcher / router
-            setattr(self, key, req.urlvars[key])
+            setattr(self, varname, value)
 
         # add the pybald extension dict to the controller
         # object
