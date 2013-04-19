@@ -4,6 +4,7 @@
 
 import os
 import project
+import re
 
 from urlparse import urlparse, ParseResult
 from routes import request_config
@@ -58,7 +59,7 @@ class AssetUrl(dict):
 asset_tag_cache = {}
 
 
-def compute_asset_tag(filename):
+def compute_asset_tag(filename, pattern='{filename}{extension}?v={tag}'):
     asset_tag = asset_tag_cache.get(filename, None)
     try:
         if not asset_tag:
@@ -70,7 +71,8 @@ def compute_asset_tag(filename):
         asset_tag_cache[filename] = asset_tag
     except OSError:
         asset_tag_cache[filename] = "xxx"
-    return "{0}?v={1}".format(filename, asset_tag)
+    filename, ext = os.path.splitext(filename)
+    return pattern.format(filename=filename, tag=asset_tag, extension=ext)
 
 
 def add_js(filename):

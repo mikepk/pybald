@@ -91,7 +91,11 @@ def bundle(input_text):
             try:
                 assets = [link_func(url) for url in bundle.urls(env=env)]
             except BundleError:
-                console.warning("!"*10 + " Warning, missing static assets " + "!"*10)
+                console.warning("!"*80 + '''
+  Warning, missing pre-compiled static assets. Switching to debug mode
+  automatically. Run compile_static_assets.py to pre-create the compiled 
+  minified static assets.
+''' + "!"*80)
                 env.debug = True
                 assets = [link_func(url) for url in bundle.urls(env=env)]
             output_buffer.extend(assets)
