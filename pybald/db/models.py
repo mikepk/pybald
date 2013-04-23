@@ -268,6 +268,37 @@ Base = declarative_base(bind=engine)
 # # =====================================
 # # end of zzzeek's code for "Magic" ORM
 # # =====================================
+class ASCII(TypeDecorator):
+    '''
+    A database string type that only allows ASCII characters.
+
+    This is a data type check since all strings in the database could
+    be unicode.
+    '''
+    impl = VARCHAR
+
+    def process_bind_param(self, value, dialect):
+        '''
+        Run encode on a unicode string to make sure the string only
+        contains ASCII characterset characters. To avoid another conversion
+        pass, the original unicode value is passed to the underlying db.
+        '''
+        # run an encode on the value with ascii to see if it contains
+        # non ascii. Ignore the return value because we only want to throw
+        # an exception if the encode fails. The data can stay unicode for
+        # insertion into the db.
+        value.encode('ascii')
+        return value
+
+    def process_result_value(self, value, dialect):
+        '''
+        Run encode on a unicode string coming out of the database to turn the
+        unicode string back into an encoded python bytestring.
+        '''
+        if isinstance(value, unicode):
+            value = value.encode('ascii')
+        return value
+
 
 class JSONEncodedDict(TypeDecorator):
     '''
@@ -347,6 +378,7 @@ class NotFound(NoResultFound):
     '''Generic Not Found Error'''
     pass
 
+
 class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
     '''
     MetaClass that sets up some common behaviors for pybald models.
@@ -363,14 +395,14 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
                 # for use with SqlAlchemy inheritance patterns
                 super(ModelMeta, cls).__init__(name, bases, ns)
                 return
-        except NameError, er:
+        except NameError:
             # if this is the Model class, then just return
             return
 
         # set the tablename, if it's user set, use that, otherwise use a
         # function to create one
-        cls.__tablename__ = getattr(cls, "__tablename__" ,
-                                        pluralize( camel_to_underscore(name) ))
+        cls.__tablename__ = getattr(cls, "__tablename__",
+                                        pluralize(camel_to_underscore(name)))
         # tableargs adds autoload to create schema reflection
         cls.__table_args__ = getattr(cls, "__table_args__", {})
 
@@ -382,7 +414,7 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
 
         # check if the class has at least one primary key
         # if not, automatically generate one.
-        has_primary = reduce(lambda x,y: x or y,
+        has_primary = reduce(lambda x, y: x or y,
                             [False] + [value.primary_key
                                           for value in cls.__dict__.values()
                                     if isinstance(value, Column)])

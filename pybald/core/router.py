@@ -3,20 +3,14 @@
 
 import unittest
 import re
-
 from webob import Request, Response, exc
-
 from routes import Mapper, request_config, URLGenerator
 # handle Mako's top level lookup
 from mako import exceptions
-
 import project
-debug = project.debug
-
+from pybald.util import camel_to_underscore
 import logging
 console = logging.getLogger(__name__)
-
-from pybald.util import camel_to_underscore, underscore_to_camel
 
 # load the controllers from the project defined path
 # change this to passed in value to the Router. That way it can
@@ -27,8 +21,10 @@ my_project = __import__(project.package_name, globals(), locals(),
 # add the project package name to the global symbol table
 # to avoid any double imports
 globals()[project.package_name] = my_project
+# import all controllers
 __import__('{project}.app'.format(project=project.package_name),
                       globals(), locals(), ['controllers'], -1)
+
 
 class Router(object):
     # class method match patterns
@@ -57,11 +53,9 @@ class Router(object):
                             "See pybald docs for more details.")
 
         self.controllers = {}
-        # default mapper was switched to explicit
-        # explains all the mapper weirdness I was seeing
+        # initialize Router
         # explicit turns off route memory and 'index' for
         # default action
-        # initialize Router
         self.map = Mapper(explicit=False)
         routes(self.map)
         # debug print the whole URL map
@@ -70,11 +64,18 @@ class Router(object):
 
     def load(self):
         '''
-        Loads controllers from app.controllers. Uses the controller name to
-        define a path to controller mapping. It does some text munging to
-        camel-case the module name to look up the expected classname in the
-        modules. It loads all controller candidates into a mapping block to
-        look up URLs against.
+        Loads controllers from PROJECT.app.controllers. It does some text
+        munging to change the camel-case class names into
+        underscore-separated url like names. (HomeController)
+
+        All controller candidates are loaded into a hash to look up
+        the matched "controller" urlvar against.
+
+        The _controller suffix is removed from the module name for the url
+        route mapping table (so controller="home" matches home_controller).
+
+        against and the routes regex is initialized with a list of controller
+        names.
 
         Called only once at the start of a pybald application.
         '''
@@ -84,7 +85,7 @@ class Router(object):
             controller_name = camel_to_underscore(controller)
             try:
                 controller_path_name = self.controller_pattern.search(
-                                                      controller_name).group(1)
+                                                    controller_name).group(1)
             except AttributeError:
                 controller_path_name = controller_name
             controller_names.append(controller_path_name)
@@ -139,24 +140,25 @@ class Router(object):
         ``delete`` from web clients that don't support them natively.
         '''
         req = Request(environ)
+        req.errors = 'ignore'
         #method override
         #===============
         # for REST architecture, this allows a POST parameter of _method
         # to be used to override POST with alternate HTTP verbs (PUT, DELETE)
-        req.errors = 'ignore'
-        # params = req.POST
+        # override_method = req.POST.pop('_method', None)
+        # if override_method is not None:
+        #     environ['REQUEST_METHOD'] = override_method.upper()
         if '_method' in req.params:
             environ['REQUEST_METHOD'] = req.params['_method'].upper()
             try:
                 del req.POST['_method']
             except:
                 pass
-            # Experiment, is it worth it to change get method too?
+            # Experiment, is it worth it to change GET method too?
             try:
                 del req.GET['_method']
             except:
                 pass
-
             console.debug("Changing request method to {0}".format(
                                                     environ["REQUEST_METHOD"]))
 
@@ -175,9 +177,10 @@ class Router(object):
         environ['routes.url'] = url
         environ['pybald.router'] = self
 
-        # Add pybald extension, normally gets assigned to controller object
-        environ['pybald.extension'] = environ.get('pybald.extension', {})
-        environ['pybald.extension']["url_for"] = url
+        # Add pybald extension
+        # the pybald.extension is a dictionary that can be used to copy state
+        # into a running controller (usually handled by the @action decorator)
+        environ.setdefault('pybald.extension', {})["url_for"] = url
 
         # defines the redirect method. In this case it generates a
         # Webob Response object with the location and status headers
@@ -185,7 +188,7 @@ class Router(object):
         config.redirect = lambda url: Response(location=url, status=302)
 
         # debug print messages
-        console.debug(''.join(['=' * 20, ' ',req.path_qs, ' ', '=' * 20]))
+        console.debug(''.join(['=' * 20, ' ', req.path_qs, ' ', '=' * 20]))
         console.debug('Method: {0}'.format(req.method))
 
         # use routes to match the url to a path

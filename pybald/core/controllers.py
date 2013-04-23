@@ -83,7 +83,7 @@ def action(method):
 
         # add the pybald extension dict to the controller
         # object
-        for key, value in req.environ.get('pybald.extension', {}).items():
+        for key, value in req.environ.setdefault('pybald.extension', {}).items():
             setattr(self, key, value)
 
         # TODO: fixme this is a hack

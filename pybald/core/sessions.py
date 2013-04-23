@@ -29,8 +29,7 @@ class SessionManager(object):
         environ['pybald.session'] = self.session_class._before(req)
 
         # update or create the pybald.extension to populate controller instances
-        environ['pybald.extension'] = environ.get('pybald.extension', {})
-        environ['pybald.extension']['session'] = environ['pybald.session']
+        environ.setdefault('pybald.extension', {})['session'] = environ['pybald.session']
 
         # call the next part of the pipeline
         resp = req.get_response(self.application)
