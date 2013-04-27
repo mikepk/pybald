@@ -1,9 +1,15 @@
 from celery.loaders.base import BaseLoader
-import project
+import site
+from celery.utils import cwd_in_path
+with cwd_in_path():
+    import project
+site.addsitedir(project.path)
+site.addsitedir(project.toplevel)
 
-def wanted_module_item(item):
+
+def celery_config_item(item):
     # check if the config item starts with any of the celery config start keys
-    # run startswith against each, and then or the results to return True
+    # run startswith against each, and then "or" the results to return True
     # if any match
     # this could probably be done with a dynamic regex too.
     celery_config_start_keys = ('CELERY', 'BROKER')
@@ -22,4 +28,8 @@ class PybaldLoader(BaseLoader):
         self.configured = True
         # generate a config dictionary from project.py
         return dict((key, getattr(project, key))
-            for key in filter(wanted_module_item, dir(project)))
+            for key in filter(celery_config_item, dir(project)))
+
+    def on_worker_init(self):
+        '''On worker init load all the default modules'''
+        self.import_default_modules()

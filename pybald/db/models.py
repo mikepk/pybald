@@ -437,7 +437,7 @@ class Model(Base):
 
     def is_modified(self):
         '''Check if SQLAlchemy believes this instance is modified.'''
-        # TODO: Using this internal falg, is this a private internal
+        # TODO: Using this internal flag, is this a private internal
         # behavior? Is there a better, public-api way of getting this info?
         # alternatively is session.is_modified(self) although will this fail
         # if the instance isn't part of the session?
