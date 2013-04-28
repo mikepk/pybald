@@ -21,6 +21,7 @@ template_helpers = ['from pybald.core.helpers import img, link, humanize, js_esc
 if project.template_helpers:
     template_helpers.extend(project.template_helpers)
 
+
 class TemplateEngine:
     '''
     The basic template engine, looks up templates and renders them.
@@ -30,13 +31,13 @@ class TemplateEngine:
     def __init__(self, template_path=None, cache_path=None):
         self.project_path = project.path
         try:
-            default_template_path = os.path.join( os.path.dirname(
-                                                    os.path.realpath(__file__)
-                                                      ), 'default_templates' )
+            default_template_path = os.path.join(os.path.dirname(
+                                                    os.path.realpath(__file__)),
+                                                'default_templates')
             project_template_path = template_path or os.path.join(
-                                                self.project_path,'app/views')
+                                                self.project_path, 'app/views')
             project_cache_path = cache_path or os.path.join(
-                                               self.project_path,'viewscache')
+                                               self.project_path, 'viewscache')
         except AttributeError, e:
             sys.stderr.write(("**Warning**\n"
                              "Exception: {exception}\n"
@@ -55,7 +56,6 @@ class TemplateEngine:
                                      input_encoding='utf-8',
                                      output_encoding='utf-8',
                                      filesystem_checks=fs_test)
-
 
     def form_render(self, template_name=None, format="form", **kargs):
         '''
@@ -77,7 +77,6 @@ class TemplateEngine:
         # string for inclusion in another Mako template
         return mytemplate.render_unicode(**data)
 
-
     def _get_template(self, template, format="html"):
         '''
         Retrieves the proper template from the Mako template system.
@@ -97,7 +96,6 @@ class TemplateEngine:
         # TODO: Add memc caching of rendered templates
         # also need to check if the internal caching is good enough
         return self.lookup.get_template(template_file)
-
 
     def __call__(self, template=None, data={}, format="html"):
         '''
