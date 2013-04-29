@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import sys
 import os
 import unittest
-
 import project
+from mako.lookup import TemplateLookup
 import logging
 console = logging.getLogger(__name__)
-
-from mako.template import Template
-from mako.lookup import TemplateLookup
 
 # base template helpers all pybald projects have
 template_helpers = ['from pybald.core.helpers import img, link, humanize, js_escape, as_p',
@@ -38,11 +34,10 @@ class TemplateEngine:
                                                 self.project_path, 'app/views')
             project_cache_path = cache_path or os.path.join(
                                                self.project_path, 'viewscache')
-        except AttributeError, e:
-            sys.stderr.write(("**Warning**\n"
-                             "Exception: {exception}\n"
+        except AttributeError:
+            console.exception(("**Warning**\n"
                              "Unable to load templates from template path\n"
-                             ).format(exception=e))
+                             ))
             default_template_path = ""
             project_template_path = ""
             project_cache_path = ""
@@ -91,7 +86,8 @@ class TemplateEngine:
         name based on the template_id and the format and retrieves it from the
         Mako template system.
         '''
-        template_file = "/{0}.{1}.template".format(template.lower(), format.lower())
+        template_file = "/{0}.{1}.template".format(template.lower(),
+                                                   format.lower())
         console.debug("Using template: {0}".format(template_file))
         # TODO: Add memc caching of rendered templates
         # also need to check if the internal caching is good enough
@@ -116,7 +112,7 @@ class TemplateEngine:
         console.debug("Rendering template")
         return mytemplate.render(**template_data)
 
-#module scope singleton, should this be changed?
+# module scope singleton, should this be changed?
 # engine = TemplateEngine()
 render = TemplateEngine()
 
