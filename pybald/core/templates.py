@@ -4,6 +4,7 @@
 import os
 import unittest
 import project
+from mako.template import Template
 from mako.lookup import TemplateLookup
 import logging
 console = logging.getLogger(__name__)
