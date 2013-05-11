@@ -449,7 +449,12 @@ class Model(Base):
         this instance.
         '''
         # Uses this method: http://www.sqlalchemy.org/docs/orm/internals.html?highlight=commit_all#sqlalchemy.orm.state.InstanceState.commit_all
-        return instance_state(self).commit_all({})
+        if int(sa_min_ver) > 7:
+            # the methods became private in SA 8, need to check if
+            # this is a problem
+            return instance_state(self)._commit_all({})
+        else:
+            return instance_state(self).commit_all({})
 
     def is_persisted(self):
         '''
