@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 from webob import Request, Response, exc
-from pybald.core.templates import engine as template_engine
+from pybald.core.templates import render as template_engine
 import logging
 console = logging.getLogger(__name__)
 
