@@ -111,7 +111,7 @@ class Router(object):
             raise exc.HTTPNotFound("Invalid Action")
 
         for key, value in urlvars.items():
-            console.debug('''{0}: {1}'''.format(key, value))
+            console.debug(u'''{0}: {1}'''.format(key, value))
 
         try:
             # create controller instance from controllers dictionary
