@@ -1,0 +1,122 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; Pybald 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="Pybald 0.2.0 documentation" href="index.html" />
+    <link rel="next" title="Quick Start" href="getting_started.html" />
+    <link rel="prev" title="About" href="index.html" /> 
+  </head>
+  <body>
+      <div class="header"><img class="rightlogo" src="_static/pybald.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>Pybald 0.2.0 documentation</span></a></h1>
+        <h2 class="heading"><span>Introduction</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">About</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="getting_started.html">Quick Start</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview-and-goals">
+<h2>Overview and Goals<a class="headerlink" href="#overview-and-goals" title="Permalink to this headline">¶</a></h2>
+<p><em>For lazy hackers that know what they&#8217;re doing.</em></p>
+<p>Pybald was built initially as an exploration of what makes up a modern web framework. It was not originally intended to be &#8220;industrial strength&#8221; but as a way to experiment with various python web components and how they fit together. After being used to build some non-trivial web projects, Pybald has evolved from this early incarnation to be a fairly complete web framework with its own personality. It&#8217;s still clean and light on initial configuration but it is also relatively powerful since it makes use of many &#8220;best-of-breed&#8221; components connected together using the <a class="reference external" href="http://wsgi.org/wsgi/">WSGI</a> interface.</p>
+<p>The goals behind Pybald:</p>
+<ul class="simple">
+<li>Fast and easy startup - get running quickly with limited configuration</li>
+<li>Brevity and clarity - build the basics of a python web framework core without a lot of complex code. Make it easy to learn and hack.</li>
+<li>Opinionated but hackable - one set of components is &#8220;official&#8221; and installed by default but the system is not a black box</li>
+<li>Support quick prototyping, but don&#8217;t limit options as a project grows</li>
+<li>Stick to <a class="reference external" href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention over configuration</a></li>
+<li>Limited, or at least transparent, &#8220;Magic&#8221; - A lot of frameworks provide behaviors that seem &#8220;magical&#8221; without making clear how that magic is accomplished. Pybald&#8217;s &#8220;magic&#8221; is limited, easily accessible, and usually explicitly invoked.</li>
+<li>Use <a class="reference external" href="http://wsgi.org/wsgi/">WSGI</a> for the web interfaces and utilize WSGI middleware</li>
+<li><em>Don&#8217;t coddle me</em> - give the power to execute logic in the templates, don&#8217;t hide RDBMS implementation details and SQL, give (easy) access to the internals of the framework, give developers power and flexibility (don&#8217;t impose design hygine).</li>
+</ul>
+<p>What Pybald is <strong>not</strong>:</p>
+<ul class="simple">
+<li>Not Designed for maximum configurability. It&#8217;s relatively trivial to use a different template engine or url dispatcher but that&#8217;s not the goal of the project. There are other frameworks that serve that need like <a class="reference external" href="http://pylonshq.com">Pylons / Pyramid</a></li>
+</ul>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>It has only been tested on Python 2.5, 2.6 and 2.7. Python 3 support is coming soon.</p>
+<p>Pybald currently depends on, and will automatically install, the following projects:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.makotemplates.org/">Mako Templates</a></li>
+<li><a class="reference external" href="http://routes.groovie.org/">Routes</a></li>
+<li><a class="reference external" href="http://pythonpaste.org/webob/">WebOb</a></li>
+<li><a class="reference external" href="http://pythonpaste.org/">Paste</a></li>
+<li><a class="reference external" href="http://sqlalchemy.org/">SqlAlchemy</a></li>
+<li><a class="reference external" href="http://formalchemy.org/">FormAlchemy</a></li>
+</ul>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">About</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="getting_started.html">Quick Start</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+  
+    <div class="footer">
+        &copy; Copyright 2013, Michael Kowalchik.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>

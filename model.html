@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Models and ORM &mdash; Pybald 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="Pybald 0.2.0 documentation" href="index.html" />
+    <link rel="up" title="API Reference" href="api_reference.html" />
+    <link rel="next" title="Pybald Core" href="core.html" />
+    <link rel="prev" title="API Reference" href="api_reference.html" /> 
+  </head>
+  <body>
+      <div class="header"><img class="rightlogo" src="_static/pybald.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>Pybald 0.2.0 documentation</span></a></h1>
+        <h2 class="heading"><span>Models and ORM</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="api_reference.html">API Reference</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="core.html">Pybald Core</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="models-and-orm">
+<h1>Models and ORM<a class="headerlink" href="#models-and-orm" title="Permalink to this headline">¶</a></h1>
+<p>Pybald models are a fairly thin wrapper around the <a class="reference external" href="http://sqlalchemy.org/">SqlAlchemy</a> ORM.</p>
+<span class="target" id="module-pybald.db.models"></span><dl class="class">
+<dt id="pybald.db.models.ASCII">
+<em class="property">class </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">ASCII</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pybald.db.models.ASCII" title="Permalink to this definition">¶</a></dt>
+<dd><p>A database string type that only allows ASCII characters.</p>
+<p>This is a data type check since all strings in the database could
+be unicode.</p>
+<p>Construct a <tt class="xref py py-class docutils literal"><span class="pre">TypeDecorator</span></tt>.</p>
+<p>Arguments sent here are passed to the constructor
+of the class assigned to the <tt class="docutils literal"><span class="pre">impl</span></tt> class level attribute,
+assuming the <tt class="docutils literal"><span class="pre">impl</span></tt> is a callable, and the resulting
+object is assigned to the <tt class="docutils literal"><span class="pre">self.impl</span></tt> instance attribute
+(thus overriding the class attribute of the same name).</p>
+<p>If the class level <tt class="docutils literal"><span class="pre">impl</span></tt> is not a callable (the unusual case),
+it will be assigned to the same instance attribute &#8216;as-is&#8217;,
+ignoring those arguments passed to the constructor.</p>
+<p>Subclasses can override this to customize the generation
+of <tt class="docutils literal"><span class="pre">self.impl</span></tt> entirely.</p>
+<dl class="attribute">
+<dt id="pybald.db.models.ASCII.impl">
+<tt class="descname">impl</tt><a class="headerlink" href="#pybald.db.models.ASCII.impl" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">VARCHAR</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.ASCII.process_bind_param">
+<tt class="descname">process_bind_param</tt><big>(</big><em>value</em>, <em>dialect</em><big>)</big><a class="headerlink" href="#pybald.db.models.ASCII.process_bind_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run encode on a unicode string to make sure the string only
+contains ASCII characterset characters. To avoid another conversion
+pass, the original unicode value is passed to the underlying db.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.ASCII.process_result_value">
+<tt class="descname">process_result_value</tt><big>(</big><em>value</em>, <em>dialect</em><big>)</big><a class="headerlink" href="#pybald.db.models.ASCII.process_result_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run encode on a unicode string coming out of the database to turn the
+unicode string back into an encoded python bytestring.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybald.db.models.JSONEncodedDict">
+<em class="property">class </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">JSONEncodedDict</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pybald.db.models.JSONEncodedDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a dictionary as a json-encoded string in the database.</p>
+<p>Construct a <tt class="xref py py-class docutils literal"><span class="pre">TypeDecorator</span></tt>.</p>
+<p>Arguments sent here are passed to the constructor
+of the class assigned to the <tt class="docutils literal"><span class="pre">impl</span></tt> class level attribute,
+assuming the <tt class="docutils literal"><span class="pre">impl</span></tt> is a callable, and the resulting
+object is assigned to the <tt class="docutils literal"><span class="pre">self.impl</span></tt> instance attribute
+(thus overriding the class attribute of the same name).</p>
+<p>If the class level <tt class="docutils literal"><span class="pre">impl</span></tt> is not a callable (the unusual case),
+it will be assigned to the same instance attribute &#8216;as-is&#8217;,
+ignoring those arguments passed to the constructor.</p>
+<p>Subclasses can override this to customize the generation
+of <tt class="docutils literal"><span class="pre">self.impl</span></tt> entirely.</p>
+<dl class="attribute">
+<dt id="pybald.db.models.JSONEncodedDict.impl">
+<tt class="descname">impl</tt><a class="headerlink" href="#pybald.db.models.JSONEncodedDict.impl" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">VARCHAR</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.JSONEncodedDict.process_bind_param">
+<tt class="descname">process_bind_param</tt><big>(</big><em>value</em>, <em>dialect</em><big>)</big><a class="headerlink" href="#pybald.db.models.JSONEncodedDict.process_bind_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn a dictionary into a JSON encoded string on the way into
+the database.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.JSONEncodedDict.process_result_value">
+<tt class="descname">process_result_value</tt><big>(</big><em>value</em>, <em>dialect</em><big>)</big><a class="headerlink" href="#pybald.db.models.JSONEncodedDict.process_result_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn a JSON encoded string into a dictionary on the way out
+of the database.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybald.db.models.Model">
+<em class="property">class </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">Model</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pybald.db.models.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pybald Model class, inherits from SQLAlchemy Declarative Base.</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <tt class="docutils literal"><span class="pre">kwargs</span></tt>.</p>
+<p>Only keys that are present as
+attributes of the instance&#8217;s class are allowed. These could be,
+for example, any mapped columns or relationships.</p>
+<dl class="attribute">
+<dt id="pybald.db.models.Model.MultipleFound">
+<tt class="descname">MultipleFound</tt><a class="headerlink" href="#pybald.db.models.Model.MultipleFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">MultipleResultsFound</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybald.db.models.Model.NotFound">
+<tt class="descname">NotFound</tt><a class="headerlink" href="#pybald.db.models.Model.NotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">NoResultFound</span></tt></p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pybald.db.models.Model.all">
+<em class="property">classmethod </em><tt class="descname">all</tt><big>(</big><em>**where</em><big>)</big><a class="headerlink" href="#pybald.db.models.Model.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a collection of objects that can be filtered for
+specific collections.</p>
+<p>all() without arguments returns all the items of the model type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.Model.clear_modified">
+<tt class="descname">clear_modified</tt><big>(</big><big>)</big><a class="headerlink" href="#pybald.db.models.Model.clear_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unconditionally clear all modified state from the attibutes on
+this instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.Model.commit">
+<tt class="descname">commit</tt><big>(</big><big>)</big><a class="headerlink" href="#pybald.db.models.Model.commit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commits the entire database session (including other pending objects).</p>
+<p>This emits all relevant SQL to the databse, commits the current
+transaction, and closes the current session (and database connection)
+and returns it to the connection pool. Any data operations after this
+will pull a new database session from the connection pool.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.Model.delete">
+<tt class="descname">delete</tt><big>(</big><em>flush=False</em><big>)</big><a class="headerlink" href="#pybald.db.models.Model.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete this instance from the current database session.</p>
+<p>The object will be deleted from the database at the next commit. If
+you want to immediately delete the object, you should follow this
+operation with a commit to emit the SQL to delete the item from
+the database and commit the transaction.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pybald.db.models.Model.filter">
+<em class="property">classmethod </em><tt class="descname">filter</tt><big>(</big><em>*pargs</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pybald.db.models.Model.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience method that auto-builds the query and passes the filter
+to it.</p>
+<p>Returns a query object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.Model.flush">
+<tt class="descname">flush</tt><big>(</big><big>)</big><a class="headerlink" href="#pybald.db.models.Model.flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Syncs all pending SQL changes (including other pending objects) to
+the underlying data store within the current transaction.</p>
+<p>Flush emits all the relevant SQL to the underlying store, but does
+<strong>not</strong> commit the current transaction or close the current
+database session.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pybald.db.models.Model.get">
+<em class="property">classmethod </em><tt class="descname">get</tt><big>(</big><em>**where</em><big>)</big><a class="headerlink" href="#pybald.db.models.Model.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>A convenience method that constructs a load query with keyword
+arguments as the filter arguments and return a single instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.Model.is_modified">
+<tt class="descname">is_modified</tt><big>(</big><big>)</big><a class="headerlink" href="#pybald.db.models.Model.is_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if SQLAlchemy believes this instance is modified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.Model.is_persisted">
+<tt class="descname">is_persisted</tt><big>(</big><big>)</big><a class="headerlink" href="#pybald.db.models.Model.is_persisted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this instance has ever been persisted. Means it is either
+<cite>detached</cite> or <cite>persistent</cite>.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pybald.db.models.Model.load">
+<em class="property">classmethod </em><tt class="descname">load</tt><big>(</big><em>**where</em><big>)</big><a class="headerlink" href="#pybald.db.models.Model.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience method to build a sqlalchemy query to return stored
+objects.</p>
+<p>Returns a query object. This query object must be executed to retrieve
+actual items from the database.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pybald.db.models.Model.query">
+<em class="property">classmethod </em><tt class="descname">query</tt><big>(</big><big>)</big><a class="headerlink" href="#pybald.db.models.Model.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience method to return a query based on the current object
+class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.Model.save">
+<tt class="descname">save</tt><big>(</big><em>flush=False</em><big>)</big><a class="headerlink" href="#pybald.db.models.Model.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves (adds) this instance in the current databse session.</p>
+<p>This does not immediatly persist the data since these operations
+occur within a transaction and the sqlalchemy unit-of-work pattern.
+If something causes a rollback before the session is committed,
+these changes will be lost.</p>
+<p>When flush is <cite>True</cite>, flushes the data to the database immediately
+<strong>within the same transaction</strong>. This does not commit the transaction,
+for that use <a class="reference internal" href="#pybald.db.models.Model.commit" title="pybald.db.models.Model.commit"><tt class="xref py py-meth docutils literal"><span class="pre">commit()</span></tt></a>)</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pybald.db.models.Model.show_create_table">
+<em class="property">classmethod </em><tt class="descname">show_create_table</tt><big>(</big><big>)</big><a class="headerlink" href="#pybald.db.models.Model.show_create_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the simple dump_engine to print to stdout the SQL for this
+table.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybald.db.models.ModelMeta">
+<em class="property">class </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">ModelMeta</tt><big>(</big><em>name</em>, <em>bases</em>, <em>ns</em><big>)</big><a class="headerlink" href="#pybald.db.models.ModelMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>MetaClass that sets up some common behaviors for pybald models.</p>
+<p>Will assign tablename if not defined based on pluralization rules. Also
+applies project global table arguments. Lastly this will assign a
+numeric primary key id to the table if no primary key was defined
+in the model class.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pybald.db.models.MutationDict">
+<em class="property">class </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">MutationDict</tt><a class="headerlink" href="#pybald.db.models.MutationDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary that automatically emits change events for SQA
+change tracking.</p>
+<p>Lifted almost verbatim from the SQA docs.</p>
+<dl class="classmethod">
+<dt id="pybald.db.models.MutationDict.coerce">
+<em class="property">classmethod </em><tt class="descname">coerce</tt><big>(</big><em>key</em>, <em>value</em><big>)</big><a class="headerlink" href="#pybald.db.models.MutationDict.coerce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert plain dictionaries to MutationDict.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.MutationDict.update">
+<tt class="descname">update</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pybald.db.models.MutationDict.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the current dictionary with kargs or a passed in dict.
+Calls the internal setitem for the update method to maintain
+mutation tracking.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybald.db.models.NonDbModel">
+<em class="property">class </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">NonDbModel</tt><a class="headerlink" href="#pybald.db.models.NonDbModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="exception">
+<dt id="pybald.db.models.NotFound">
+<em class="property">exception </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">NotFound</tt><a class="headerlink" href="#pybald.db.models.NotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic Not Found Error</p>
+</dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="api_reference.html">API Reference</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="core.html">Pybald Core</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+  
+    <div class="footer">
+        &copy; Copyright 2013, Michael Kowalchik.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>

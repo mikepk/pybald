@@ -1,0 +1,138 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Utilities &mdash; Pybald 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="Pybald 0.2.0 documentation" href="index.html" />
+    <link rel="up" title="API Reference" href="api_reference.html" />
+    <link rel="prev" title="Pybald Core" href="core.html" /> 
+  </head>
+  <body>
+      <div class="header"><img class="rightlogo" src="_static/pybald.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>Pybald 0.2.0 documentation</span></a></h1>
+        <h2 class="heading"><span>Utilities</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="core.html">Pybald Core</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="utilities">
+<h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pybald.util">
+<span id="util-project-utilities"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">util</span></tt> - project utilities<a class="headerlink" href="#module-pybald.util" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pybald.util.camel_to_underscore">
+<tt class="descclassname">pybald.util.</tt><tt class="descname">camel_to_underscore</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#pybald.util.camel_to_underscore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert CamelCase text into underscore_separated text.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.is_modified">
+<tt class="descclassname">pybald.util.</tt><tt class="descname">is_modified</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#pybald.util.is_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the file referenced by filename has been modified
+since the last time this funciton was called, otherwise False.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.ordinal_suffix">
+<tt class="descclassname">pybald.util.</tt><tt class="descname">ordinal_suffix</tt><big>(</big><em>num</em><big>)</big><a class="headerlink" href="#pybald.util.ordinal_suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the ordinal suffix of an interger (1st, 2nd, 3rd).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.pluralize">
+<tt class="descclassname">pybald.util.</tt><tt class="descname">pluralize</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#pybald.util.pluralize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a pluralized from of the input text following simple naive
+english language pluralization rules.</p>
+<p>Smart enough to turn fox into foxes and quiz into quizzes. Does not catch
+all pluralization rules, however.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.strip_accents">
+<tt class="descclassname">pybald.util.</tt><tt class="descname">strip_accents</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#pybald.util.strip_accents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip diacriticals from characters. This will change the meaning of words
+but for places where unicode can&#8217;t be used (or ASCII only) francais looks
+better than fran-ais or fran?ais.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.underscore_to_camel">
+<tt class="descclassname">pybald.util.</tt><tt class="descname">underscore_to_camel</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#pybald.util.underscore_to_camel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert underscore_separated text into CamelCase text.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.watch_module_files">
+<tt class="descclassname">pybald.util.</tt><tt class="descname">watch_module_files</tt><big>(</big><em>pid=None</em><big>)</big><a class="headerlink" href="#pybald.util.watch_module_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Continuously monitors all loaded modules and issues a POSIX SIGHUP if 
+any of the files associated with the loaded modules are changed during
+runtime.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="core.html">Pybald Core</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+
+  
+    <div class="footer">
+        &copy; Copyright 2013, Michael Kowalchik.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>
