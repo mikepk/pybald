@@ -125,10 +125,10 @@ class CompatibilityProxy(object):
         """The initializer."""
         self._obj = obj
 
-    def _get_template(self, data, format=None, template=None):
+    def _get_template(self, data, format="html", template=None):
         '''Old style get template'''
         template_name = template or data.pop('template_id', '')
-        format = format or data.pop('format', 'html')
+        format = format or data.get('format', 'html')
         return self._obj._get_template(template=template_name, format=format)
 
     def __getattr__(self, attrib):
@@ -136,7 +136,7 @@ class CompatibilityProxy(object):
 
     def __call__(self, data, format=None, template=None):
         template_name = template or data.pop('template_id', '')
-        format = format or data.pop('format', 'html')
+        format = format or data.get('format', 'html')
         return self._obj(template=template_name, data=data, format=format)
 
 engine = CompatibilityProxy(render)
