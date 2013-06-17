@@ -31,12 +31,12 @@ except ImportError:
     # from distutils.core import setup
 
 setup(name='pybald',
-      version='0.1.5',
+      version='0.2.0',
       description='A lightweight MVC framework',
       license='MIT',
       author='Michael Kowalchik',
-      author_email='mikepk@smarterer.com',
-      url='http://www.github.com/mikepk/pybald',
+      author_email='mikepk@tenzerolab.com',
+      url='http://docs.pybald.com/',
       packages=find_packages(),
       package_data={'pybald': ['*.template', 'core/default_templates/forms/*.template']},
       install_requires=[
