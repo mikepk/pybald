@@ -62,7 +62,7 @@ class AssetUrl(dict):
 asset_tag_cache = {}
 
 
-def compute_asset_tag(filename, pattern='{filename}.sv{tag}x{extension}'):
+def compute_asset_tag(filename, pattern='{filename}{extension}?v={tag}'):
     asset_tag = asset_tag_cache.get(filename, None)
     try:
         if not asset_tag:
