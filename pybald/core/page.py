@@ -40,6 +40,9 @@ class AssetUrl(dict):
 
     def __str__(self):
         '''Return a transformed URL if necessary (appending protocol and CDN)'''
+        if self.get('netloc', None):
+            # Don't CDN urls with hosts
+            return self.raw_url
         if (project.USE_CDN and (project.CDN_HOST or project.STATIC_HOSTS)):
             protocol = request_config().protocol
             if protocol is not "https" and project.STATIC_HOSTS:
@@ -59,7 +62,7 @@ class AssetUrl(dict):
 asset_tag_cache = {}
 
 
-def compute_asset_tag(filename, pattern='{filename}{extension}?v={tag}'):
+def compute_asset_tag(filename, pattern='{filename}.sv{tag}x{extension}'):
     asset_tag = asset_tag_cache.get(filename, None)
     try:
         if not asset_tag:
