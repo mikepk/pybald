@@ -138,22 +138,27 @@ def caching_post(time=0):
     def post_wrapper(post):
         def replacement(self, req, resp):
             post(req, resp)
-            if 'X-Cache' not in resp.headers:
-                resp.headerlist.append(('X-Cache', 'MISS'))
-                project.mc.set(self.cache_key, resp, time)
-            else:
-                resp.headers['X-Cache'] = 'HIT'
+            # only cache 2XX or 4XX responses
+            if (200 <= resp.status_code < 300) or (400 <= resp.status_code < 500):
+                if 'X-Cache' not in resp.headers:
+                    resp.headerlist.append(('X-Cache', 'MISS'))
+                    project.mc.set(self.cache_key, resp, time)
+                else:
+                    resp.headers['X-Cache'] = 'HIT'
         return replacement
     return post_wrapper
 
+# regenerate a content_cache_prefix on every reload so that content will
+# be force loaded after any full application restart
+# This provides a way to cache static content for the duration of the
+# application lifespan.
+content_cache_prefix = hex(random.randrange(0, 2 ** 32 - 1))
+
 
 # memcache for actions
-def action_cached(prefix=hex(random.randrange(0, 2 ** 32 - 1)), keys=None, time=0):
+def action_cached(prefix=content_cache_prefix, keys=None, time=0):
     '''
-    The default prefix is reset whenever the code is reloaded.
-
-    This provides a nice way to cache static content for the duration of the
-    application lifespan.
+    Wrap actions and return pre-generated responses when appropriate.
     '''
     if keys is None:
         keys = []
@@ -169,8 +174,8 @@ def action_cached(prefix=hex(random.randrange(0, 2 ** 32 - 1)), keys=None, time=
             self._post = caching_post(time)(self._post
                                         ).__get__(self, self.__class__)
             return my_action_method(self, environ, start_response)
-        # don't enable caching if in debug mode
-        if project.debug:
+        # don't enable caching if requested
+        if project.DISABLE_STATIC_CONTENT_CACHE:
             return my_action_method
         return replacement
     return cached_wrapper
