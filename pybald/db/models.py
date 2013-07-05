@@ -287,7 +287,8 @@ class ASCII(TypeDecorator):
         # non ascii. Ignore the return value because we only want to throw
         # an exception if the encode fails. The data can stay unicode for
         # insertion into the db.
-        value.encode('ascii')
+        if value is not None:
+            value.encode('ascii')
         return value
 
     def process_result_value(self, value, dialect):
