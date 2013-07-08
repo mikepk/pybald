@@ -45,7 +45,6 @@ class AssetUrl(dict):
         if host:
             if (project.STATIC_SOURCES is None or
                                            host not in project.STATIC_SOURCES):
-                print "WHAT THE FRAK", host
                 return self.raw_url
         if (project.USE_CDN and (project.CDN_HOST or project.STATIC_HOSTS)):
             protocol = request_config().protocol
