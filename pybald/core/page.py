@@ -40,9 +40,13 @@ class AssetUrl(dict):
 
     def __str__(self):
         '''Return a transformed URL if necessary (appending protocol and CDN)'''
-        if self.get('netloc', None):
-            # Don't CDN urls with hosts
-            return self.raw_url
+        host = self.get('netloc', None)
+        # Don't CDN urls with hosts we're not re-writing
+        if host:
+            if (project.STATIC_SOURCES is None or
+                                           host not in project.STATIC_SOURCES):
+                print "WHAT THE FRAK", host
+                return self.raw_url
         if (project.USE_CDN and (project.CDN_HOST or project.STATIC_HOSTS)):
             protocol = request_config().protocol
             if protocol is not "https" and project.STATIC_HOSTS:
