@@ -48,7 +48,7 @@ class AssetUrl(dict):
                 return self.raw_url
         if (project.USE_CDN and (project.CDN_HOST or project.STATIC_HOSTS)):
             protocol = request_config().protocol
-            if protocol is not "https" and project.STATIC_HOSTS:
+            if protocol != "https" and project.STATIC_HOSTS:
                 self['netloc'] = project.STATIC_HOSTS[hashfunc(self.raw_url) %
                                                       len(project.STATIC_HOSTS)]
             else:
