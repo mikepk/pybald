@@ -166,7 +166,7 @@ class Router(object):
         # The dict from m.match for this URL request
         config.mapper_dict = match
         config.host = req.host
-        config.protocol = req.host_port
+        # config.protocol = req.host_port
         # defines the redirect method. In this case it generates a
         # Webob Response object with the location and status headers
         # set
