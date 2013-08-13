@@ -41,10 +41,9 @@ setup(name='pybald',
       package_data={'pybald': ['core/default_templates/*.template', 'core/default_templates/forms/*.template']},
       install_requires=[
           "Routes==1.12.5dev",
-          "FormAlchemy==1.4.3", "SqlAlchemy==0.8.1",
-          "WebOb==1.2.3", "eventlet==0.12.1", "Spawning>=0.9.4",
-          "Mako==0.8.1", "python-memcached>=1.47", "webassets==0.8",
-          "lxml==2.3.2"
+          "FormAlchemy==1.4.3", "SqlAlchemy==0.8.2",
+          "WebOb==1.2.3", "Mako==0.8.1", "python-memcached==1.53", "webassets==0.8",
+          "lxml==3.2.3"
       ],
     dependency_links = [
         'https://github.com/mikepk/pybald-routes/tarball/master#egg=Routes-1.12.5dev'
