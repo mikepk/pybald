@@ -415,13 +415,11 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
 
         # check if the class has at least one primary key
         # if not, automatically generate one.
-        has_primary = reduce(lambda x, y: x or y,
-                            [False] + [value.primary_key
+        has_primary = any([False] + [value.primary_key
                                           for value in cls.__dict__.values()
                                     if isinstance(value, Column)])
         if not has_primary:
             cls.id = Column(Integer, nullable=False, primary_key=True)
-
         super(ModelMeta, cls).__init__(name, bases, ns)
 
 

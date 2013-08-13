@@ -145,33 +145,33 @@ class Router(object):
         #===============
         # for REST architecture, this allows a POST parameter of _method
         # to be used to override POST with alternate HTTP verbs (PUT, DELETE)
-        # override_method = req.POST.pop('_method', None)
-        # if override_method is not None:
-        #     environ['REQUEST_METHOD'] = override_method.upper()
-        if '_method' in req.params:
-            environ['REQUEST_METHOD'] = req.params['_method'].upper()
-            try:
-                del req.POST['_method']
-            except:
-                pass
-            # Experiment, is it worth it to change GET method too?
-            try:
-                del req.GET['_method']
-            except:
-                pass
-            console.debug("Changing request method to {0}".format(
-                                                    environ["REQUEST_METHOD"]))
+        if req.POST:
+            override_method = req.POST.pop('_method', None)
+            if override_method is not None:
+                environ['REQUEST_METHOD'] = override_method.upper()
+                console.debug("Changing request method to {0}".format(
+                                                        environ["REQUEST_METHOD"]))
 
-        # routes config object, this must be done on every request.
-        # sets the mapper and allows link_to and redirect_to to
-        # function on routes
-        config = request_config()
-        config.mapper = self.map
-        config.environ = environ
+        results = self.map.routematch(environ=environ)
+        if results:
+            match, route = results[0], results[1]
+        else:
+            match = route = None
 
-        match = config.mapper_dict
-        route = config.route
         url = URLGenerator(self.map, environ)
+        config = request_config()
+
+        # Your mapper object
+        config.mapper = self.map
+        # The dict from m.match for this URL request
+        config.mapper_dict = match
+        config.host = req.host
+        config.protocol = req.host_port
+        # defines the redirect method. In this case it generates a
+        # Webob Response object with the location and status headers
+        # set
+        config.redirect = lambda url: Response(location=url, status=302)
+
         environ['wsgiorg.routing_args'] = ((url), match)
         environ['routes.route'] = route
         environ['routes.url'] = url
@@ -182,11 +182,6 @@ class Router(object):
         # into a running controller (usually handled by the @action decorator)
         environ.setdefault('pybald.extension', {})["url_for"] = url
 
-        # defines the redirect method. In this case it generates a
-        # Webob Response object with the location and status headers
-        # set
-        config.redirect = lambda url: Response(location=url, status=302)
-
         # debug print messages
         console.debug(''.join(['=' * 20, ' ', req.path_qs, ' ', '=' * 20]))
         console.debug('Method: {0}'.format(req.method))
@@ -196,12 +191,12 @@ class Router(object):
         # URL data. Middleware above this can override and set urlvars
         # and the router will use those values.
         # TODO: allow individual variable overrides?
-        urlvars = environ.get('urlvars', self.map.match(environ=environ)) or {}
+        urlvars = environ.get('urlvars', match) or {}
 
         # lifted from Routes middleware, handles 'redirect'
         # routes (map.redirect)
         if route and route.redirect:
-            route_name = '_redirect_%s' % id(route)
+            route_name = '_redirect_{0}'.format(id(route))
             location = url(route_name, **match)
             return Response(location=location,
                             status=route.redirect_status
@@ -212,7 +207,6 @@ class Router(object):
 
         if urlvars:
             controller, handler = self.get_handler(urlvars)
-
         # No URL vars means nothing matched in the mapper function
         else:
             raise exc.HTTPNotFound("No URL match")
@@ -223,10 +217,10 @@ class Router(object):
         # This is a mako 'missing template' exception
         except exceptions.TopLevelLookupException:
             raise exc.HTTPNotFound("Missing Template")
-        except:
-            # All other program errors get re-raised
-            # e.g. a 500 server error
-            raise
+        # except Exception as e:
+        # All other program errors get re-raised
+        # e.g. a 500 server error
+        # raise e
 
 
 class routerTests(unittest.TestCase):
