@@ -13,6 +13,8 @@ from urlparse import urlparse
 import logging
 console = logging.getLogger(__name__)
 
+# setting auto-build to false will keep all sub-nodes from
+# running the XML parser.
 env = Environment(os.path.join(project.path or '', "public"),
                   '',
                   debug=(not project.BUNDLE_ASSETS),
@@ -26,7 +28,7 @@ class AssetBundleSyntaxError(Exception):
 def _parse_bundle(elem, parent_bundle=None):
     '''Recursively generate webassets bundles by walking the xml tree'''
     if elem.tag != "bundle":
-        raise AssetBundleSyntaxError("Bundling only works with bundle tags.")
+        raise AssetBundleSyntaxError("Bundling only works with <bundle></bundle> tags.")
     contents = []
     # get all sub_bundles and process them
     for t in elem:
@@ -64,6 +66,10 @@ class memoize_bundles(object):
         self.cached = {}
 
     def __call__(self, input_text):
+        '''
+        Decorator that returns memoized responses.
+        '''
+        # OK to use hash() here since this cache is per-machine.
         if not self.cached.get(hash(input_text), None):
             self.cached[hash(input_text)] = self.method(input_text)
         return self.cached[hash(input_text)]
@@ -90,10 +96,11 @@ def bundle(input_text):
             # construct the asset urls
             try:
                 assets = [link_func(url) for url in bundle.urls(env=env)]
-            except BundleError:
+            except BundleError as err:
+                console.exception("Problem bundling.")
                 console.warning("!"*80 + '''
   Warning, missing pre-compiled static assets. Switching to debug mode
-  automatically. Run compile_static_assets.py to pre-create the compiled 
+  automatically. Run compile_static_assets.py to pre-create the compiled
   minified static assets.
 ''' + "!"*80)
                 env.debug = True

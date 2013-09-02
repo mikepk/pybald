@@ -103,8 +103,7 @@ class Router(object):
         return "<Pybald Router Object>"
 
     def get_handler(self, urlvars=None):
-        controller_name = urlvars["controller"]
-        action_name = urlvars["action"]
+        controller_name, action_name = urlvars["controller"], urlvars["action"]
 
         #methods starting with underscore can't be used as actions
         if self.has_underscore.match(action_name):
@@ -173,10 +172,10 @@ class Router(object):
         # set
         config.redirect = lambda url: Response(location=url, status=302)
 
-        environ['wsgiorg.routing_args'] = ((url), match)
-        environ['routes.route'] = route
-        environ['routes.url'] = url
-        environ['pybald.router'] = self
+        environ.update({'wsgiorg.routing_args': ((url), match),
+                        'routes.route': route,
+                        'routes.url': url,
+                        'pybald.router': self})
 
         # Add pybald extension
         # the pybald.extension is a dictionary that can be used to copy state
@@ -218,10 +217,8 @@ class Router(object):
         # This is a mako 'missing template' exception
         except exceptions.TopLevelLookupException:
             raise exc.HTTPNotFound("Missing Template")
-        # except Exception as e:
-        # All other program errors get re-raised
+        # All other program errors are allowed to bubble up
         # e.g. a 500 server error
-        # raise e
 
 
 class routerTests(unittest.TestCase):
