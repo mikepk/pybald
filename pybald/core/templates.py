@@ -4,7 +4,6 @@
 import os
 import unittest
 import project
-from mako.template import Template
 from mako.lookup import TemplateLookup
 import logging
 console = logging.getLogger(__name__)
@@ -29,12 +28,13 @@ class TemplateEngine:
         self.project_path = project.path
         try:
             default_template_path = os.path.join(os.path.dirname(
-                                                    os.path.realpath(__file__)),
+                                                os.path.realpath(__file__)),
                                                 'default_templates')
             project_template_path = template_path or os.path.join(
-                                                self.project_path, 'app/views')
-            project_cache_path = cache_path or os.path.join(
-                                               self.project_path, 'viewscache')
+                                                            self.project_path,
+                                                            'app/views')
+            project_cache_path = cache_path or os.path.join(self.project_path,
+                                                           'tmp/viewscache')
         except AttributeError:
             console.exception(("**Warning**\n"
                              "Unable to load templates from template path\n"

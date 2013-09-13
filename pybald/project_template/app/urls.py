@@ -18,8 +18,3 @@ def map(urls):
     # depends on your preference
     urls.redirect('{url:.*}/', '{url}',
                   _redirect_code='301 Moved Permanently')
-
-
-    # when in debug mode, print the whole URL mapping
-    if project.debug:
-        sys.stderr.write(str(urls)+"\n")
