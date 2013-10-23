@@ -55,7 +55,7 @@
 <div class="section" id="overview-and-goals">
 <h2>Overview and Goals<a class="headerlink" href="#overview-and-goals" title="Permalink to this headline">¶</a></h2>
 <p><em>For lazy hackers that know what they&#8217;re doing.</em></p>
-<p>Pybald was built initially as an exploration of what makes up a modern web framework. It was not originally intended to be &#8220;industrial strength&#8221; but as a way to experiment with various python web components and how they fit together. After being used to build some non-trivial web projects, Pybald has evolved from this early incarnation to be a fairly complete web framework with its own personality. It&#8217;s still clean and light on initial configuration but it is also relatively powerful since it makes use of many &#8220;best-of-breed&#8221; components connected together using the <a class="reference external" href="http://wsgi.org/wsgi/">WSGI</a> interface.</p>
+<p>Pybald was built initially as an exploration of what makes up a modern web framework. It was not originally intended to be &#8220;industrial strength&#8221; but as a way to experiment with various python web components and how they fit together. After being used to build some non-trivial web projects, Pybald has evolved from this early incarnation to be a fairly complete web framework with its own personality. It&#8217;s still clean and light on initial configuration but it is also relatively powerful since it makes use of many &#8220;best-of-breed&#8221; components connected together using the <a class="reference external" href="http://wsgi.readthedocs.org/en/latest/">WSGI</a> interface.</p>
 <p>The goals behind Pybald:</p>
 <ul class="simple">
 <li>Fast and easy startup - get running quickly with limited configuration</li>
@@ -64,7 +64,7 @@
 <li>Support quick prototyping, but don&#8217;t limit options as a project grows</li>
 <li>Stick to <a class="reference external" href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention over configuration</a></li>
 <li>Limited, or at least transparent, &#8220;Magic&#8221; - A lot of frameworks provide behaviors that seem &#8220;magical&#8221; without making clear how that magic is accomplished. Pybald&#8217;s &#8220;magic&#8221; is limited, easily accessible, and usually explicitly invoked.</li>
-<li>Use <a class="reference external" href="http://wsgi.org/wsgi/">WSGI</a> for the web interfaces and utilize WSGI middleware</li>
+<li>Use <a class="reference external" href="http://wsgi.readthedocs.org/en/latest/">WSGI</a> for the web interfaces and utilize WSGI middleware</li>
 <li><em>Don&#8217;t coddle me</em> - give the power to execute logic in the templates, don&#8217;t hide RDBMS implementation details and SQL, give (easy) access to the internals of the framework, give developers power and flexibility (don&#8217;t impose design hygine).</li>
 </ul>
 <p>What Pybald is <strong>not</strong>:</p>

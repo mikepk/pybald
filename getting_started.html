@@ -55,14 +55,14 @@
 <div class="section" id="installing">
 <h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
 <p>It&#8217;s recommended that you use <tt class="docutils literal"><span class="pre">virtualenv</span></tt> to allow you to isolate experimenting with pybald (and its dependencies) from the rest of your python environment. First we setup a new virtualenv, then we install pybald, finally we copy the empty project_template to a new project name.</p>
-<div class="highlight-sh"><div class="highlight"><pre>~<span class="nv">$ </span>virtualenv --no-site-packages pyb_test
+<div class="highlight-sh"><div class="highlight"><pre>~<span class="nv">$ </span>virtualenv pyb_test
 New python executable in pyb_test/bin/python
 Installing setuptools............done.
 Installing pip...............done.
 ~<span class="nv">$ </span><span class="nb">source</span> ./pyb_test/bin/activate
-<span class="o">(</span>pyb_test<span class="o">)</span>~<span class="nv">$ </span>pip install -e git+git://github.com/mikepk/pybald#egg<span class="o">=</span>pybald
-Obtaining pybald from git+git://github.com/mikepk/pybald#egg<span class="o">=</span>pybald
-  Cloning git://github.com/mikepk/pybald to ./pyb_test/src/pybald
+<span class="o">(</span>pyb_test<span class="o">)</span>~<span class="nv">$ </span>pip install pybald
+Downloading/unpacking pybald
+  Downloading pybald-0.2.0.tar.gz
   Running setup.py egg_info <span class="k">for </span>package pybald
  <span class="o">[</span>...<span class="o">]</span>
   Successfully installed pybald Routes FormAlchemy SqlAlchemy
@@ -102,101 +102,6 @@ Obtaining pybald from git+git://github.com/mikepk/pybald#egg<span class="o">=</s
 <p>When debugging is turned on, the routing layer of Pybald will display all of the configured url routes for the project, then a small welcome message. Out of the box pybald is configured with a generic set of routes that allow for quick prototyping.</p>
 <p>The console has a testing / convenience client <tt class="docutils literal"><span class="pre">c</span></tt> that allows you to issue simulated web requests to your application. Here we&#8217;ve fetched the &#8220;/&#8221; url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were invoked. Finally we print the response from that url which is the simple web response message that pybald is working!</p>
 <p>Pow! You&#8217;re running a pybald application.</p>
-</div>
-<div class="section" id="structure-of-a-pybald-application">
-<h2>Structure of a Pybald Application<a class="headerlink" href="#structure-of-a-pybald-application" title="Permalink to this headline">¶</a></h2>
-<p>A Pybald application is configured, at least partially, by the directory structure of the <em>project</em>. The pybald router will look for files in certain paths and will &#8220;activate&#8221; them for use.</p>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">./app</span></tt></dt>
-<dd><dl class="first last docutils">
-<dt>This is the primary application directory containing the controllers, views and models</dt>
-<dd><dl class="first last docutils">
-<dt><tt class="docutils literal"><span class="pre">./app/controllers</span></tt></dt>
-<dd>All controller files for the project</dd>
-<dt><tt class="docutils literal"><span class="pre">./app/models</span></tt></dt>
-<dd>Models for the project</dd>
-<dt><tt class="docutils literal"><span class="pre">./app/middleware</span></tt></dt>
-<dd><em>optional</em> - Any project specific WSGI middleware</dd>
-<dt><tt class="docutils literal"><span class="pre">./app/views</span></tt></dt>
-<dd>Templates for the project</dd>
-<dt><tt class="docutils literal"><span class="pre">./app/urls.py</span></tt></dt>
-<dd>Url patterns to match against</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">./public</span></tt></dt>
-<dd>Static content like images, css and javascript</dd>
-<dt><tt class="docutils literal"><span class="pre">./project.py</span></tt></dt>
-<dd>Configuration file for the project.</dd>
-<dt><tt class="docutils literal"><span class="pre">./environment.py</span></tt></dt>
-<dd>Local, environment-specific, configuration overrides (e.g. Production, Development, Test)</dd>
-<dt><tt class="docutils literal"><span class="pre">./startup</span></tt></dt>
-<dd>Web server configuration, startup scripts.</dd>
-<dt><tt class="docutils literal"><span class="pre">./utilities</span></tt></dt>
-<dd>Project utility scripts.</dd>
-<dt><tt class="docutils literal"><span class="pre">./tmp</span></tt></dt>
-<dd><dl class="first last docutils">
-<dt>Temporary files</dt>
-<dd><dl class="first last docutils">
-<dt><tt class="docutils literal"><span class="pre">./viewscache</span></tt></dt>
-<dd><em>temporary</em> The template engine&#8217;s file cache for views</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">./wsgi</span></tt></dt>
-<dd><dl class="first last docutils">
-<dt>The directory containing the primary WSGI application</dt>
-<dd><dl class="first last docutils">
-<dt><tt class="docutils literal"><span class="pre">./myapp.py</span></tt></dt>
-<dd>The WSGI app.</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>Most of your application code will be in the <tt class="docutils literal"><span class="pre">app</span></tt> directory which should contain at least these three directories <tt class="docutils literal"><span class="pre">controllers</span></tt>, <tt class="docutils literal"><span class="pre">views</span></tt>, and <tt class="docutils literal"><span class="pre">models</span></tt>.</p>
-<p>A Pybald application consists of the following parts:</p>
-<ul class="simple">
-<li>A webserver</li>
-<li>A <em>WSGI pipeline</em><ul>
-<li>A Router/Dispatcher WSGI module</li>
-<li>User defined controllers, models, and views</li>
-<li>Any additional WSGI middleware</li>
-</ul>
-</li>
-<li>Static content: images, css, javascript</li>
-</ul>
-<p>The heart of a Pybald application is the <em>WSGI pipeline</em>. The pipeline is defined in the file <tt class="docutils literal"><span class="pre">./wsgi/myapp.py</span></tt>. The WSGI pipeline is your application as well as how your webserver of choice will communicate with your application. <cite>myapp.py</cite> can be used to connect to any WSGI compliant webserver (Apache, nginx, uWSGI, etc...), or it can be run directly which invokes a built-in testing server from the command line.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># The main application pipeline</span>
-<span class="c"># Include all WSGI middleware here. The order of</span>
-<span class="c"># web transaction will flow from the bottom of this list</span>
-<span class="c"># to the top, and then back out. The pybald Router</span>
-<span class="c"># should usually be the first item listed.</span>
-<span class="c"># ----------------------------------</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">routes</span><span class="o">=</span><span class="n">my_project</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">urls</span><span class="o">.</span><span class="n">map</span><span class="p">)</span>
-<span class="c"># app = UserManager(app, user_class=User)</span>
-<span class="c"># app = SessionManager(app, session_class=Session)</span>
-<span class="c"># app = ErrorMiddleware(app, error_controller=None)</span>
-<span class="c"># app = DbMiddleware(app)</span>
-<span class="c"># ----------------------------------</span>
-<span class="c">#    ↑↑↑                  ↓↓↓</span>
-<span class="c">#    ↑↑↑                  ↓↓↓</span>
-<span class="c">#   Request              Response</span>
-</pre></div>
-</div>
-<p>Invoking the development web server from the command line should look similar to starting the console (in fact the same code executes). The webserver log is dumped to the console so you can monitor transactions.</p>
-<div class="highlight-sh"><div class="highlight"><pre>~/test_project<span class="nv">$ </span>python wsgi/myapp.py
-Route name Methods Path
-home               /
-base               /<span class="o">{</span>controller<span class="o">}</span>/<span class="o">{</span>action<span class="o">}</span>/<span class="o">{</span>id<span class="o">}</span>
-                   /<span class="o">{</span>controller<span class="o">}</span>/<span class="o">{</span>action<span class="o">}</span>
-                   /<span class="o">{</span>controller<span class="o">}</span>
-                   /*<span class="o">(</span>url<span class="o">)</span>/
-serving on 0.0.0.0:8080 view at http://127.0.0.1:8080
-</pre></div>
-</div>
 </div>
 </div>
 
