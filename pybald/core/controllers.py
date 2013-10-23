@@ -4,7 +4,7 @@
 import unittest
 
 from functools import wraps
-from pybald.core.templates import render as render_view
+from pybald.core.templates import render as render_view, engine as old_style_render_view
 
 from webob import Request, Response
 from webob import exc
@@ -222,11 +222,10 @@ class BaseController(object):
 
         This is targeted for deprecation.
         '''
-        if data is None:
-            data = self.__dict__ or {}
-        template_name = data.pop('template_id', None) or getattr(self, 'template_id', None)
-        return render_view(template=template_name,
-                             data=data)
+        return old_style_render_view(data or self.__dict__ or {})
+
+    _render_view = render_view
+
 
 class BaseControllerTests(unittest.TestCase):
     def setUp(self):

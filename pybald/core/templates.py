@@ -4,7 +4,9 @@
 import os
 import unittest
 import project
+from mako.template import Template
 from mako.lookup import TemplateLookup
+import re
 import logging
 console = logging.getLogger(__name__)
 
@@ -16,6 +18,10 @@ template_helpers = ['from pybald.core.helpers import img, link, humanize, js_esc
 
 if project.template_helpers:
     template_helpers.extend(project.template_helpers)
+
+# templates follow name.FORMAT.template so this is a simple
+# regex check of that pattern
+TEMPLATE_PATTERN = re.compile(r'([^\.]+)\.([^\.]+)\.template$')
 
 
 class TemplateEngine:
@@ -87,7 +93,10 @@ class TemplateEngine:
         name based on the template_id and the format and retrieves it from the
         Mako template system.
         '''
-        template_file = "/{0}.{1}.template".format(template.lower(),
+        if TEMPLATE_PATTERN.search(template):
+            template_file = template
+        else:
+            template_file = "/{0}.{1}.template".format(template.lower().lstrip('/'),
                                                    format.lower())
         console.debug("Using template: {0}".format(template_file))
         # TODO: Add memc caching of rendered templates
