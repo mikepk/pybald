@@ -14,7 +14,7 @@ from textwrap import TextWrapper
 class WrappedFormatter(logging.Formatter):
     '''
     Formatter subclass that indents the messages by 20 characters and
-    appends sql> prompt.
+    prepends sql> prompt.
     '''
     def __init__(self, *pargs, **kargs):
         logging.Formatter.__init__(self, *pargs, **kargs)
