@@ -184,6 +184,10 @@ def action_cached(prefix=content_cache_prefix, keys=None, time=0):
 class BaseController(object):
     '''Base controller that includes the view and a default index method.'''
 
+    def __init__(self, *pargs, **kargs):
+        for key, value in kargs.items():
+            setattr(self, key, value)
+
     def _pre(self, req):
         pass
 
