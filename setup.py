@@ -31,7 +31,7 @@ except ImportError:
     # from distutils.core import setup
 
 setup(name='pybald',
-      version='0.2.0',
+      version='0.2.1',
       description='A lightweight MVC framework',
       license='MIT',
       author='Michael Kowalchik',
@@ -40,13 +40,13 @@ setup(name='pybald',
       packages=find_packages(),
       package_data={'pybald': ['*.template', 'core/default_templates/forms/*.template']},
       install_requires=[
-          "Routes==1.12.5dev",
+          "Routes==2.0-pybald",
           "FormAlchemy==1.4.3", "SqlAlchemy==0.8.2",
           "WebOb==1.2.3", "Mako==0.8.1", "python-memcached==1.53", "webassets==0.8",
           "lxml==3.2.3"
       ],
     dependency_links = [
-        'http://github.com/mikepk/pybald-routes/tarball/master#egg=Routes-1.12.5dev'
+        'http://github.com/mikepk/routes/tarball/v2.0-pybald#egg=Routes-2.0-pybald'
     ]
 
 )
