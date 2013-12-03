@@ -44,9 +44,9 @@ class Router(object):
                        matching urls).
 
         '''
-        if routes is None:
-            raise Exception("Route mapping is required. Please pass in a "
-                            "routing function to the router as and arg to "
+        if routes is None or not callable(routes):
+            raise TypeError("Route mapping is required. Please pass in a "
+                            "routing function to the router as an arg to "
                             "Router init. "
                             "The routing function takes a routes mapper "
                             "object and uses it to contruct url mappings. "
