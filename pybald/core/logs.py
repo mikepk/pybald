@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import sys
+#import sys
 import unittest
-
-from webob import Request, Response
+#from webob import Request, Response
 
 import logging
 import logging.handlers
 from textwrap import TextWrapper
+console = logging.getLogger(__name__)
 
 
 class WrappedFormatter(logging.Formatter):
@@ -66,6 +66,20 @@ def disable_sql_log():
     '''Function to turn off debug SQL output for SQLAlchemy'''
     engine_log.setLevel(logging.ERROR)
 
+
+class LogPoint(object):
+    '''Middleware to touch the last active date'''
+    def __init__(self, application, begin_message="", end_message="", width=79, fillchar='-'):
+        self.begin_message = begin_message
+        self.end_message = end_message
+        self.application = application
+        self.log = '{{0:{0}^{1}}}'.format(fillchar, width)
+
+    def __call__(self, environ, start_response):
+        console.debug(self.log.format(' {0} '.format(self.begin_message)))
+        resp = self.application(environ, start_response)
+        console.debug(self.log.format(' {0} '.format(self.end_message)))
+        return resp
 
 if __name__ == '__main__':
     unittest.main()
