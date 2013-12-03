@@ -183,7 +183,7 @@ class Router(object):
         environ.setdefault('pybald.extension', {})["url_for"] = url
 
         # debug print messages
-        console.debug(''.join(['=' * 20, ' ', req.path_qs, ' ', '=' * 20]))
+        console.debug('{0:=^79}'.format(' {0} '.format(req.path_qs)))
         console.debug('Method: {0}'.format(req.method))
 
         # use routes to match the url to a path
