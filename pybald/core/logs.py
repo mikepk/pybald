@@ -68,7 +68,10 @@ def disable_sql_log():
 
 
 class LogPoint(object):
-    '''Middleware to touch the last active date'''
+    '''
+    WSGI middleware to output a log message before and after this point in
+    the wsgi pipeline
+    '''
     def __init__(self, application, begin_message="", end_message="", width=79, fillchar='-'):
         self.begin_message = begin_message
         self.end_message = end_message
