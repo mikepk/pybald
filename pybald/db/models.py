@@ -117,14 +117,15 @@ from sqlalchemy.ext.hybrid import (
 from sqlalchemy import func
 
 import json
-import re
+import pickle
+import zlib
 from pybald.db import engine, dump_engine
 from pybald.util import camel_to_underscore, pluralize
 
 import project
-from project import mc
+# from project import mc
 
-from sqlalchemy.orm.interfaces import SessionExtension
+# from sqlalchemy.orm.interfaces import SessionExtension
 from sqlalchemy.ext.mutable import Mutable
 
 from sqlalchemy import __version__ as sa_ver
@@ -134,7 +135,8 @@ sa_maj_ver, sa_min_ver, sa_rev_ver = sa_ver.split(".")
 if int(sa_min_ver) >= 7:
     from sqlalchemy.orm.attributes import flag_modified
 else:
-    from sqlalchemy.orm.attributes import instance_state, instance_dict, NO_VALUE
+    from sqlalchemy.orm.attributes import instance_dict, NO_VALUE
+
     def flag_modified(instance, key):
         state, dict_ = instance_state(instance), instance_dict(instance)
         impl = state.manager[key].impl
@@ -324,6 +326,15 @@ class JSONEncodedDict(TypeDecorator):
         if value is not None:
             value = json.loads(value)
         return value
+
+
+class ZipPickler(object):
+    '''Simple wrapper for pickle that auto compresses/decompresses values'''
+    def loads(self, string):
+        return pickle.loads(zlib.decompress(string))
+
+    def dumps(self, obj, protocol):
+        return zlib.compress(pickle.dumps(obj, protocol))
 
 
 class MutationDict(Mutable, dict):
