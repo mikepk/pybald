@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from webob import Request, Response, exc
+from webob import Response, exc
 from pybald.core.templates import render as template_engine
 import logging
 console = logging.getLogger(__name__)
+
 
 class ErrorMiddleware:
     '''

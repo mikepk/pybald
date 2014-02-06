@@ -50,15 +50,16 @@ class Cache(object):
             else:
                 # fetch the object the 'normal' way
                 cached_object = func(*pargs, **kargs)
-                # since we got this from the database, mark it to be stored
-                # in the cache with a needs_update
+                # since we got this from the database, mark it with a
+                # needs_update
                 cached_object.__needs_update__ = True
             # mark cached object for cache-tracking
             cached_object.__memcached__ = True
             # reconstruct the relationship list, anything that's in the current
             # relationship map add it back to the object so we know what it came
             # out of the cache with.
-            cached_object.__related__ = set([cr for cr in child_relationships(cached_object)])
+            cached_object.__related__ = set([child_object for child_object in
+                                            child_relationships(cached_object)])
             return cached_object
         return replacement
 

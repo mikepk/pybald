@@ -391,6 +391,10 @@ class NotFound(NoResultFound):
     pass
 
 
+base_id = Column(Integer, nullable=False, primary_key=True)
+# print base_id._creation_order
+
+
 class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
     '''
     MetaClass that sets up some common behaviors for pybald models.
@@ -430,7 +434,10 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
                                           for value in cls.__dict__.values()
                                     if isinstance(value, Column)])
         if not has_primary:
-            cls.id = Column(Integer, nullable=False, primary_key=True)
+            # treat the id as a mixin w/copy
+            new_id = base_id.copy()
+            new_id._creation_order = base_id._creation_order
+            cls.id = new_id
         super(ModelMeta, cls).__init__(name, bases, ns)
 
 
