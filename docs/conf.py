@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Pybald'
-copyright = u'2013, Michael Kowalchik'
+copyright = u'2014, Michael Kowalchik'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -100,7 +100,7 @@ pygments_style = 'sphinx'
 # html_theme = 'sphinxdoc'
 # html_theme = 'bootstrap' 
 # html_theme = 'solar' 
-html_theme = 'haiku'
+html_theme = 'solar'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
