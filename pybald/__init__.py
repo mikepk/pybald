@@ -6,10 +6,4 @@
 # Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 
 
-__version__ = '0.2.1'
-
-# from db import models
-# from core import forms
-# from core import errors
-# from core import controllers
-# from core import templates
+__version__ = '0.2.2'
