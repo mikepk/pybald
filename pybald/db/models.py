@@ -391,8 +391,7 @@ class NotFound(NoResultFound):
     pass
 
 
-base_id = Column(Integer, nullable=False, primary_key=True)
-# print base_id._creation_order
+surrogate_pk_template = Column(Integer, nullable=False, primary_key=True)
 
 
 class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
@@ -435,9 +434,9 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
                                     if isinstance(value, Column)])
         if not has_primary:
             # treat the id as a mixin w/copy
-            new_id = base_id.copy()
-            new_id._creation_order = base_id._creation_order
-            cls.id = new_id
+            surrogate_pk = surrogate_pk_template.copy()
+            surrogate_pk._creation_order = surrogate_pk_template._creation_order
+            cls.id = surrogate_pk
         super(ModelMeta, cls).__init__(name, bases, ns)
 
 
