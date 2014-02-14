@@ -33,16 +33,17 @@ engine_log = logging.getLogger('sqlalchemy.engine')
 
 # TODO: change thie default level to ERROR and always
 # enable logging
-def default_debug_log(level=logging.DEBUG):
+def default_debug_log(level=logging.DEBUG, log_class=logging.StreamHandler):
     # log all debug messages
     # pull the root logger and set it's logging to *level*
     root = logging.getLogger()
     root.setLevel(level)
-    h = logging.StreamHandler()
+
+    h = log_class()
     root.addHandler(h)
 
     # setup indented logging for SQL output
-    h2 = logging.StreamHandler()
+    h2 = log_class()
     formatter = WrappedFormatter("%(message)s")
     h2.setFormatter(formatter)
     # For SQL log, INFO is better than DEBUG
@@ -72,7 +73,8 @@ class LogPoint(object):
     WSGI middleware to output a log message before and after this point in
     the wsgi pipeline
     '''
-    def __init__(self, application, begin_message="", end_message="", width=79, fillchar='-'):
+    def __init__(self, application, begin_message="start", end_message="end",
+                 width=79, fillchar='-'):
         self.begin_message = begin_message
         self.end_message = end_message
         self.application = application
