@@ -38,7 +38,7 @@ setup(name='pybald',
       author_email='mikepk@tenzerolab.com',
       url='http://pybald.com/',
       packages=find_packages(),
-      package_data={'pybald': ['*.template', 'core/default_templates/forms/*.template']},
+      package_data={'pybald': ['core/default_templates/*.template', 'core/default_templates/forms/*.template']},
       install_requires=[
           "Routes==2.0-pybald",
           "FormAlchemy==1.4.3", "SqlAlchemy==0.8.2",
