@@ -6,7 +6,7 @@
 # Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 
 
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 # from db import models
 # from core import forms
