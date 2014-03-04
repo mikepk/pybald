@@ -29,20 +29,20 @@ class WrappedFormatter(logging.Formatter):
 
 # sqlalchemy engine logger
 engine_log = logging.getLogger('sqlalchemy.engine')
+root_log = logging.getLogger()
 
 
-
-def root_debug_log(level=logging.DEBUG, log_class=logging.StreamHandler):
+def set_root_logger(level=logging.DEBUG, log_class=logging.StreamHandler):
     # log all debug messages
     # pull the root logger and set it's logging to *level*
-    root = logging.getLogger()
-    root.setLevel(level)
+    # root = logging.getLogger()
+    root_log.setLevel(level)
 
     h = log_class()
-    root.addHandler(h)
+    root_log.addHandler(h)
 
 
-def sql_debug_log(level=logging.DEBUG, log_class=logging.StreamHandler):
+def set_sql_logger(level=logging.DEBUG, log_class=logging.StreamHandler):
     # setup indented logging for SQL output
     h2 = log_class()
     formatter = WrappedFormatter("%(message)s")
@@ -62,8 +62,8 @@ def sql_debug_log(level=logging.DEBUG, log_class=logging.StreamHandler):
 # TODO: change thie default level to ERROR and always
 # enable logging
 def default_debug_log(level=logging.DEBUG, log_class=logging.StreamHandler):
-    root_debug_log(level, log_class)
-    sql_debug_log(level, log_class)
+    set_root_logger(level, log_class)
+    set_sql_logger(level, log_class)
 
 
 def enable_sql_log():
