@@ -47,7 +47,7 @@ setup(name='pybald',
           "lxml==2.3.2"
       ],
     dependency_links = [
-        'http://github.com/mikepk/pybald-routes/tarball/master#egg=Routes-1.12.5dev'
+        'https://github.com/mikepk/pybald-routes/tarball/master#egg=Routes-1.12.5dev'
     ]
 
 )
