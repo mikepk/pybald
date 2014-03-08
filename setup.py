@@ -39,7 +39,7 @@ with io.open(os.path.join(here, 'README.rst'), encoding='utf8') as f:
 CHANGES = ''
 
 setup(name='pybald',
-      version='0.2.2',
+      version='0.2.3',
       description='A lightweight python web framework',
       long_description=README + '\n\n' + CHANGES,
       license='MIT',
@@ -51,7 +51,6 @@ setup(name='pybald',
       package_data={'pybald': ['core/default_templates/*.template', 'core/default_templates/forms/*.template']},
       install_requires=[
           "pybald-routes==2.11",
-          "Routes==1.12.5dev",
           "FormAlchemy==1.4.3", "SqlAlchemy==0.8.2",
           "WebOb==1.2.3", "Mako==0.8.1", "python-memcached==1.53", "webassets==0.8",
           "lxml==3.2.3"
