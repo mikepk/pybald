@@ -6,4 +6,4 @@
 # Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 
 
-__version__ = '0.2.2'
+__version__ = '0.2.5dev'

@@ -27,27 +27,35 @@ except ImportError:
     from ez_setup import use_setuptools
     use_setuptools()
     from setuptools import setup, find_packages
-    #
-    # from distutils.core import setup
+import io
+import os
+
+import pybald
+version = pybald.__version__
+
+here = os.path.abspath(os.path.dirname(__file__))
+with io.open(os.path.join(here, 'README.rst'), encoding='utf8') as f:
+    README = f.read()
+# with io.open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf8') as f:
+#     CHANGES = f.read() or ''
+CHANGES = ''
 
 setup(name='pybald',
-      version='0.2.1',
-      description='A lightweight MVC framework',
+      version=version,
+      description='A lightweight python web framework',
+      long_description=README + '\n\n' + CHANGES,
       license='MIT',
+      keywords='web framework',
       author='Michael Kowalchik',
       author_email='mikepk@tenzerolab.com',
       url='http://pybald.com/',
       packages=find_packages(),
       package_data={'pybald': ['core/default_templates/*.template', 'core/default_templates/forms/*.template']},
       install_requires=[
-          "Routes==2.0-pybald",
+          "pybald-routes==2.11",
           "FormAlchemy==1.4.3", "SqlAlchemy==0.8.2",
           "WebOb==1.2.3", "Mako==0.8.1", "python-memcached==1.53", "webassets==0.8",
           "lxml==3.2.3"
       ],
-    dependency_links = [
-        'http://github.com/mikepk/routes/tarball/v2.0-pybald#egg=Routes-2.0-pybald'
-    ]
-
 )
 
