@@ -52,4 +52,4 @@ class Client(object):
         if cookie_string:
             self._set_cookie(cookie_string)
         
-        return req.get_response(self.app)
+        return resp
