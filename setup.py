@@ -30,6 +30,8 @@ except ImportError:
 import io
 import os
 
+import pybald
+version = pybald.__version__
 
 here = os.path.abspath(os.path.dirname(__file__))
 with io.open(os.path.join(here, 'README.rst'), encoding='utf8') as f:
@@ -39,7 +41,7 @@ with io.open(os.path.join(here, 'README.rst'), encoding='utf8') as f:
 CHANGES = ''
 
 setup(name='pybald',
-      version='0.2.3',
+      version=version,
       description='A lightweight python web framework',
       long_description=README + '\n\n' + CHANGES,
       license='MIT',
