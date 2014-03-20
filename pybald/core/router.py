@@ -46,7 +46,35 @@ class Router(object):
         routes(self.map)
         # debug print the whole URL map
         console.debug(str(self.map))
-        self.load(controllers)
+        if controllers is None:
+            self.load_old_style()
+        else:
+            self.load(controllers)
+
+    def load_old_style(self):
+        '''Compatibility method for old-style pybald install.'''
+        console.warn("!"*80+'''
+!! Old style Router init is deprecated.
+!!
+!! New style pybald Router objects are constructed by passing in the controller
+!! module or controller registry.
+!! You will want to update your wsgi/myapp.py file.
+!! app = Router(controllers=CONTROLLER_REGISTRY)
+'''+"!"*80)
+        import project
+        # load the controllers from the project defined path
+        # change this to passed in value to the Router. That way it can
+        # be project specific
+        # Load the project specified in the project file
+        my_project = __import__(project.package_name, globals(), locals(),
+                                                                    ['app'], -1)
+        # add the project package name to the global symbol table
+        # to avoid any double imports
+        globals()[project.package_name] = my_project
+        # import all controllers
+        __import__('{project}.app'.format(project=project.package_name),
+                              globals(), locals(), ['controllers'], -1)
+        self.load(my_project.app.controllers)
 
     def load(self, controllers):
         '''
