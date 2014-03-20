@@ -27,7 +27,6 @@ from pybald.core.router import Router
 from pybald.core.errors import ErrorMiddleware
 # from pybald.core.sessions import SessionManager
 # from pybald.core.users import UserManager
-# from pybald.core.pybald_logger import PybaldLogger
 # from pybald.core.db_middleware import DbMiddleware
 
 # load the application
@@ -37,8 +36,8 @@ from ..app import urls, models, controllers
 # load the error controller so that the ErrorMiddleware
 # has somewhere to route the request if an error occurs
 from ..app.controllers import ErrorController
-# from quiz_site.app.models.session import Session
-# from quiz_site.app.models.user import User
+# from ..app.models.session import Session
+# from ..app.models.user import User
 
 # The main application pipeline
 # Include all WSGI middleware here. The order of
