@@ -7,23 +7,9 @@ from webob import Request, Response, exc
 from routes import Mapper, request_config, URLGenerator
 # handle Mako's top level lookup
 from mako import exceptions
-import project
 from pybald.util import camel_to_underscore
 import logging
 console = logging.getLogger(__name__)
-
-# load the controllers from the project defined path
-# change this to passed in value to the Router. That way it can
-# be project specific
-# Load the project specified in the project file
-my_project = __import__(project.package_name, globals(), locals(),
-                                                            ['app'], -1)
-# add the project package name to the global symbol table
-# to avoid any double imports
-globals()[project.package_name] = my_project
-# import all controllers
-__import__('{project}.app'.format(project=project.package_name),
-                      globals(), locals(), ['controllers'], -1)
 
 
 class Router(object):
@@ -33,7 +19,7 @@ class Router(object):
 
     # add controllers=None to the call sig and use that for controller
     # loading
-    def __init__(self, application=None, routes=None):
+    def __init__(self, application=None, routes=None, controllers=None):
         '''
         Create a Router object, the core of the pybald framework.
 
@@ -60,13 +46,15 @@ class Router(object):
         routes(self.map)
         # debug print the whole URL map
         console.debug(str(self.map))
-        self.load()
+        self.load(controllers)
 
-    def load(self):
+    def load(self, controllers):
         '''
-        Loads controllers from PROJECT.app.controllers. It does some text
+        Finds registred controllers in controllers. Does some text
         munging to change the camel-case class names into
-        underscore-separated url like names. (HomeController)
+        underscore-separated url like names. (HomeController to home)
+
+        :param controllers: A module containing all loaded controllers
 
         All controller candidates are loaded into a hash to look up
         the matched "controller" urlvar against.
@@ -81,7 +69,7 @@ class Router(object):
         '''
 
         controller_names = []
-        for controller in my_project.app.controllers.__all__:
+        for controller in controllers.__all__:
             controller_name = camel_to_underscore(controller)
             try:
                 controller_path_name = self.controller_pattern.search(
@@ -91,8 +79,8 @@ class Router(object):
             controller_names.append(controller_path_name)
             # self.controllers holds paths to map to modules and controller
             # names
-            self.controllers[controller_path_name] = getattr(my_project.app.controllers,
-                                                                    controller)
+            self.controllers[controller_path_name] = getattr(controllers,
+                                                             controller)
 
         # register the controller module names
         # with the mapper, creates the internal regular
@@ -137,6 +125,11 @@ class Router(object):
         dispatching urls to controllers, it also allows 'method override'
         behavior allowing other HTTP methods to be invoked such as ``put`` and
         ``delete`` from web clients that don't support them natively.
+
+        :param environ: WSGI CGI-like request environment
+
+        :param start_response: WSGI callback for starting the response and
+        setting HTTP response headers
         '''
         req = Request(environ)
         req.errors = 'ignore'
