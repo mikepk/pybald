@@ -444,9 +444,31 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
 class NonDbModel(object):
     pass
 
+
+class Registry(ModelMeta):
+    '''
+    A registry metaclass that keeps track of all defined classes that 
+    inherit from a base class using this metaclass.
+    '''
+    # lifted almost verbatim from: http://martyalchin.com/2008/jan/10/simple-plugin-framework/
+    def __init__(cls, name, bases, attrs):
+        if not hasattr(cls, 'registry'):
+            # This branch only executes when processing the mount point itself.
+            # So, since this is a new type, not an implementation, this
+            # class shouldn't be registered. Instead, it sets up a
+            # list where items can be registered later.
+            cls.registry = []
+        else:
+            # This must be an implementation, which should be registered.
+            # Simply appending it to the list is all that's needed to keep
+            # track of it later.
+            cls.registry.append(cls)
+        super(Registry, cls).__init__(name, bases, attrs)
+
+
 class Model(Base):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
-    __metaclass__ = ModelMeta
+    __metaclass__ = Registry
 
     # exception aliases
     NotFound = sqlalchemy.orm.exc.NoResultFound
