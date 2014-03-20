@@ -447,7 +447,7 @@ class NonDbModel(object):
 
 class Registry(ModelMeta):
     '''
-    A registry metaclass that keeps track of all defined classes that 
+    A registry creating metaclass that keeps track of all defined classes that
     inherit from a base class using this metaclass.
     '''
     # lifted almost verbatim from: http://martyalchin.com/2008/jan/10/simple-plugin-framework/
