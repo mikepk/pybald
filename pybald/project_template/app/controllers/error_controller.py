@@ -16,27 +16,27 @@ from mako import exceptions
 import project
 from collections import defaultdict
 
+
 def error_response(template="general_error", status_code=500):
     template = os.path.join('error', template)
     return Response(body=render_view(template=template, format="html"),
                             status=status_code)
 
+
 class ErrorController(BaseController):
     '''Controller to handle error exceptions.'''
     # map status codes to error controller actions
-    error_map = defaultdict(lambda:'general_error',
-                                    {404:'not_found',
-                                     410:'gone',
-                                     401:'not_authorized',
-                                     500:'general_error'})
-
+    error_map = defaultdict(lambda: 'general_error',
+                                    {404: 'not_found',
+                                     410: 'gone',
+                                     401: 'not_authorized',
+                                     500: 'general_error'})
 
     def __init__(self, *pargs, **kargs):
         '''Setup the error controller'''
         self.status_code = kargs.pop('status_code', 500)
         self.message = kargs.pop('message', None)
         super(ErrorController, self).__init__(*pargs, **kargs)
-
 
     @action
     def http_client_error(self, req):
@@ -54,7 +54,7 @@ class ErrorController(BaseController):
         mode, or point to the regular error page otherwise.
         '''
         if project.email_errors or project.debug:
-            stack_trace = render_view(template='stack_trace', data={'req':req})
+            stack_trace = render_view(template='stack_trace', data={'req': req})
 
         if project.debug:
             return Response(body=stack_trace, status=self.status_code)
