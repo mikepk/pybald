@@ -66,7 +66,7 @@ def main():
     '''A simple server startup if module is called directly'''
     from optparse import OptionParser
     from wsgiref.simple_server import make_server
-    from pybald.core.static_serve import StaticServer
+    from pybald.util.static_serve import StaticServer
 
     parser = OptionParser()
     parser.add_option("--host", default="0.0.0.0",
@@ -79,7 +79,7 @@ def main():
     (options, args) = parser.parse_args()
 
     # add the static server component
-    my_app = StaticServer(app, path='public')
+    my_app = StaticServer(app, path=os.path.join(project_path, 'public'))
     httpd = make_server(options.host, options.port, my_app)
     print("Serving on {0}:{1}...".format(options.host, options.port))
     httpd.serve_forever()
