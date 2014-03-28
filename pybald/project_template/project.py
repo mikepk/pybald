@@ -86,11 +86,28 @@ if debug:
 
 # Runs the project console. Allows interacting with the models and controllers.
 if __name__ == '__main__':
+    # import sys
+    sys.path.append(toplevel)
+    if __package__ is None:
+        __import__(package_name, globals(), locals(), [], -1)
+        __package__ = package_name
+
     # set the sys.modules project entry to this file
     # wrapped in the ConfigWrapper to avoid double import
     sys.modules['project'] = ConfigWrapper(sys.modules['__main__'])
-    from pybald.core.console import Console
-    console = Console(project_name=project_name, package_name=package_name)
+    from pybald.util.console import Console
+
+    # load the application!
+    from .wsgi.myapp import app
+
+    # now the models registry should be loaded and the additional_symbols
+    # added
+    from pybald.db.models import Model
+    models = dict([(model.__name__, model) for model in Model.registry])
+
+    # create a pybald console around it
+    console = Console(project_name=project_name, app=app,
+                      additional_symbols=models)
     console.run()
 else:
     # Sets this module's entry in modules to be wrapped by the getattr
