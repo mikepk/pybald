@@ -4,9 +4,9 @@
 
 import os
 import project
-import re
 
 from urlparse import urlparse, ParseResult
+# global request_config... how can we eliminate?
 from routes import request_config
 
 import logging
@@ -29,8 +29,10 @@ pip install pyhash
 
 # parse result keys
 class AssetUrl(dict):
-    '''Wraps urls and returns URL transformations when necessary. Examples
-    include when running static assets on a CDN.
+    '''
+    Wraps urls and returns URL transformations when necessary.
+
+    The primary use case is transforming the url for running static assets on a CDN.
     '''
     keys = ("scheme", "netloc", "path", "params", "query", "fragment")
 
@@ -82,7 +84,7 @@ def compute_asset_tag(filename, pattern='{filename}{extension}?v={tag}'):
 
 
 def add_js(filename):
-    return '''<script type="text/javascript" src="{0}"></script>'''.format(
+    return '''<script src="{0}"></script>'''.format(
                                         AssetUrl(compute_asset_tag(filename)))
 
 
@@ -98,3 +100,5 @@ def add_extern_css(filename, media="screen"):
             ''' media="{1}" rel="stylesheet" />''').format(
                                                 filename,
                                                 str(media))
+
+
