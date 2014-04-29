@@ -82,6 +82,8 @@ class memoize_bundles(object):
         self.cached = {}
 
     def __call__(self, input_text):
+        if project.debug:
+            return self.method(input_text)
         key = hashfunc(input_text)
         try:
             return self.cached[key]
