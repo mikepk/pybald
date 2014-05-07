@@ -6,6 +6,8 @@ import sys
 import re
 
 from inspect import isclass
+from importlib import import_module
+from types import ModuleType
 
 import logging
 log = logging.getLogger(__name__)
@@ -18,6 +20,61 @@ PYTHON_MODULE_NAME_PATTERN = re.compile(r'^([a-z][0-9a-z_]*)\.py$', re.I)
 PYTHON_MAGIC_VARIABLE_PATTERN = re.compile(r'^__.*__$')
 
 import traceback
+
+
+# TODO, use walk to have this recursively walk up the models path
+# finding all interesting classes.
+def load_from_path(path, package):
+    '''
+    '''
+    # loaded_classes = []
+    for dirpath, dirnames, filenames in os.walk(path):
+        if dirpath != path:
+            # turn nested path into package notation
+            nested = os.path.relpath(dirpath, path
+                                        ).replace('/', '.').lstrip('.')
+        else:
+            nested = None
+        for filename in sorted(filenames):
+            log.debug(filename)
+            match = PYTHON_MODULE_NAME_PATTERN.search(filename)
+            if not match:
+                continue
+            import_module_name = match.group(1)
+            try:
+                if not nested:
+                    import_package_name = import_module_name
+                    # import_list = ()
+                else:
+                    # import_list = (import_module_name,)
+                    import_package_name = '.'.join((nested, import_module_name))
+                log.debug("."+import_package_name)
+                log.debug(import_module(name="."+import_package_name,
+                                        package=package.__name__))
+            except ImportError:
+                if log.handlers or logging.getLogger().handlers:
+                    log.exception("Automatic Pybald class loader failed with exception:")
+                    log.error('-'*80)
+                else:
+                    tb = traceback.format_exc()
+                    sys.stderr.write(tb + '-'*80 + '\n')
+
+                raise PybaldImportError("\nThe automatic pybald class loader "
+                                        "failed while attempting to load the module {0} from {1}.\n"
+                                        "".format(filename, dirpath))
+
+
+def auto_load(package):
+    '''
+    Walks the entire path of a package and loads all python
+    modules present within this package. Used for auto-loading
+    classes and modules.
+    '''
+    if isinstance(package, ModuleType):
+        return
+    package_path = os.path.dirname(os.path.realpath(package.__file__))
+    load_from_path(package_path, package)
+
 
 # TODO, use walk to have this recursively walk up the models path
 # finding all interesting classes.
@@ -76,7 +133,7 @@ def pybald_class_loader(path, classes, module_globals, module_locals,
                                          module_locals,
                                          import_list,
                                          1)
-            except ImportError, ie:
+            except ImportError:
                 if log.handlers or logging.getLogger().handlers:
                     log.exception("Automatic Pybald class loader failed with exception:")
                     log.error('-'*80)

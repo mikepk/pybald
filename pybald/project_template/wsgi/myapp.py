@@ -19,8 +19,8 @@ site.addsitedir(project.toplevel)
 
 # setup the package if not present, allows relative imports
 if __name__ == '__main__' and __package__ is None:
-    __import__(project.package_name, globals(), locals(),
-                        ['wsgi'], -1)
+    from importlib import import_module
+    import_module('.wsgi', project.package_name)
     __package__ = project.package_name+'.wsgi'
 
 from pybald.core.router import Router
@@ -31,13 +31,14 @@ from pybald.core.middleware.errors import ErrorMiddleware
 
 # load the application
 # loading models and controllers here initializes them
+from pybald.core.class_loader import auto_load
 from ..app import urls, models, controllers
-models.load()
-controllers.load()
+auto_load(models)
+auto_load(controllers)
 
 # load the error controller so that the ErrorMiddleware
 # has somewhere to route the request if an error occurs
-from ..app.controllers import ErrorController
+from ..app.controllers.error_controller import ErrorController
 # from ..app.models.session import Session
 # from ..app.models.user import User
 
@@ -87,6 +88,6 @@ def main():
     httpd.serve_forever()
     sys.exit(1)
 
-#use when moduled called directly, runs internal webserver
+#use when module called directly, runs internal webserver
 if __name__ == '__main__':
     main()
