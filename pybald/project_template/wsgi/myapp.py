@@ -24,7 +24,7 @@ if __name__ == '__main__' and __package__ is None:
     __package__ = project.package_name+'.wsgi'
 
 from pybald.core.router import Router
-from pybald.core.errors import ErrorMiddleware
+from pybald.core.middleware.errors import ErrorMiddleware
 # from pybald.core.middleware.sessions import SessionManager
 # from pybald.core.middleware.users import UserManager
 # from pybald.core.middleware.db_middleware import DbMiddleware
