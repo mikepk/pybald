@@ -17,7 +17,7 @@ site.addsitedir(project_path)
 import project
 site.addsitedir(project.toplevel)
 
-# setup the package if not present
+# setup the package if not present, allows relative imports
 if __name__ == '__main__' and __package__ is None:
     __import__(project.package_name, globals(), locals(),
                         ['wsgi'], -1)
