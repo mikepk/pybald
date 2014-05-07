@@ -4,7 +4,7 @@ import sys
 import os
 
 # mod_wsgi restricts stdout, so switch it to stderr
-sys.stdout = sys.stderr
+original_stdout, sys.stdout = sys.stdout, sys.stderr
 
 # find out where this module lives, set the project path accordingly
 project_path, script_path = os.path.split(
@@ -17,7 +17,7 @@ site.addsitedir(project_path)
 import project
 site.addsitedir(project.toplevel)
 
-
+# setup the package if not present
 if __name__ == '__main__' and __package__ is None:
     __import__(project.package_name, globals(), locals(),
                         ['wsgi'], -1)
@@ -25,13 +25,15 @@ if __name__ == '__main__' and __package__ is None:
 
 from pybald.core.router import Router
 from pybald.core.errors import ErrorMiddleware
-# from pybald.core.sessions import SessionManager
-# from pybald.core.users import UserManager
-# from pybald.core.db_middleware import DbMiddleware
+# from pybald.core.middleware.sessions import SessionManager
+# from pybald.core.middleware.users import UserManager
+# from pybald.core.middleware.db_middleware import DbMiddleware
 
 # load the application
 # loading models and controllers here initializes them
 from ..app import urls, models, controllers
+models.load()
+controllers.load()
 
 # load the error controller so that the ErrorMiddleware
 # has somewhere to route the request if an error occurs
@@ -84,7 +86,6 @@ def main():
     print("Serving on {0}:{1}...".format(options.host, options.port))
     httpd.serve_forever()
     sys.exit(1)
-
 
 #use when moduled called directly, runs internal webserver
 if __name__ == '__main__':
