@@ -19,27 +19,37 @@ import random
 
 controller_pattern = re.compile(r'(\w+)Controller')
 
+
 # a no-op placeholder
-noop_func = lambda *pargs, **kargs: None
+def noop_func(*pargs, **kargs):
+    '''Do nothing'''
+    pass
 
 
 def get_template_name(instance, method_name):
-    # this code defines the template id to match against
-    # template path = controller name + '/' + action name (except in the case
-    # of) index if the template is specified as part of the processed object
-    # return that, short circuiting any other template name processing
-    # This form may removed later, considered a candidate for deprecation
-    t = getattr(instance, 'template_id', None)
-    if t:
-        return t
+    '''
+    Defines the template id to match against.
+
+    :param instance: the instance to generate a template for
+    :param method_name: the method to combine with the instance class
+
+    template path = controller name + '/' + action name, except in the case
+    of index. If the template is specified as part of the processed object
+    return that, short circuiting any other template name processing
+
+    This form may removed later, considered a candidate for deprecation
+    '''
+    template_id = getattr(instance, 'template_id', None)
+    if template_id:
+        return template_id
     # build a default template name if one isn't explicitly set
     try:
         template_root_name = camel_to_underscore(
                   controller_pattern.search(instance.__class__.__name__
-                                       ).group(1))
+                                            ).group(1))
     except AttributeError:
         template_root_name = ''
-    return "/".join(filter(lambda x: x != '', [template_root_name, method_name]))
+    return "/".join(filter(None, [template_root_name, method_name]))
 
 
 # action / method decorator

@@ -2,6 +2,7 @@
 # encoding: utf-8
 import sys
 import os
+from pybald.core.class_loader import auto_load
 
 # mod_wsgi restricts stdout, so switch it to stderr
 original_stdout, sys.stdout = sys.stdout, sys.stderr
@@ -30,8 +31,9 @@ from pybald.core.middleware.errors import ErrorMiddleware
 # from pybald.core.middleware.db_middleware import DbMiddleware
 
 # load the application
-# loading models and controllers here initializes them
-from pybald.core.class_loader import auto_load
+# loading models and controllers
+# auto_load'ing them ensures all models and controllers are loaded
+# before proceeding
 from ..app import urls, models, controllers
 auto_load(models)
 auto_load(controllers)
