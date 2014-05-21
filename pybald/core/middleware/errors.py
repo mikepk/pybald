@@ -16,13 +16,13 @@ class ErrorMiddleware:
     webob HTTP exceptions and other exception types.
 
 
-        :param application:  WSGI application/middleware that is to be
-                             *wrapped* by the error handler in the web app pipeline.
+    :param application:  WSGI application/middleware that is to be
+                         *wrapped* by the error handler in the web app pipeline.
 
-        :param error_controller:  A class that is used by the middleware to handle
-                              errors for the project. When configured, an error_controller
-                              instance is created and the WSGI response is passed to
-                              the error_controller to handle.
+    :param error_controller:  A class that is used by the middleware to handle
+                          errors for the project. When configured, an error_controller
+                          instance is created and the WSGI response is passed to
+                          the error_controller to handle.
     '''
     def __init__(self, application=None, error_controller=None):
         if application:

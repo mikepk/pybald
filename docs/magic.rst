@@ -33,7 +33,7 @@ When the app.controllers package is loaded, a special ``pybald_class_loader`` fu
 
 For controllers, the ``./app/controllers`` path is scanned with a list of ``(BaseController,)`` as the list of matching class names. Any module in the path that inherits from ``BaseController`` will be included in the list of exported classes. These are automatically pre-loaded into the package and exported in the ``__all__`` python 'magic method' of the package.
 
-.. literalinclude:: /pybald_src/core/__init__.py
+.. literalinclude:: /pybald_src/core/class_loader.py
    :pyobject: pybald_class_loader
 
 

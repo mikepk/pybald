@@ -7,24 +7,24 @@ import re
 
 from inspect import isclass
 from importlib import import_module
-from types import ModuleType
 
 import logging
 log = logging.getLogger(__name__)
+import time
 
 
 class PybaldImportError(ImportError):
     pass
 
+
 PYTHON_MODULE_NAME_PATTERN = re.compile(r'^([a-z][0-9a-z_]*)\.py$', re.I)
 PYTHON_MAGIC_VARIABLE_PATTERN = re.compile(r'^__.*__$')
-
 import traceback
 
 
 # TODO, use walk to have this recursively walk up the models path
 # finding all interesting classes.
-def load_from_path(path, package):
+def load_all_from_path(path, package):
     '''
     '''
     # loaded_classes = []
@@ -36,7 +36,6 @@ def load_from_path(path, package):
         else:
             nested = None
         for filename in sorted(filenames):
-            log.debug(filename)
             match = PYTHON_MODULE_NAME_PATTERN.search(filename)
             if not match:
                 continue
@@ -44,13 +43,12 @@ def load_from_path(path, package):
             try:
                 if not nested:
                     import_package_name = import_module_name
-                    # import_list = ()
                 else:
-                    # import_list = (import_module_name,)
                     import_package_name = '.'.join((nested, import_module_name))
-                log.debug("."+import_package_name)
-                log.debug(import_module(name="."+import_package_name,
-                                        package=package.__name__))
+
+                module = import_module(name="." + import_package_name,
+                                       package=package.__name__)
+
             except ImportError:
                 if log.handlers or logging.getLogger().handlers:
                     log.exception("Automatic Pybald class loader failed with exception:")
@@ -64,20 +62,30 @@ def load_from_path(path, package):
                                         "".format(filename, dirpath))
 
 
-def auto_load(package):
+def flatten_namespace(package, registry):
+    '''Export all classes in a registry into a package namespace'''
+    for class_ in registry:
+        setattr(package, class_.__name__, class_)
+        package.__all__.append(class_.__name__)
+
+
+def auto_load(package, flatten=None):
     '''
     Walks the entire path of a package and loads all python
     modules present within this package. Used for auto-loading
     classes and modules.
     '''
-    if isinstance(package, ModuleType):
+    package_path, filename = os.path.split(os.path.realpath(package.__file__))
+    # if this is not a package, then return
+    if not filename.startswith("__init__.py"):
         return
-    package_path = os.path.dirname(os.path.realpath(package.__file__))
-    load_from_path(package_path, package)
+    t0 = time.time()
+    load_all_from_path(package_path, package)
+    log.debug("Loaded all modules in {0:<30}- total load time: {1:0.2f}s".format(package.__name__, time.time() - t0))
+    if flatten:
+        flatten_namespace(package, flatten)
 
 
-# TODO, use walk to have this recursively walk up the models path
-# finding all interesting classes.
 def pybald_class_loader(path, classes, module_globals, module_locals,
                                                                recursive=True):
     '''

@@ -191,8 +191,25 @@ def action_cached(prefix=content_cache_prefix, keys=None, time=0):
     return cached_wrapper
 
 
-class BaseController(object):
+class RegistryMount(type):
+    '''
+    A registry creating metaclass that keeps track of all defined classes that
+    inherit from a base class using this metaclass.
+    '''
+    # lifted almost verbatim from: http://martyalchin.com/2008/jan/10/simple-plugin-framework/
+    def __init__(cls, name, bases, attrs):
+        try:
+            cls.registry.append(cls)
+        except AttributeError:
+            # this is processing the first class (the mount point)
+            cls.registry = []
+
+        return super(RegistryMount, cls).__init__(name, bases, attrs)
+
+
+class Controller(object):
     '''Base controller that includes the view and a default index method.'''
+    __metaclass__ = RegistryMount
 
     def __init__(self, *pargs, **kargs):
         for key, value in kargs.items():
@@ -239,6 +256,9 @@ class BaseController(object):
         return old_style_render_view(data or self.__dict__ or {})
 
     _render_view = render_view
+
+# alias for backwards copatibility
+BaseController = Controller
 
 
 class BaseControllerTests(unittest.TestCase):

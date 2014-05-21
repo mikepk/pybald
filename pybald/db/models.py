@@ -418,7 +418,7 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         # set the tablename, if it's user set, use that, otherwise use a
         # function to create one
         cls.__tablename__ = getattr(cls, "__tablename__",
-                                        pluralize(camel_to_underscore(name)))
+                                    pluralize(camel_to_underscore(name)))
         # tableargs adds autoload to create schema reflection
         cls.__table_args__ = getattr(cls, "__table_args__", {})
 
@@ -431,8 +431,8 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         # check if the class has at least one primary key
         # if not, automatically generate one.
         has_primary = any([False] + [value.primary_key
-                                          for value in cls.__dict__.values()
-                                    if isinstance(value, Column)])
+                                     for value in cls.__dict__.values()
+                                     if isinstance(value, Column)])
         if not has_primary:
             # treat the id as a mixin w/copy
             surrogate_pk = surrogate_pk_template.copy()
@@ -441,36 +441,30 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         super(ModelMeta, cls).__init__(name, bases, ns)
 
 
-class NonDbModel(object):
-    pass
-
-
-class Registry(ModelMeta):
+class RegistryMount(type):
     '''
     A registry creating metaclass that keeps track of all defined classes that
     inherit from a base class using this metaclass.
     '''
     # lifted almost verbatim from: http://martyalchin.com/2008/jan/10/simple-plugin-framework/
     def __init__(cls, name, bases, attrs):
-        if not hasattr(cls, 'registry'):
-            # This branch only executes when processing the mount point itself.
-            # So, since this is a new type, not an implementation, this
-            # class shouldn't be registered. Instead, it sets up a
-            # list where items can be registered later.
-            cls.registry = []
-        else:
-            # This must be an implementation, which should be registered.
-            # Simply appending it to the list is all that's needed to keep
-            # track of it later.
+        try:
             cls.registry.append(cls)
-        super(Registry, cls).__init__(name, bases, attrs)
+        except AttributeError:
+            # this is processing the first class (the mount point)
+            cls.registry = []
+
+        return super(RegistryMount, cls).__init__(name, bases, attrs)
+
+
+class RegistryModelMeta(RegistryMount, ModelMeta):
+    pass
 
 
 class Model(Base):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
-    __metaclass__ = Registry
+    __metaclass__ = RegistryModelMeta
 
-    # exception aliases
     NotFound = sqlalchemy.orm.exc.NoResultFound
     MultipleFound = sqlalchemy.orm.exc.MultipleResultsFound
 
@@ -604,7 +598,6 @@ class Model(Base):
         '''
         return session.query(cls).filter(*pargs, **kargs)
 
-
     @classmethod
     def query(cls):
         '''
@@ -621,3 +614,13 @@ class Model(Base):
         '''
         cls.__table__.create(dump_engine)
 
+
+class NonDbModel(object):
+    '''
+    A plain Python object that uses the RegistryMount system to register
+    non database models. Inheriting from this allows the object to be registered
+    as a Model.
+    '''
+    __metaclass__ = RegistryMount
+    # use the same registry space for NonDbModels
+    registry = Model.registry

@@ -19,10 +19,10 @@ Pybald Core
 
 .. autofunction:: action
 
-:class:`BaseController` - simple base class that pybald controllers can optionally subclass
+:class:`Controller` - simple base class that pybald controllers can optionally subclass
 -------------------------------------------------------------------------------------------
 
-.. autoclass:: BaseController
+.. autoclass:: Controller
   :members: _redirect_to, _status, _not_found
   :undoc-members:
   

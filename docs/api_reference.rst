@@ -6,12 +6,9 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   
-   model.rst
+
    core.rst
+   middleware.rst
+   model.rst
    util.rst
-
-
-
-
 

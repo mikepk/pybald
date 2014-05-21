@@ -3,12 +3,16 @@
 
 
 class UserManager(object):
-    '''Code to manage users, implemented as WSGI middleware.'''
+    '''Code to manage users, implemented as WSGI middleware. 
+
+    This middleware will set REMOTE_USER as well as the pybald context object 
+    within the WSGI environ. This allows any other WSGI or pybald aware code
+    to inspect the environ for the current authenticated user.'''
 
     def __init__(self, application=None, user_class=None):
         self.user_class = user_class
         if application is None:
-            raise Exception("User Manager Middleware doesn't work stand alone.")
+            raise ValueError("User Manager Middleware doesn't work stand alone, it is expected to wrap another application.")
         self.application = application
 
     def __call__(self, environ, start_response):
@@ -35,7 +39,7 @@ class UserManager(object):
                     environ['REMOTE_USER'] = None
                 # Otherwise, do nothing
 
-        # update or create the pybald.extension to populate controller instances
+        # update or create the pybald.extension for other pybald aware WSGI code
         environ['pybald.extension'] = environ.get('pybald.extension', {})
         environ['pybald.extension']['user'] = environ['REMOTE_USER']
         # call the next part of the pipeline

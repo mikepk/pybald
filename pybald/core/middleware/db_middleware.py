@@ -4,6 +4,8 @@ import sys
 
 
 class EndPybaldMiddleware(object):
+    '''Utilitiy middleware to force remove current session at the end of
+    the request.'''
     def __init__(self, application):
         self.application = application
 
@@ -14,13 +16,12 @@ class EndPybaldMiddleware(object):
             # always, always, ALWAYS close the session regardless
             models.session.remove()
 
-    # def _sr_callback(self, start_response):
-    #     def callback(status, headers, exc_info=None):
-    #         start_response(status, headers, exc_info)
-    #     return callback
-
 
 class DbMiddleware(object):
+    '''The database middleware provides three behaviors, committing
+    transactions at the end of the request, rolling back database transactions
+    if errors occur and forcibly closing the session
+    at the end of the web request to avoid dangling connections.'''
     def __init__(self, application=None):
         if application:
             self.application = application
