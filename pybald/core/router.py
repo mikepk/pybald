@@ -97,8 +97,16 @@ class Router(object):
         '''
 
         controller_names = []
-        for controller in controllers.__all__:
-            controller_name = camel_to_underscore(controller)
+        # switch between old-style package container and registry model
+        # both should work here
+        if hasattr(controllers, '__all__'):
+            controller_iterator = ((name, getattr(controllers, name)) for
+                                   name in controllers.__all__)
+        else:
+            controller_iterator = ((controller.__name__, controller) for
+                                   controller in controllers)
+        for name, controller in controller_iterator:
+            controller_name = camel_to_underscore(name)
             try:
                 controller_path_name = self.controller_pattern.search(
                                                     controller_name).group(1)
@@ -107,8 +115,7 @@ class Router(object):
             controller_names.append(controller_path_name)
             # self.controllers holds paths to map to modules and controller
             # names
-            self.controllers[controller_path_name] = getattr(controllers,
-                                                             controller)
+            self.controllers[controller_path_name] = controller
 
         # register the controller module names
         # with the mapper, creates the internal regular
