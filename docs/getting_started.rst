@@ -56,7 +56,7 @@ The command ``python project.py`` starts the pybald :ref:`console <console>` for
 
 When debugging is turned on, the routing layer of Pybald will display all of the configured url routes for the project, then a small welcome message. Out of the box pybald is configured with a generic set of routes that allow for quick prototyping.
 
-The console has a testing / convenience client ``c`` that allows you to issue simulated web requests to your application. Here we've fetched the "/" url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were invoked. Finally we print the response from that url which is the simple web response message that pybald is working!
+The console has a testing / convenience client ``c`` that allows you to issue web-like requests to your application. Here we've fetched the "/" url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were invoked. Finally we print the response from that url which is the simple web response message that pybald is working!
 
-Pow! You're running a pybald application.
+Boom! You're running a pybald application.
 

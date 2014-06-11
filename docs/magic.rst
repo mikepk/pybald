@@ -7,25 +7,23 @@ Pybald only has a few 'magical' behaviors. This documentation explains how they 
 Loading Controllers
 -------------------
 
-Pybald relies on the use of convention over configuration. It assumes that a  project's files will be organized in a pre-defined way. Borrowing from Ruby on Rails, the main application lives under the ``./app`` path and application controllers are assumed to be stored in the project's ``./app/controllers`` path. Within this path, you can organize your controllers any way you wish, but generally the convention is to place one controller per module with a filename that matches the name of the contained controller. So, for example, a HomeController class may be located in a file named: ``./app/controllers/home_controller.py``.
+Pybald uses a 'controller registry' for keeping track of which classes are to be used as controllers. This registry is just a list of all controllers that have been imported / loaded in the current project. To register a class to act as a controller, you can inherit from the pybald.core.Controller class. Inheriting from this class will automatically register the class as a controller.
+
+.. code-block:: pycon
+
+  >>> from pybald.core.controllers import Controller
+  >>> class PostCommentController(Controller):
+  ...    pass
+  ... 
+  >>> print Controller.registry
+  [<class '__main__.PostCommentController'>]
+
+
+While you can organize your controller classes any way you wish, the convention is to place one controller per module with a filename that matches the name of the contained controller. So, for example, a HomeController class might be located in a file named: ``./app/controllers/home_controller.py``. Additionally, for a controller to be registered, its class must be defined and/or its containing module imported. There are some convenience utilities for auto-importing entire paths which will be discussed later.
 
 It's also recommended that you follow the Python style guide (`PEP8 <http://www.python.org/dev/peps/pep-0008/>`_). Controller module (file) names are expected to be all lowercase, using underscores to separate words. Controller class names are expected to follow the CapWords convention.
 
-On startup, when the pybald Router is first instantiated, but before the web application starts, the Router's ``load`` method is called. This method loads the app.controllers module.
-
-The app.controllers package will scan the controllers path and look for classes that inherit from ``BaseController``. Any module that inherits from BaseController will be included in the package as well as the project's controller lookup table. The class name will be converted to underscore separated, lowercase text and the word "controller" will be stripped.
-
-For example, to create a controller for blog post comments you might have a module like ``./app/controllers/post_comment_controller.py`` and a class defined like this:
-
-.. code-block:: python
-
-  from pybald.core.controller import BaseController
-
-  class PostCommentController(BaseController):
-      pass
-
-
-This class would be loaded into the routers controller lookup table as 'post_comment'.
+On startup, when the pybald Router is first instantiated, but before the web application starts, the Router is passed a controller registry to use for associating with the route map.
 
 *How does this work?*
 
