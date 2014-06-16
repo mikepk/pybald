@@ -27,7 +27,6 @@ import traceback
 def load_all_from_path(path, package):
     '''
     '''
-    # loaded_classes = []
     for dirpath, dirnames, filenames in os.walk(path):
         if dirpath != path:
             # turn nested path into package notation
@@ -48,7 +47,7 @@ def load_all_from_path(path, package):
 
                 module = import_module(name="." + import_package_name,
                                        package=package.__name__)
-
+                # print "import {1}{0}".format("." + import_package_name, package.__name__)
             except ImportError:
                 if log.handlers or logging.getLogger().handlers:
                     log.exception("Automatic Pybald class loader failed with exception:")
@@ -63,17 +62,24 @@ def load_all_from_path(path, package):
 
 
 def flatten_namespace(package, registry):
-    '''Export all classes in a registry into a package namespace'''
+    '''
+    Export all classes in a registry into a package namespace.
+
+    This is mainly a backwards compatibility function for exposing classes
+    inside a flat package namespace (w/out additional module qualification).
+    '''
+    # log.debug("Flattening all registry classes into the package {0}...".format(package.__name__))
     for class_ in registry:
         setattr(package, class_.__name__, class_)
         package.__all__.append(class_.__name__)
 
 
-def auto_load(package, flatten=None):
+def auto_load(package, registry=None):
     '''
-    Walks the entire path of a package and loads all python
-    modules present within this package. Used for auto-loading
-    classes and modules.
+    Walks the entire path of a package, recursively, and loads all python
+    modules present within the package.
+
+    Used for auto-loading classes and modules.
     '''
     package_path, filename = os.path.split(os.path.realpath(package.__file__))
     # if this is not a package, then return
@@ -81,9 +87,9 @@ def auto_load(package, flatten=None):
         return
     t0 = time.time()
     load_all_from_path(package_path, package)
+    if registry:
+        flatten_namespace(package, registry)
     log.debug("Loaded all modules in {0:<30}- total load time: {1:0.2f}s".format(package.__name__, time.time() - t0))
-    if flatten:
-        flatten_namespace(package, flatten)
 
 
 def pybald_class_loader(path, classes, module_globals, module_locals,

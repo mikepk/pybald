@@ -29,6 +29,11 @@ class Router(object):
         :param routes: A routing function that takes a mapper (for parsing and
                        matching urls).
 
+        :param controllers: A registry of all loaded controllers. This is
+                            required to do routing lookups. This is also a
+                            security precaution since only registered
+                            controllers can be matched against.
+
         '''
         if routes is None or not callable(routes):
             raise TypeError("Route mapping is required. Please pass in a "
@@ -78,11 +83,13 @@ class Router(object):
 
     def load(self, controllers):
         '''
-        Finds registred controllers in controllers. Does some text
-        munging to change the camel-case class names into
+        Handles walking the registry (or old-style controller module) and
+        builds the lookup table for controller classes to match against.
+
+        Does some text munging to change the camel-case class names into
         underscore-separated url like names. (HomeController to home)
 
-        :param controllers: A module containing all loaded controllers
+        :param controllers: A controller registry
 
         All controller candidates are loaded into a hash to look up
         the matched "controller" urlvar against.

@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-static_serve.py
-
-Created by mikepk on 2009-11-17.
-Copyright (c) 2009 Michael Kowalchik. All rights reserved.
-"""
-
 import os
 import unittest
 import mimetypes
@@ -16,16 +9,25 @@ class StaticServer(object):
     '''
     A *very* simple static asset server. Do not use in production, just
     for test or development use.
+
+    StaticServer is a WSGI application that can be included in the WSGI
+    pipeline to intercept static requests (and perform file system lookups).
+    If the file lookup fails, the pipeline is allowed to continue to any
+    dynamic components.
     '''
     def __init__(self, application, path):
         """
-        :param: path is directory where static files are stored
+        :param application: is the remaining WSGI pipeline to connect to.
+        :param path: is directory where static files are stored
         """
         self.path = path
         self.application = application
 
     def send_file(self, file_path, size):
-        '''Send an iterable file.'''
+        '''
+        Read a file from the filesystem and yield 64k chunks of the file
+        as a generator / iterable.
+        '''
         BLOCK_SIZE = 64 * 1024
         f = open(file_path)  # as f:
         block = f.read(BLOCK_SIZE)
@@ -35,7 +37,11 @@ class StaticServer(object):
         f.close()
 
     def __call__(self, environ, start_response):
-        '''A simple static file server.'''
+        '''
+        A simple static file server.
+
+        Should not be used in production environments.
+        '''
         file_path = os.path.join(self.path, environ['PATH_INFO'].lstrip('/'))
         if not os.path.isfile(file_path):
             return self.application(environ, start_response)
