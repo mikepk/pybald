@@ -93,6 +93,9 @@ class TemplateEngine:
         name based on the template_id and the format and retrieves it from the
         Mako template system.
         '''
+        # format can't be None, set to html as a default
+        if format is None:
+            format = 'html'
         if TEMPLATE_PATTERN.search(template):
             template_file = template
         else:
