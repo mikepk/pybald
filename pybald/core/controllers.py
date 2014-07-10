@@ -17,6 +17,9 @@ import base64
 import json
 import random
 
+import logging
+console = logging.getLogger(__name__)
+
 controller_pattern = re.compile(r'(\w+)Controller')
 
 
@@ -86,10 +89,14 @@ def action(method):
     def action_wrapper(self, environ, start_response):
         req = Request(environ)
         # add any url variables as members of the controller
-        for varname, value in req.urlvars.items():
-            # Set the controller object to contain the url variables
-            # parsed from the dispatcher / router
-            setattr(self, varname, value)
+        try:
+            for varname, value in req.urlvars.items():
+                # Set the controller object to contain the url variables
+                # parsed from the dispatcher / router
+                setattr(self, varname, value)
+        except AttributeError:
+            # no urlvars exception, just eat it
+            console.exception("No url variables in the request")
 
         # add the pybald extension dict to the controller
         # object
