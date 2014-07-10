@@ -3,6 +3,7 @@
 
 from webob import Response, exc
 from pybald.core.templates import render as template_engine
+import urllib
 import logging
 console = logging.getLogger(__name__)
 
@@ -38,6 +39,7 @@ class ErrorMiddleware:
             # catch stupid URLs before getting into webob
             try:
                 unicode(environ['PATH_INFO'])
+                urllib.unquote(environ['QUERY_STRING']).decode('utf8')
             except UnicodeDecodeError:
                 return Response(status=400, body="""<h1>Bad Request</h1>""")(environ, start_response)
             return self.application(environ, start_response)
