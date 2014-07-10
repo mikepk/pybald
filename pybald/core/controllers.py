@@ -105,7 +105,10 @@ def action(method):
 
         # TODO: fixme this is a hack
         setattr(self, 'request', req)
-        setattr(self, 'request_url', req.url)
+        try:
+            setattr(self, 'request_url', req.url)
+        except AttributeError:
+            console.exception("Problem saving the request url on the request, likely due to poorly formed unicode or other garbage characters.")
 
         # set pre/post/view to a no-op if they don't exist
         pre = getattr(self, '_pre', noop_func)
