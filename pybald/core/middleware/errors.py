@@ -35,11 +35,11 @@ class ErrorMiddleware:
     def __call__(self, environ, start_response):
         #pass through if no exceptions occur
         try:
+            # catch stupid URLs before getting into webob
             try:
                 unicode(environ['PATH_INFO'])
             except UnicodeDecodeError:
                 return Response(status=400, body="""<h1>Bad Request</h1>""")(environ, start_response)
-
             return self.application(environ, start_response)
         # handle HTTP errors
         except exc.HTTPException, err:

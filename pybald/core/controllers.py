@@ -89,14 +89,10 @@ def action(method):
     def action_wrapper(self, environ, start_response):
         req = Request(environ)
         # add any url variables as members of the controller
-        try:
-            for varname, value in req.urlvars.items():
-                # Set the controller object to contain the url variables
-                # parsed from the dispatcher / router
-                setattr(self, varname, value)
-        except AttributeError:
-            # no urlvars exception, just eat it
-            console.exception("No url variables in the request")
+        for varname, value in req.urlvars.items():
+            # Set the controller object to contain the url variables
+            # parsed from the dispatcher / router
+            setattr(self, varname, value)
 
         # add the pybald extension dict to the controller
         # object
@@ -105,11 +101,7 @@ def action(method):
 
         # TODO: fixme this is a hack
         setattr(self, 'request', req)
-        try:
-            setattr(self, 'request_url', req.url)
-        except (AttributeError, UnicodeDecodeError):
-            req.url = unicode(req.url, errors='replace')
-            console.exception("Problem saving the request url on the request, likely due to poorly formed unicode or other garbage characters. Replacing the Unicode characters.")
+        setattr(self, 'request_url', req.url)
 
         # set pre/post/view to a no-op if they don't exist
         pre = getattr(self, '_pre', noop_func)
