@@ -107,7 +107,7 @@ def action(method):
         setattr(self, 'request', req)
         try:
             setattr(self, 'request_url', req.url)
-        except AttributeError:
+        except (AttributeError, UnicodeDecodeError):
             console.exception("Problem saving the request url on the request, likely due to poorly formed unicode or other garbage characters.")
 
         # set pre/post/view to a no-op if they don't exist
