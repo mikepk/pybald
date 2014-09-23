@@ -49,18 +49,22 @@ class AssetUrl(dict):
                                            host not in project.STATIC_SOURCES):
                 return self.raw_url
         if (project.USE_CDN and (project.CDN_HOST or project.STATIC_HOSTS)):
+            # get the protocol for the current request
+            # this requires the custom HTTP header X-Forwarded-Proto
+            # set if running behind a proxy (or if SSL is terminated
+            # upstream)
             protocol = request_config().protocol
+            # use the round robin hosts to speed download when not https
             if protocol != "https" and project.STATIC_HOSTS:
                 self['netloc'] = project.STATIC_HOSTS[hashfunc(self.raw_url) %
                                                       len(project.STATIC_HOSTS)]
             else:
                 self['netloc'] = project.CDN_HOST
-            if self['netloc'] and not self['scheme']:
-                # get the protocol for the current request
-                # this requires the custom HTTP header X-Forwarded-Proto
-                # set if running behind a proxy (or if SSL is terminated
-                # upstream)
-                self['scheme'] = request_config().protocol
+            # adjust the scheme of any link with a net location
+            # to match the current request so we don't have mixed link
+            # protocols
+            if self['netloc']:
+                self['scheme'] = protocol
         return ParseResult(**self).geturl()
 
 
