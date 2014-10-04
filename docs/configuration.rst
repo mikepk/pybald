@@ -17,7 +17,7 @@ The default project.py file has some example configuration variables along with 
 Common config arguments
 ------------------------
 
-For example database configuration is done via a URL following `RFC-1738 <http://rfc.net/rfc1738.html>`_. In the project.py file, the config variable `database_engine_uri` is used to define the URL to be used for database configuration. Generally pybald projects use some string interpolation to create these URLs from configuration dictionaries.
+Database configuration is done via a URI following `RFC-1738 <http://rfc.net/rfc1738.html>`_. In the project.py file, the config variable `database_engine_uri` is used to define the URI to be used for database configuration. Generally pybald projects use some string interpolation to create these URLs from configuration dictionaries.
 
 The default project.py has the following block to define a simple sqllite database as the database URL:
 
