@@ -36,7 +36,8 @@ For this case you can use requirements in your variable captures. Requirements a
 .. code-block:: python
 
     def map(urls):
-        urls.connect('show_post', r'/blog/posts/{id:\d+}', controller='blog', action='show')
+        urls.connect('show_post', r'/blog/posts/{id:\d+}', controller='blog',
+                     action='show')
 
 Here we've added the requirement that there be one or more interger values after the url slash (and only interger values) to trigger the route match. This would match `/blog/posts/45` but not `/blog/posts/frank` or even `/blog/posts/45frank`.
 
@@ -50,7 +51,7 @@ When creating CRUD applications, Pybald can automatically create a set of RESTfu
 
     def map(urls):
         urls.collection('posts', 'post', path_prefix=r'/blog',
-        controller='blog')
+                        controller='blog')
 
 
 =========== ======  ==============================
