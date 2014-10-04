@@ -4,7 +4,7 @@ Using Pybald
 A Quick Note on Naming Conventions
 ----------------------------------
 
-Pybald tries to bridge the convention over configuration approach and the explicit approach to creating a web application. For the basics of the web framework, it tends to favor the CoC approach. Pybald has a few naming conventions that are expected and may cause confusion if not understood.
+Pybald tries to bridge the convention over configuration (CoC) approach and the explicit approach to creating a web application. For the basics of the web framework, it tends to favor the CoC approach. Pybald has a few naming conventions that are expected and may cause confusion if not understood.
 
 Naming Controllers
 ~~~~~~~~~~~~~~~~~~
@@ -18,7 +18,7 @@ Naming Models
 
 Models are also implemented as Python classes and are expected to follow the PEP8 style guide and be named in the StudlyCaps style. Model class names are usually expected to be singular nouns (User not Users).
 
-When pybald models are synchronized with a databse, by default the underlying tables are named by converting the StudlyCaps name into an underscore_separated form and pluralized. Therefore a ``UserProfile`` model will (by default) create a ``user_profiles`` database table. Obviously an explicit table name can also be provided to any model to override this default behavior.
+When pybald models are synchronized with a databse, by default the underlying tables are named by converting the StudlyCaps class name into an underscore_separated form and pluralized. Therefore a ``UserProfile`` model will (by default) create a ``user_profiles`` database table. Obviously an explicit table name can also be provided to any model to override this default behavior.
 
 Naming Modules
 ~~~~~~~~~~~~~~
@@ -117,6 +117,6 @@ The Pybald console
 
 The pybald console allows you to interact with your program using the python REPL.
 
-The console automatically loads the route mapping for your application as well as all of the controllers and models for your project. The console allows you to interact with your application directly, experiment with new functionality, play with models, and test and exercise the application.
+The console automatically loads the route mapping for your application as well as all of the models for your project. The console allows you to interact with your application directly, experiment with new functionality, play with models, and test and exercise the application.
 
 It also includes a command history per-project.

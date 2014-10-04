@@ -1,23 +1,20 @@
 
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Models and ORM &mdash; Pybald 0.2.0 documentation</title>
+    <title>Models and ORM &mdash; Pybald 0.2.8 documentation</title>
     
-    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/solar.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2.0',
+        VERSION:     '0.2.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,31 +23,69 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="Pybald 0.2.0 documentation" href="index.html" />
+    <link rel="top" title="Pybald 0.2.8 documentation" href="index.html" />
     <link rel="up" title="API Reference" href="api_reference.html" />
-    <link rel="next" title="Pybald Core" href="core.html" />
-    <link rel="prev" title="API Reference" href="api_reference.html" /> 
+    <link rel="next" title="Utilities" href="util.html" />
+    <link rel="prev" title="Middleware" href="middleware.html" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+<link href="_static/solarized-dark.css" rel="stylesheet">
   </head>
   <body>
-      <div class="header"><img class="rightlogo" src="_static/pybald.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>Pybald 0.2.0 documentation</span></a></h1>
-        <h2 class="heading"><span>Models and ORM</span></h2>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="util.html" title="Utilities"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="middleware.html" title="Middleware"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Pybald 0.2.8 documentation</a> &raquo;</li>
+          <li><a href="api_reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/pybald.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="middleware.html"
+                        title="previous chapter">Middleware</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="util.html"
+                        title="next chapter">Utilities</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/model.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
       </div>
-      <div class="topnav">
-      
-        <p>
-        «&#160;&#160;<a href="api_reference.html">API Reference</a>
-        &#160;&#160;::&#160;&#160;
-        <a class="uplink" href="index.html">Contents</a>
-        &#160;&#160;::&#160;&#160;
-        <a href="core.html">Pybald Core</a>&#160;&#160;»
-        </p>
 
-      </div>
-      <div class="content">
-        
-        
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
   <div class="section" id="models-and-orm">
 <h1>Models and ORM<a class="headerlink" href="#models-and-orm" title="Permalink to this headline">¶</a></h1>
 <p>Pybald models are a fairly thin wrapper around the <a class="reference external" href="http://sqlalchemy.org/">SqlAlchemy</a> ORM.</p>
@@ -242,6 +277,11 @@ actual items from the database.</p>
 class.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="pybald.db.models.Model.registry">
+<tt class="descname">registry</tt><em class="property"> = [&lt;class 'pybald.db.models.NonDbModel'&gt;]</em><a class="headerlink" href="#pybald.db.models.Model.registry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="pybald.db.models.Model.save">
 <tt class="descname">save</tt><big>(</big><em>flush=False</em><big>)</big><a class="headerlink" href="#pybald.db.models.Model.save" title="Permalink to this definition">¶</a></dt>
@@ -299,7 +339,15 @@ mutation tracking.</p>
 <dl class="class">
 <dt id="pybald.db.models.NonDbModel">
 <em class="property">class </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">NonDbModel</tt><a class="headerlink" href="#pybald.db.models.NonDbModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A plain Python object that uses the RegistryMount system to register
+non database models. Inheriting from this allows the object to be registered
+as a Model.</p>
+<dl class="attribute">
+<dt id="pybald.db.models.NonDbModel.registry">
+<tt class="descname">registry</tt><em class="property"> = [&lt;class 'pybald.db.models.NonDbModel'&gt;]</em><a class="headerlink" href="#pybald.db.models.NonDbModel.registry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
 
 <dl class="exception">
 <dt id="pybald.db.models.NotFound">
@@ -307,26 +355,65 @@ mutation tracking.</p>
 <dd><p>Generic Not Found Error</p>
 </dd></dl>
 
+<dl class="class">
+<dt id="pybald.db.models.RegistryModelMeta">
+<em class="property">class </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">RegistryModelMeta</tt><big>(</big><em>name</em>, <em>bases</em>, <em>attrs</em><big>)</big><a class="headerlink" href="#pybald.db.models.RegistryModelMeta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybald.db.models.RegistryMount">
+<em class="property">class </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">RegistryMount</tt><big>(</big><em>name</em>, <em>bases</em>, <em>attrs</em><big>)</big><a class="headerlink" href="#pybald.db.models.RegistryMount" title="Permalink to this definition">¶</a></dt>
+<dd><p>A registry creating metaclass that keeps track of all defined classes that
+inherit from a base class using this metaclass.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pybald.db.models.ZipPickler">
+<em class="property">class </em><tt class="descclassname">pybald.db.models.</tt><tt class="descname">ZipPickler</tt><a class="headerlink" href="#pybald.db.models.ZipPickler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple wrapper for pickle that auto compresses/decompresses values</p>
+<dl class="method">
+<dt id="pybald.db.models.ZipPickler.dumps">
+<tt class="descname">dumps</tt><big>(</big><em>obj</em>, <em>protocol</em><big>)</big><a class="headerlink" href="#pybald.db.models.ZipPickler.dumps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pybald.db.models.ZipPickler.loads">
+<tt class="descname">loads</tt><big>(</big><em>string</em><big>)</big><a class="headerlink" href="#pybald.db.models.ZipPickler.loads" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 
 
+          </div>
+        </div>
       </div>
-      <div class="bottomnav">
-      
-        <p>
-        «&#160;&#160;<a href="api_reference.html">API Reference</a>
-        &#160;&#160;::&#160;&#160;
-        <a class="uplink" href="index.html">Contents</a>
-        &#160;&#160;::&#160;&#160;
-        <a href="core.html">Pybald Core</a>&#160;&#160;»
-        </p>
-
-      </div>
-
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="util.html" title="Utilities"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="middleware.html" title="Middleware"
+             >previous</a> |</li>
+        <li><a href="index.html">Pybald 0.2.8 documentation</a> &raquo;</li>
+          <li><a href="api_reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
   
     <div class="footer">
-        &copy; Copyright 2013, Michael Kowalchik.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+        &copy; Copyright 2014, Michael Kowalchik.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.Theme by <a href="http://github.com/vkvn">vkvn</a>
     </div>
   <!-- <script type="text/javascript">
   var gaJsHost = (("https:" == document.location.protocol) ? 

@@ -1,23 +1,20 @@
 
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Using Pybald &mdash; Pybald 0.2.0 documentation</title>
+    <title>Using Pybald &mdash; Pybald 0.2.8 documentation</title>
     
-    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/solar.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2.0',
+        VERSION:     '0.2.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,35 +23,87 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="Pybald 0.2.0 documentation" href="index.html" />
+    <link rel="top" title="Pybald 0.2.8 documentation" href="index.html" />
     <link rel="next" title="Magic" href="magic.html" />
-    <link rel="prev" title="Quick Start" href="getting_started.html" /> 
+    <link rel="prev" title="Quick Start" href="getting_started.html" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+<link href="_static/solarized-dark.css" rel="stylesheet">
   </head>
   <body>
-      <div class="header"><img class="rightlogo" src="_static/pybald.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>Pybald 0.2.0 documentation</span></a></h1>
-        <h2 class="heading"><span>Using Pybald</span></h2>
-      </div>
-      <div class="topnav">
-      
-        <p>
-        «&#160;&#160;<a href="getting_started.html">Quick Start</a>
-        &#160;&#160;::&#160;&#160;
-        <a class="uplink" href="index.html">Contents</a>
-        &#160;&#160;::&#160;&#160;
-        <a href="magic.html">Magic</a>&#160;&#160;»
-        </p>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="magic.html" title="Magic"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Quick Start"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Pybald 0.2.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/pybald.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using Pybald</a><ul>
+<li><a class="reference internal" href="#a-quick-note-on-naming-conventions">A Quick Note on Naming Conventions</a><ul>
+<li><a class="reference internal" href="#naming-controllers">Naming Controllers</a></li>
+<li><a class="reference internal" href="#naming-models">Naming Models</a></li>
+<li><a class="reference internal" href="#naming-modules">Naming Modules</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#structure-of-a-pybald-application">Structure of a Pybald Application</a></li>
+<li><a class="reference internal" href="#the-pybald-console">The Pybald console</a></li>
+</ul>
+</li>
+</ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="getting_started.html"
+                        title="previous chapter">Quick Start</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="magic.html"
+                        title="next chapter">Magic</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/using.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
       </div>
-      <div class="content">
-        
-        
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
   <div class="section" id="using-pybald">
 <h1>Using Pybald<a class="headerlink" href="#using-pybald" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="a-quick-note-on-naming-conventions">
 <h2>A Quick Note on Naming Conventions<a class="headerlink" href="#a-quick-note-on-naming-conventions" title="Permalink to this headline">¶</a></h2>
-<p>Pybald tries to bridge the convention over configuration approach and the explicit approach to creating a web application. For the basics of the web framework, it tends to favor the CoC approach. Pybald has a few naming conventions that are expected and may cause confusion if not understood.</p>
+<p>Pybald tries to bridge the convention over configuration (CoC) approach and the explicit approach to creating a web application. For the basics of the web framework, it tends to favor the CoC approach. Pybald has a few naming conventions that are expected and may cause confusion if not understood.</p>
 <div class="section" id="naming-controllers">
 <h3>Naming Controllers<a class="headerlink" href="#naming-controllers" title="Permalink to this headline">¶</a></h3>
 <p>Controllers are implemented as Python classes and are therefore expected to follow the PEP8 naming standard and be named in the StudlyCaps format (otherwise known as CamelCase). Additionally, while not strictly required, controller names usually contain the suffix <tt class="docutils literal"><span class="pre">Controller</span></tt> (e.g. <tt class="docutils literal"><span class="pre">UserProfileController</span></tt>).</p>
@@ -63,7 +112,7 @@
 <div class="section" id="naming-models">
 <h3>Naming Models<a class="headerlink" href="#naming-models" title="Permalink to this headline">¶</a></h3>
 <p>Models are also implemented as Python classes and are expected to follow the PEP8 style guide and be named in the StudlyCaps style. Model class names are usually expected to be singular nouns (User not Users).</p>
-<p>When pybald models are synchronized with a databse, by default the underlying tables are named by converting the StudlyCaps name into an underscore_separated form and pluralized. Therefore a <tt class="docutils literal"><span class="pre">UserProfile</span></tt> model will (by default) create a <tt class="docutils literal"><span class="pre">user_profiles</span></tt> database table. Obviously an explicit table name can also be provided to any model to override this default behavior.</p>
+<p>When pybald models are synchronized with a databse, by default the underlying tables are named by converting the StudlyCaps class name into an underscore_separated form and pluralized. Therefore a <tt class="docutils literal"><span class="pre">UserProfile</span></tt> model will (by default) create a <tt class="docutils literal"><span class="pre">user_profiles</span></tt> database table. Obviously an explicit table name can also be provided to any model to override this default behavior.</p>
 </div>
 <div class="section" id="naming-modules">
 <h3>Naming Modules<a class="headerlink" href="#naming-modules" title="Permalink to this headline">¶</a></h3>
@@ -168,29 +217,39 @@ serving on 0.0.0.0:8080 view at http://127.0.0.1:8080
 <div class="section" id="the-pybald-console">
 <h2>The Pybald console<a class="headerlink" href="#the-pybald-console" title="Permalink to this headline">¶</a></h2>
 <p>The pybald console allows you to interact with your program using the python REPL.</p>
-<p>The console automatically loads the route mapping for your application as well as all of the controllers and models for your project. The console allows you to interact with your application directly, experiment with new functionality, play with models, and test and exercise the application.</p>
+<p>The console automatically loads the route mapping for your application as well as all of the models for your project. The console allows you to interact with your application directly, experiment with new functionality, play with models, and test and exercise the application.</p>
 <p>It also includes a command history per-project.</p>
 </div>
 </div>
 
 
+          </div>
+        </div>
       </div>
-      <div class="bottomnav">
-      
-        <p>
-        «&#160;&#160;<a href="getting_started.html">Quick Start</a>
-        &#160;&#160;::&#160;&#160;
-        <a class="uplink" href="index.html">Contents</a>
-        &#160;&#160;::&#160;&#160;
-        <a href="magic.html">Magic</a>&#160;&#160;»
-        </p>
-
-      </div>
-
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="magic.html" title="Magic"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Quick Start"
+             >previous</a> |</li>
+        <li><a href="index.html">Pybald 0.2.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
   
     <div class="footer">
-        &copy; Copyright 2013, Michael Kowalchik.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+        &copy; Copyright 2014, Michael Kowalchik.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.Theme by <a href="http://github.com/vkvn">vkvn</a>
     </div>
   <!-- <script type="text/javascript">
   var gaJsHost = (("https:" == document.location.protocol) ? 
