@@ -25,17 +25,7 @@ It's also recommended that you follow the Python style guide (`PEP8 <http://www.
 
 On startup, when the pybald Router is first instantiated, but before the web application starts, the Router is passed a controller registry to use for associating with the route map.
 
-*How does this work?*
-
-When the app.controllers package is loaded, a special ``pybald_class_loader`` function is called. This function recursively scans a path looking for classes that inherit from a pre-set list of target classes.
-
-For controllers, the ``./app/controllers`` path is scanned with a list of ``(BaseController,)`` as the list of matching class names. Any module in the path that inherits from ``BaseController`` will be included in the list of exported classes. These are automatically pre-loaded into the package and exported in the ``__all__`` python 'magic method' of the package.
-
-.. literalinclude:: /pybald_src/core/class_loader.py
-   :pyobject: pybald_class_loader
-
-
-Again taking cues from Ruby on Rails, the initial project is configured with a default route ``/{controller}/{action}/{id}``. This default route means that just by defining a new class, inheriting from ``BaseClass`` in the ``./app/controllers`` path, a URL will become immediately available at the 'lookup' value without any further configuration or additional route creation.
+Again taking cues from Ruby on Rails, the initial project is configured with a default route ``/{controller}/{action}/{id}``. This default route means that just by defining a class, inheriting from ``BaseClass``, a URL will become immediately available at the 'lookup' value without any further configuration or additional route creation.
 
 In the above example ``/post_comment`` would become available as a project route and the router would instantiate a PostCommentController object to handle the request.
 

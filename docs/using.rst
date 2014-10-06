@@ -112,6 +112,7 @@ Invoking the development web server from the command line should look similar to
 
 
 .. _console:
+
 The Pybald console
 ------------------
 

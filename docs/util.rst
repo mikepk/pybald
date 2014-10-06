@@ -11,7 +11,7 @@ Utilities
   :undoc-members:
 
 :mod:`static_serve` - Simple debugging static server
------------------------------------------------
+----------------------------------------------------
 .. automodule:: pybald.util.static_serve
   :members:
   :undoc-members:
