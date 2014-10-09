@@ -132,7 +132,12 @@ class Router(object):
     def __repr__(self):
         return "<Pybald Router Object>"
 
-    def get_handler(self, urlvars=None):
+    def get_handler(self, urlvars):
+        '''Method that returns the callable code mapped to this current
+        request.
+
+        This method can be overriden to change the behavior of mapping.
+        '''
         controller_name, action_name = urlvars["controller"], urlvars["action"]
 
         #methods starting with underscore can't be used as actions
