@@ -20,6 +20,7 @@ except ImportError:
 import logging
 console = logging.getLogger(__name__)
 
+
 # set the bundle input and output paths
 if project.BUNDLE_OUTPUT_PATH:
     bundle_output_path = project.BUNDLE_OUTPUT_PATH
@@ -130,7 +131,7 @@ def bundle(input_text):
             # construct the asset urls
             try:
                 assets = [link_func(url) for url in bundle.urls(env=env)]
-            except BundleError as err:
+            except BundleError:
                 console.exception("Problem bundling.")
                 console.warning("!"*80 + '''
   Warning, missing pre-compiled static assets. Switching to debug mode
@@ -148,3 +149,5 @@ def bundle(input_text):
         else:
             output_buffer.append(etree.tostring(elem, method="html"))
     return u'\n'.join([unicode(item) for item in output_buffer])
+
+

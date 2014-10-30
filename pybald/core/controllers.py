@@ -17,10 +17,79 @@ import base64
 import json
 import random
 
+import uuid
 import logging
 console = logging.getLogger(__name__)
 
 controller_pattern = re.compile(r'(\w+)Controller')
+
+
+class CSRFValidationFailure(exc.HTTPForbidden):
+    pass
+
+
+def csrf_protected(action_func):
+    """
+    Decorator to add CSRF (cross-site request forgery) protection to POST
+    requests on an action. To use, include this decorator and provide the
+    token in any submitted forms.
+
+    For example, in the controller, do:
+
+    @action
+    @csrf_protected
+    def my_action(self, req):
+        ...
+
+    And in the template:
+
+    <form action='my_action' method='post'>
+    ${csrf_input}
+    ...
+    </form>
+    """
+    CSRF_TOKEN_POST_VARIABLE = '__csrf_token__'
+
+    @wraps(action_func)
+    def replacement(self, req):
+        if req.method == 'POST':
+            try:
+                if CSRF_TOKEN_POST_VARIABLE not in req.POST:
+                    raise CSRFValidationFailure(
+                        ("No %r value found in POST data. Please make sure "
+                         "that a ${csrf_input} is used in the form template.")
+                        % CSRF_TOKEN_POST_VARIABLE)
+
+                if not self.session.stash.get("csrf_token"):
+                    raise CSRFValidationFailure(
+                        "CSRF validation failed: no validation token available "
+                        "in this session.")
+
+                provided_csrf_token = req.POST.get(CSRF_TOKEN_POST_VARIABLE)
+
+                if provided_csrf_token != self.session.stash.get("csrf_token"):
+                    raise CSRFValidationFailure(
+                        "CSRF validation failed: token mismatch.")
+
+                else:
+                    # success! wipe out the used token
+                    self.session.stash(csrf_token=None)
+                    #del self.session.csrf_token
+
+            except CSRFValidationFailure:
+                # gentle mode, redirect to GET version of the page
+                return self._redirect_to(req.path_qs)
+
+        # always stash a new token
+        new_token = str(uuid.uuid4()).replace("-", "")
+        self.session.stash(csrf_token=new_token)
+
+        self.csrf_input = ("<input type='hidden' name='%s' value='%s' />" % (
+            CSRF_TOKEN_POST_VARIABLE, new_token))
+
+        return action_func(self, req)
+    return replacement
+
 
 
 # a no-op placeholder
