@@ -5,9 +5,10 @@
 import os
 import project
 
-from urlparse import urlparse, ParseResult
+# from urlparse import urlparse, ParseResult
 # global request_config... how can we eliminate?
-from routes import request_config
+# from routes import request_config
+from pybald.core.helpers import HTMLLiteral, AssetUrl
 
 import logging
 console = logging.getLogger(__name__)
@@ -26,46 +27,6 @@ pip install pyhash
 ''')
     hashfunc = hash
 
-
-# parse result keys
-class AssetUrl(dict):
-    '''
-    Wraps urls and returns URL transformations when necessary.
-
-    The primary use case is transforming the url for running static assets on a CDN.
-    '''
-    keys = ("scheme", "netloc", "path", "params", "query", "fragment")
-
-    def __init__(self, url):
-        self.raw_url = url
-        super(AssetUrl, self).__init__(**dict(zip(self.keys, urlparse(url))))
-
-    def __str__(self):
-        '''Return a transformed URL if necessary (appending protocol and CDN)'''
-        host = self.get('netloc', None)
-        # Don't CDN urls with hosts we're not re-writing
-        if host:
-            if (project.STATIC_SOURCES is None or
-                                           host not in project.STATIC_SOURCES):
-                return self.raw_url
-        if (project.USE_CDN and (project.CDN_HOST or project.STATIC_HOSTS)):
-            # get the protocol for the current request
-            # this requires the custom HTTP header X-Forwarded-Proto
-            # set if running behind a proxy (or if SSL is terminated
-            # upstream)
-            protocol = request_config().protocol
-            # use the round robin hosts to speed download when not https
-            if protocol != "https" and project.STATIC_HOSTS:
-                self['netloc'] = project.STATIC_HOSTS[hashfunc(self.raw_url) %
-                                                      len(project.STATIC_HOSTS)]
-            else:
-                self['netloc'] = project.CDN_HOST
-            # adjust the scheme of any link with a net location
-            # to match the current request so we don't have mixed link
-            # protocols
-            if self['netloc']:
-                self['scheme'] = protocol
-        return ParseResult(**self).geturl()
 
 
 asset_tag_cache = {}
@@ -88,21 +49,21 @@ def compute_asset_tag(filename, pattern='{filename}{extension}?v={tag}'):
 
 
 def add_js(filename):
-    return '''<script src="{0}"></script>'''.format(
-                                        AssetUrl(compute_asset_tag(filename)))
+    return HTMLLiteral('''<script src="{0}"></script>'''.format(
+                                        AssetUrl(compute_asset_tag(filename))))
 
 
 def add_css(filename, media="screen"):
-    return ('''<link type="text/css" href="{0}"'''
+    return HTMLLiteral(('''<link type="text/css" href="{0}"'''
             ''' media="{1}" rel="stylesheet" />''').format(
                                                 AssetUrl(compute_asset_tag(filename)),
-                                                str(media))
+                                                str(media)))
 
 
 def add_extern_css(filename, media="screen"):
-    return ('''<link type="text/css" href="{0}"'''
+    return HTMLLiteral(('''<link type="text/css" href="{0}"'''
             ''' media="{1}" rel="stylesheet" />''').format(
                                                 filename,
-                                                str(media))
+                                                str(media)))
 
 

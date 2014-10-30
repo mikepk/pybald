@@ -13,9 +13,70 @@
 from datetime import datetime
 from routes import url_for
 from mako import filters
+from urlparse import urlparse, ParseResult
+from routes import request_config
+import project
+try:
+    import pyhash
+    hashfunc = pyhash.super_fast_hash()
+except ImportError:
+    hashfunc = hash
 
-from pybald.core.page import AssetUrl
-# from markdown import markdown
+
+# parse result keys
+class AssetUrl(dict):
+    '''
+    Wraps urls and returns URL transformations when necessary.
+
+    The primary use case is transforming the url for running static assets on a CDN.
+    '''
+    keys = ("scheme", "netloc", "path", "params", "query", "fragment")
+
+    def __init__(self, url):
+        self.raw_url = url
+        super(AssetUrl, self).__init__(**dict(zip(self.keys, urlparse(url))))
+
+    def __str__(self):
+        return self.__html__()
+
+    def __html__(self):
+        '''Return a transformed URL if necessary (appending protocol and CDN)'''
+        host = self.get('netloc', None)
+        # Don't CDN urls with hosts we're not re-writing
+        if host:
+            if (project.STATIC_SOURCES is None or
+                                           host not in project.STATIC_SOURCES):
+                return self.raw_url
+        if (project.USE_CDN and (project.CDN_HOST or project.STATIC_HOSTS)):
+            # get the protocol for the current request
+            # this requires the custom HTTP header X-Forwarded-Proto
+            # set if running behind a proxy (or if SSL is terminated
+            # upstream)
+            protocol = request_config().protocol
+            # use the round robin hosts to speed download when not https
+            if protocol != "https" and project.STATIC_HOSTS:
+                self['netloc'] = project.STATIC_HOSTS[hashfunc(self.raw_url) %
+                                                      len(project.STATIC_HOSTS)]
+            else:
+                self['netloc'] = project.CDN_HOST
+            # adjust the scheme of any link with a net location
+            # to match the current request so we don't have mixed link
+            # protocols
+            if self['netloc']:
+                self['scheme'] = protocol
+        return ParseResult(**self).geturl()
+
+
+class HTMLLiteral(object):
+    '''This is an object to handle literal HTML in Mako template'''
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return self.__html__()
+
+    def __html__(self):
+        return unicode(self.value)
 
 
 def as_p(input_str):
@@ -38,6 +99,9 @@ class img(tag):
             self.set(alt=self.img_src)
 
     def __str__(self):
+        return self.__html__()
+
+    def __html__(self):
         '''Return the image in string form.'''
         return u'''<img src="{0}" {1} />'''.format(AssetUrl(str(self.img_src)),
                                                    " ".join(self.attribs))
@@ -45,7 +109,7 @@ class img(tag):
 
 class anchor(tag):
     def __init__(self, link_text='', name='', **kargs):
-        self.link_text = link_text
+        self.link_text = filters.html_escape(link_text)
         if name:
             self.url = name
         else:
@@ -54,6 +118,9 @@ class anchor(tag):
         self.set(**kargs)
 
     def __str__(self):
+        return self.__html__()
+
+    def __html__(self):
         '''Return the anchor in string form.'''
         # attr = " ".join(self.attribs)
         return u'''<a name="{0}" {1}>{2}</a>'''.format(self.url,
@@ -63,7 +130,7 @@ class anchor(tag):
 
 class link(tag):
     def __init__(self, link_text='', **kargs):
-        self.link_text = link_text
+        self.link_text = filters.html_escape(link_text)
         self.url = "#"
         self.attribs = []
         self.set(**kargs)
@@ -83,6 +150,9 @@ class link(tag):
         return self
 
     def __str__(self):
+        return self.__html__()
+
+    def __html__(self):
         '''Return the link in string form.'''
         attr = " ".join(self.attribs)
         return u'''<a href="{0}" {1}>{2}</a>'''.format(self.url, attr, self.link_text)

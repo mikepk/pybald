@@ -19,6 +19,11 @@ template_helpers = ['from pybald.core.helpers import img, link, humanize, js_esc
 if project.template_helpers:
     template_helpers.extend(project.template_helpers)
 
+# set the default filters to auto-html escape all content
+default_filters = ['h', 'unicode']
+if project.template_default_filters:
+    default_filters = project.template_default_filters
+
 # templates follow name.FORMAT.template so this is a simple
 # regex check of that pattern
 TEMPLATE_PATTERN = re.compile(r'([^\.]+)\.([^\.]+)\.template$')
@@ -57,7 +62,8 @@ class TemplateEngine:
                                      imports=template_helpers,
                                      input_encoding='utf-8',
                                      output_encoding='utf-8',
-                                     filesystem_checks=fs_test)
+                                     filesystem_checks=fs_test,
+                                     default_filters=default_filters)
 
     def form_render(self, template_name=None, format="form", **kargs):
         '''
