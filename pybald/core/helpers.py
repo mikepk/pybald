@@ -67,7 +67,7 @@ class AssetUrl(dict):
         return ParseResult(**self).geturl()
 
 
-class HTMLLiteral(object):
+class HTMLLiteral(unicode):
     '''This is an object to handle literal HTML in Mako template'''
     def __init__(self, value):
         self.value = value
@@ -76,7 +76,7 @@ class HTMLLiteral(object):
         return self.__html__()
 
     def __html__(self):
-        return unicode(self.value)
+        return self.value
 
 
 def as_p(input_str):

@@ -61,11 +61,11 @@
 <h3 id="exception">${tback.errorname}: ${tback.message[:1024]}</h3>
 % if req:
 <ul>
-<li><span class="key">request url:</span> <span class="sourceline">${req.url|h}</span></li>
-<li><span class="key">request method:</span> <span class="sourceline">${req.environ.get("REQUEST_METHOD")|h}</span></li>
+<li><span class="key">request url:</span> <span class="sourceline">${req.url}</span></li>
+<li><span class="key">request method:</span> <span class="sourceline">${req.environ.get("REQUEST_METHOD")}</span></li>
 <li><span class="key">user:</span> <span class="sourceline">\
 %try:
-${req.remote_user.email|h}\
+${req.remote_user.email}\
 %except:
 None\
 %endtry
@@ -75,7 +75,7 @@ None\
 <div class="section" id="urlvars">
 <ul>
 % for label, val in req.environ.get("urlvars",{}).items():
-<li><span class="key">${label|h}:</span><span class="sourceline">${val|h}</span></li>
+<li><span class="key">${label}:</span><span class="sourceline">${val}</span></li>
 % endfor
 </ul>
 </div>
@@ -86,9 +86,9 @@ None\
     <div class="nonhighlight">
 % for index in range(max(0, line-4),min(len(lines), line+5)):
     % if index + 1 == line:
-<div class="highlight">${index + 1} ${lines[index] | h}</div>
+<div class="highlight">${index + 1} ${lines[index]}</div>
     % else:
-<div class="sampleline">${index + 1} ${lines[index] | h}</div>
+<div class="sampleline">${index + 1} ${lines[index]}</div>
     % endif
 % endfor
     </div>
@@ -98,7 +98,7 @@ None\
 <div class="stacktrace">
 % for (filename, lineno, function, line) in tback.reverse_traceback:
     <div class="location">${filename}, line ${lineno}:</div>
-    <div class="sourceline">${line | h}</div>
+    <div class="sourceline">${line}</div>
 % endfor
 </div>
 </div>
@@ -111,14 +111,14 @@ None\
 <tr><td>
 <span class="env_key">
 %try:
-${key|h}\
+${key}\
 %except Exception, err:
 ---${err}---\
 %endtry
 </span></td>
 <td><span class="env_value">\
 %try:
-${str(req.environ[key])|h}
+${str(req.environ[key])}
 %except Exception, err:
 ---${err}---\
 %endtry
