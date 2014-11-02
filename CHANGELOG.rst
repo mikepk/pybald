@@ -9,3 +9,11 @@ Release 0.2.8 (June 26, 2014)
       BUNDLE_SOURCE_PATHS = ['alternate_source_path', 'public']
       BUNDLE_OUTPUT_PATH = '/some_path/public_files/'
 
+
+Release 0.3.0 (November 2, 2014)
+================================
+
+* Change the default behavior of all templates to include the html escape filter
+* New helper: HTMLLiteral. Allows explicit html escape bypassing
+* Add csrf decorator
+* New newrelic instrumentation code to improve controller/action visibility
