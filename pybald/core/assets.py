@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
 from lxml import etree
 
 from webassets.env import Environment
@@ -20,6 +19,11 @@ except ImportError:
 import logging
 console = logging.getLogger(__name__)
 
+# python 3
+try:
+    type(unicode)
+except NameError:
+    unicode = str
 
 # set the bundle input and output paths
 if project.BUNDLE_OUTPUT_PATH:
@@ -28,7 +32,8 @@ else:
     bundle_output_path = os.path.join(project.path or '', "public")
 
 if project.BUNDLE_SOURCE_PATHS:
-    bundle_input_paths = [os.path.join(project.path or '', path) for path in project.BUNDLE_SOURCE_PATHS]
+    bundle_input_paths = [os.path.join(project.path or '', path) for path in
+                          project.BUNDLE_SOURCE_PATHS]
 else:
     bundle_input_paths = [bundle_output_path]
 
@@ -149,5 +154,3 @@ def bundle(input_text):
         else:
             output_buffer.append(etree.tostring(elem, method="html"))
     return u'\n'.join([unicode(item) for item in output_buffer])
-
-
