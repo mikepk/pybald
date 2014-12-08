@@ -27,24 +27,25 @@ except NameError:
 
 # set the bundle input and output paths
 if project.BUNDLE_OUTPUT_PATH:
-    bundle_output_path = project.BUNDLE_OUTPUT_PATH
+    bundle_output_path = project.BUNDLE_OUTPUT_PATH.lstrip('/')
 else:
     bundle_output_path = os.path.join(project.path or '', "public")
 
 if project.BUNDLE_SOURCE_PATHS:
-    bundle_input_paths = [os.path.join(project.path or '', path) for path in
+    bundle_input_paths = [os.path.join(project.path or '', path).lstrip('/') for path in
                           project.BUNDLE_SOURCE_PATHS]
 else:
     bundle_input_paths = [bundle_output_path]
 
-
+cache_path = os.path.join(project.path or '', 'tmp', '.webassets-cache')
 # setting auto-build to false will keep all sub-nodes from
 # running the XML parser.
 env = Environment(bundle_output_path,
                   '',
                   debug=(not project.BUNDLE_ASSETS),
                   auto_build=bool(project.BUNDLE_AUTO_BUILD),
-                  load_path=bundle_input_paths)
+                  load_path=bundle_input_paths,
+                  cache=cache_path)
 
 # Take any bundle filter options and apply them to the config
 for key, value in (project.BUNDLE_FILTER_OPTIONS or {}).items():
