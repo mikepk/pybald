@@ -36,7 +36,7 @@ else:
     url_pre = ''
 
 if project.BUNDLE_SOURCE_PATHS:
-    bundle_input_paths = [os.path.join(project.path or '', path).lstrip('/')
+    bundle_input_paths = [os.path.join(project.path or '', path.lstrip('/'))
                             for path in project.BUNDLE_SOURCE_PATHS]
 else:
     bundle_input_paths = [bundle_output_path]
