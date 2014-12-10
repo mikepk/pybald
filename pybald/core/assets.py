@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from lxml import etree
+from lxml import html
 
 from webassets.env import Environment
 from webassets import Bundle
@@ -25,31 +25,37 @@ try:
 except NameError:
     unicode = str
 
+public_path = os.path.join(project.path or '', "public")
+
 # set the bundle input and output paths
 if project.BUNDLE_OUTPUT_PATH:
-    bundle_output_path = project.BUNDLE_OUTPUT_PATH.lstrip('/')
+    bundle_output_path = os.path.join(public_path, project.BUNDLE_OUTPUT_PATH.lstrip('/'))
+    url_pre = project.BUNDLE_OUTPUT_PATH
 else:
-    bundle_output_path = os.path.join(project.path or '', "public")
+    bundle_output_path = public_path
+    url_pre = ''
 
 if project.BUNDLE_SOURCE_PATHS:
-    bundle_input_paths = [os.path.join(project.path or '', path).lstrip('/') for path in
-                          project.BUNDLE_SOURCE_PATHS]
+    bundle_input_paths = [os.path.join(project.path or '', path).lstrip('/')
+                            for path in project.BUNDLE_SOURCE_PATHS]
 else:
     bundle_input_paths = [bundle_output_path]
 
 cache_path = os.path.join(project.path or '', 'tmp', '.webassets-cache')
+# auto creat cache path if not present
+if not os.path.exists(cache_path):
+    os.makedirs(cache_path)
+
 # setting auto-build to false will keep all sub-nodes from
 # running the XML parser.
 env = Environment(bundle_output_path,
-                  '',
+                  url=url_pre,
                   debug=(not project.BUNDLE_ASSETS),
                   auto_build=bool(project.BUNDLE_AUTO_BUILD),
                   load_path=bundle_input_paths,
-                  cache=cache_path)
-
-# Take any bundle filter options and apply them to the config
-for key, value in (project.BUNDLE_FILTER_OPTIONS or {}).items():
-    env.config[key] = value
+                  cache=cache_path,
+                  # Take any bundle filter options and apply them to the config
+                  **(project.BUNDLE_FILTER_OPTIONS or {}))
 
 def _parse_bundle(elem, parent_bundle=None):
     '''Recursively generate webassets bundles by walking the xml tree'''
@@ -120,13 +126,14 @@ class memoize_bundles(object):
 @memoize_bundles
 def bundle(input_text):
     '''
-    Parse XML fragments from a string looking for asset bundles and
+    Parse HTML/XML fragments from a string looking for asset bundles and
     process them into webasset bundles.
     '''
-    # XML parse the fragments
+    # HTML/XML parse the fragments
     output_buffer = []
-    xml_fragment = u'''<fragments>{0}</fragments>'''.format(input_text)
-    root = etree.fromstring(xml_fragment)
+    html_fragment = u'''<div>{0}</div>'''.format(input_text)
+    root = html.fragment_fromstring(html_fragment)
+
     for elem in root:
         # parse all bundles
         if elem.tag == 'bundle':
@@ -151,7 +158,8 @@ def bundle(input_text):
             # the node
             if bundle_tag.tail is not None:
                 output_buffer.append(bundle_tag.tail)
-        # just dump out anything that's not a bundle
+        # just dump out anything that's not a bundle, use html-style for
+        # scripts and
         else:
-            output_buffer.append(etree.tostring(elem, method="html"))
-    return u'\n'.join([unicode(item) for item in output_buffer])
+            output_buffer.append(html.tostring(elem))
+    return u''.join([unicode(item) for item in output_buffer])
