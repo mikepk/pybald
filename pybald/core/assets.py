@@ -29,36 +29,37 @@ public_path = os.path.join(project.path or '', "public")
 
 # set the bundle input and output paths
 if project.BUNDLE_OUTPUT_PATH:
-    bundle_output_path = os.path.join(public_path, project.BUNDLE_OUTPUT_PATH.lstrip('/'))
-    url_pre = project.BUNDLE_OUTPUT_PATH
+    bundle_output_path = project.BUNDLE_OUTPUT_PATH
 else:
-    bundle_output_path = public_path
-    url_pre = ''
+    bundle_output_path = ''
 
 if project.BUNDLE_SOURCE_PATHS:
     bundle_input_paths = [os.path.join(project.path or '', path.lstrip('/'))
                             for path in project.BUNDLE_SOURCE_PATHS]
 else:
-    bundle_input_paths = [bundle_output_path]
+    bundle_input_paths = [public_path]
 
 cache_path = os.path.join(project.path or '', 'tmp', '.webassets-cache')
-# auto creat cache path if not present
+manifest_file = os.path.join(project.path or '', 'tmp', '.webassets-manifest')
+
+# auto create cache path if not present
 if not os.path.exists(cache_path):
     os.makedirs(cache_path)
 
 # setting auto-build to false will keep all sub-nodes from
 # running the XML parser.
-env = Environment(bundle_output_path,
-                  url=url_pre,
+env = Environment(public_path,
+                  url='',
                   debug=(not project.BUNDLE_ASSETS),
                   auto_build=bool(project.BUNDLE_AUTO_BUILD),
                   load_path=bundle_input_paths,
                   cache=cache_path,
+                  manifest="".join(["file:", manifest_file]),
                   # Take any bundle filter options and apply them to the config
                   **(project.BUNDLE_FILTER_OPTIONS or {}))
 
 def _parse_bundle(elem, parent_bundle=None):
-    '''Recursively generate webassets bundles by walking the xml tree'''
+    '''Recursively generate webassets bundles by walking the xml/html tree'''
     if elem.tag != "bundle":
         raise SyntaxError("Bundling only works with bundle tags.")
     contents = []
@@ -98,7 +99,7 @@ def _parse_bundle(elem, parent_bundle=None):
 
     # remove leading slashes since webassets works on relative paths
     # a little hacky but keeps the document (web page) syntax cleaner
-    attrib_dict['output'] = attrib_dict['output'].lstrip('/')
+    attrib_dict['output'] = os.path.join(bundle_output_path, attrib_dict['output'].lstrip('/')).lstrip('/')
     new_bundle = Bundle(*contents, **attrib_dict)
     return new_bundle, asset_type
 
@@ -142,24 +143,23 @@ def bundle(input_text):
             # every asset type has a default 'link type'
             link_func = getattr(page, 'add_{0}'.format(asset_type))
             # construct the asset urls
-            try:
-                assets = [link_func(url) for url in bundle.urls(env=env)]
-            except BundleError:
-                console.exception("Problem bundling.")
-                console.warning("!"*80 + '''
-  Warning, missing pre-compiled static assets. Switching to debug mode
-  automatically. Run compile_static_assets.py to pre-create the compiled
-  minified static assets.
-''' + "!"*80)
-                env.debug = True
-                assets = [link_func(url) for url in bundle.urls(env=env)]
+            # try:
+            assets = [link_func(url) for url in bundle.urls(env=env)]
+#             except BundleError:
+#                 console.exception("Problem bundling.")
+#                 console.warning("!"*80 + '''
+#   Warning, missing pre-compiled static assets. Switching to debug mode
+#   automatically. Run compile_static_assets.py to pre-create the compiled
+#   minified static assets.
+# ''' + "!"*80)
+#                 env.debug = True
+#                 assets = [link_func(url) for url in bundle.urls(env=env)]
             output_buffer.extend(assets)
             # add any text nodes that got glommed onto
             # the node
             if bundle_tag.tail is not None:
                 output_buffer.append(bundle_tag.tail)
-        # just dump out anything that's not a bundle, use html-style for
-        # scripts and
+        # just dump out anything that's not a bundle
         else:
             output_buffer.append(html.tostring(elem))
-    return u''.join([unicode(item) for item in output_buffer])
+    return u'\n'.join([unicode(item) for item in output_buffer])
