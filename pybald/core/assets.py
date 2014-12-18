@@ -54,7 +54,7 @@ env = Environment(public_path,
                   auto_build=bool(project.BUNDLE_AUTO_BUILD),
                   load_path=bundle_input_paths,
                   cache=cache_path,
-                  manifest="".join(["file:", manifest_file]),
+                  manifest="".join(["json:", manifest_file]),
                   # Take any bundle filter options and apply them to the config
                   **(project.BUNDLE_FILTER_OPTIONS or {}))
 
@@ -78,7 +78,6 @@ def _parse_bundle(elem, parent_bundle=None):
             file_path = urlparse(t.attrib.get('src', '')).path
             contents.append(file_path.lstrip('/'))
             asset_types.append('js')
-
     if not asset_types:
         raise SyntaxError("No assets found in the bundle tag. Include javascript, css, or source files in the bundle.")
     elif len(set(asset_types)) > 1:
@@ -140,20 +139,12 @@ def bundle(input_text):
         if elem.tag == 'bundle':
             bundle_tag = elem
             bundle, asset_type = _parse_bundle(bundle_tag)
+
             # every asset type has a default 'link type'
             link_func = getattr(page, 'add_{0}'.format(asset_type))
             # construct the asset urls
             # try:
             assets = [link_func(url) for url in bundle.urls(env=env)]
-#             except BundleError:
-#                 console.exception("Problem bundling.")
-#                 console.warning("!"*80 + '''
-#   Warning, missing pre-compiled static assets. Switching to debug mode
-#   automatically. Run compile_static_assets.py to pre-create the compiled
-#   minified static assets.
-# ''' + "!"*80)
-#                 env.debug = True
-#                 assets = [link_func(url) for url in bundle.urls(env=env)]
             output_buffer.extend(assets)
             # add any text nodes that got glommed onto
             # the node
