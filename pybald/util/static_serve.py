@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import os
-import unittest
 import mimetypes
-
+from datetime import datetime, timedelta
 
 class StaticServer(object):
     '''
@@ -15,13 +14,15 @@ class StaticServer(object):
     If the file lookup fails, the pipeline is allowed to continue to any
     dynamic components.
     '''
-    def __init__(self, application, path):
+    def __init__(self, application, path, browser_caching=False):
         """
         :param application: is the remaining WSGI pipeline to connect to.
         :param path: is directory where static files are stored
+        :param browser_caching: whether to send 30d expires future headers
         """
         self.path = path
         self.application = application
+        self.browser_caching = browser_caching
 
     def send_file(self, file_path, size):
         '''
@@ -50,16 +51,16 @@ class StaticServer(object):
 
         size = os.path.getsize(file_path)
         headers = [
-            ("Content-type", mimetype),
-            ("Content-length", str(size)),
+            ("Content-Type", mimetype),
+            ("Content-Length", str(size)),
         ]
+        if self.browser_caching:
+            expires = datetime.utcnow() + timedelta(days=30)
+            headers.extend([
+            ("Cache-Control", "public, max-age={0}".format(60*60*24*30)),
+            ("Expires", "{0}".format(expires.strftime("%a, %e %b %Y %H:%M:%S GMT")))
+                ])
+
         start_response("200 OK", headers)
         return self.send_file(file_path, size)
 
-
-class static_serveTests(unittest.TestCase):
-    def setUp(self):
-        pass
-
-if __name__ == '__main__':
-    unittest.main()
