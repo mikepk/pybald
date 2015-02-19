@@ -17,3 +17,9 @@ Release 0.3.0 (November 2, 2014)
 * New helper: HTMLLiteral. Allows explicit html escape bypassing
 * Add csrf decorator
 * New newrelic instrumentation code to improve controller/action visibility
+
+Release 0.3.1 (February 19, 2015)
+================================
+
+* Fix webassets dependencies and bugs
+* Added browser caching headers to the simple static server
