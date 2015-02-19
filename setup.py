@@ -55,7 +55,7 @@ setup(name='pybald',
           "pybald-routes==2.11",
           "FormAlchemy==1.4.3", "SqlAlchemy==0.8.2",
           "WebOb==1.2.3", "Mako==0.8.1", "python-memcached==1.53", "webassets==0.8",
-          "lxml==3.2.3"
+          "lxml==3.2.3", "rjsmin==1.0.10", "cssmin==0.2.0"
       ],
 )
 
