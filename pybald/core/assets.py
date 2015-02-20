@@ -6,9 +6,15 @@ from webassets.env import Environment
 from webassets import Bundle
 from webassets.exceptions import BundleError
 from pybald.core import page
+from pybald.asset_filters.jsx import JsxFilter
+from webassets.filter import register_filter
+
 import project
 import os
 from urlparse import urlparse
+
+# add custom JsxFilter
+register_filter(JsxFilter)
 
 try:
     import pyhash
