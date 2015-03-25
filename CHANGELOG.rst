@@ -23,3 +23,8 @@ Release 0.3.1 (February 19, 2015)
 
 * Fix webassets dependencies and bugs
 * Added browser caching headers to the simple static server
+
+Release 0.3.2 (March 25, 2015)
+================================
+
+* Add jsx filters for react components
