@@ -3,7 +3,7 @@
 
 import os
 import unittest
-import project
+# import project
 from mako.template import Template
 from mako.lookup import TemplateLookup
 import re
@@ -16,27 +16,27 @@ template_helpers = ['from pybald.core.helpers import img, link, humanize, js_esc
                     'from pybald.core.helpers import js_escape as js',
                     'from mako.filters import html_escape']
 
-if project.template_helpers:
-    template_helpers.extend(project.template_helpers)
+# if project.template_helpers:
+#     template_helpers.extend(project.template_helpers)
 
 # set the default filters to auto-html escape all content
 default_filters = ['h', 'unicode']
-if project.template_default_filters:
-    default_filters = project.template_default_filters
+# if project.template_default_filters:
+#     default_filters = project.template_default_filters
 
 # templates follow name.FORMAT.template so this is a simple
 # regex check of that pattern
 TEMPLATE_PATTERN = re.compile(r'([^\.]+)\.([^\.]+)\.template$')
 
 
-class TemplateEngine:
+class TemplateEngine(object):
     '''
     The basic template engine, looks up templates and renders them.
     Uses the mako template system
     '''
 
-    def __init__(self, template_path=None, cache_path=None):
-        self.project_path = project.path
+    def __init__(self, template_path=None, cache_path=None, helpers=None):
+        self.project_path = '' #project.path
         try:
             default_template_path = os.path.join(os.path.dirname(
                                                 os.path.realpath(__file__)),
@@ -54,7 +54,8 @@ class TemplateEngine:
             project_template_path = ""
             project_cache_path = ""
 
-        fs_test = project.template_filesystem_check or project.debug or False
+        fs_test = False
+        # fs_test = project.template_filesystem_check or project.debug or False
 
         self.lookup = TemplateLookup(directories=[project_template_path,
                                                   default_template_path],
@@ -126,14 +127,35 @@ class TemplateEngine:
 
         Calls _get_template to retrieve the template and then renders it.
         '''
-        template_data = dict(project.page_options.items() + data.items())
+        # template_data = dict(project.page_options.items() + data.items())
+        template_data = data
         mytemplate = self._get_template(template, format)
         console.debug("Rendering template")
         return mytemplate.render(**template_data)
 
+    @classmethod
+    def configure(cls):
+        render = cls()
+
+        # global engine
+        engine = CompatibilityProxy(render)
+        return render
+
+# lazy-load / self-redefine render function
+def render(self, *pargs, **kargs):
+    global render
+    render = TemplateEngine.configure()
+    return render(*pargs, **kargs)
+
+def engine(self, *pargs, **kargs):
+    global engine
+    global render
+    engine = CompatibilityProxy(render)
+    return engine(*pargs, **kargs)
+
 # module scope singleton, should this be changed?
 # engine = TemplateEngine()
-render = TemplateEngine()
+# render = TemplateEngine()
 
 
 class CompatibilityProxy(object):
@@ -157,7 +179,7 @@ class CompatibilityProxy(object):
         format = format or data.get('format', 'html')
         return self._obj(template=template_name, data=data, format=format)
 
-engine = CompatibilityProxy(render)
+
 
 
 class TemplateEngineTests(unittest.TestCase):

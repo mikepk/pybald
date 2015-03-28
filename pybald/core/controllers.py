@@ -11,7 +11,7 @@ from webob import exc
 import re
 from pybald.util import camel_to_underscore
 from routes import redirect_to
-import project
+
 import hashlib
 import base64
 import json
@@ -197,38 +197,38 @@ def action(method):
     return action_wrapper
 
 
-def caching_pre(keys, method_name, prefix=''):
-    '''Decorator for pybald _pre to return cached responses if available.'''
-    if keys is None:
-        keys = []
+# def caching_pre(keys, method_name, prefix=''):
+#     '''Decorator for pybald _pre to return cached responses if available.'''
+#     if keys is None:
+#         keys = []
 
-    def pre_wrapper(pre):
-        def replacement(self, req):
-            val = ":".join([prefix] + [str(getattr(self, k, '')) for
-                        k in keys] + [method_name])
-            self.cache_key = base64.urlsafe_b64encode(hashlib.md5(val).digest())
-            resp = project.mc.get(self.cache_key)
-            if resp:
-                return resp
-            return pre(req)
-        return replacement
-    return pre_wrapper
+#     def pre_wrapper(pre):
+#         def replacement(self, req):
+#             val = ":".join([prefix] + [str(getattr(self, k, '')) for
+#                         k in keys] + [method_name])
+#             self.cache_key = base64.urlsafe_b64encode(hashlib.md5(val).digest())
+#             resp = project.mc.get(self.cache_key)
+#             if resp:
+#                 return resp
+#             return pre(req)
+#         return replacement
+#     return pre_wrapper
 
 
-def caching_post(time=0):
-    '''Decorator for pybald _post to cache/store responses.'''
-    def post_wrapper(post):
-        def replacement(self, req, resp):
-            post(req, resp)
-            # only cache 2XX or 4XX responses
-            if (200 <= resp.status_code < 300) or (400 <= resp.status_code < 500):
-                if 'X-Cache' not in resp.headers:
-                    resp.headerlist.append(('X-Cache', 'MISS'))
-                    project.mc.set(self.cache_key, resp, time)
-                else:
-                    resp.headers['X-Cache'] = 'HIT'
-        return replacement
-    return post_wrapper
+# def caching_post(time=0):
+#     '''Decorator for pybald _post to cache/store responses.'''
+#     def post_wrapper(post):
+#         def replacement(self, req, resp):
+#             post(req, resp)
+#             # only cache 2XX or 4XX responses
+#             if (200 <= resp.status_code < 300) or (400 <= resp.status_code < 500):
+#                 if 'X-Cache' not in resp.headers:
+#                     resp.headerlist.append(('X-Cache', 'MISS'))
+#                     project.mc.set(self.cache_key, resp, time)
+#                 else:
+#                     resp.headers['X-Cache'] = 'HIT'
+#         return replacement
+#     return post_wrapper
 
 # regenerate a content_cache_prefix on every reload so that content will
 # be force loaded after any full application restart
@@ -245,22 +245,22 @@ def action_cached(prefix=content_cache_prefix, keys=None, time=0):
     if keys is None:
         keys = []
 
-    def cached_wrapper(my_action_method):
-        @wraps(my_action_method)
-        def replacement(self, environ, start_response):
-            # bind newly wrapped methods to self
-            self._pre = caching_pre(keys,
-                                    my_action_method.__name__,
-                                    prefix=prefix)(self._pre
-                                        ).__get__(self, self.__class__)
-            self._post = caching_post(time)(self._post
-                                        ).__get__(self, self.__class__)
-            return my_action_method(self, environ, start_response)
-        # don't enable caching if requested
-        if project.DISABLE_STATIC_CONTENT_CACHE:
-            return my_action_method
-        return replacement
-    return cached_wrapper
+    # def cached_wrapper(my_action_method):
+    #     @wraps(my_action_method)
+    #     def replacement(self, environ, start_response):
+    #         # bind newly wrapped methods to self
+    #         self._pre = caching_pre(keys,
+    #                                 my_action_method.__name__,
+    #                                 prefix=prefix)(self._pre
+    #                                     ).__get__(self, self.__class__)
+    #         self._post = caching_post(time)(self._post
+    #                                     ).__get__(self, self.__class__)
+    #         return my_action_method(self, environ, start_response)
+    #     # don't enable caching if requested
+    #     if project.DISABLE_STATIC_CONTENT_CACHE:
+    #         return my_action_method
+    #     return replacement
+    # return cached_wrapper
 
 
 class RegistryMount(type):
