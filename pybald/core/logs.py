@@ -8,7 +8,7 @@ import unittest
 import logging
 import logging.handlers
 from textwrap import TextWrapper
-console = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class WrappedFormatter(logging.Formatter):
@@ -89,9 +89,9 @@ class LogPoint(object):
         self.log = '{{0:{0}^{1}}}'.format(fillchar, width)
 
     def __call__(self, environ, start_response):
-        console.debug(self.log.format(' {0} '.format(self.begin_message)))
+        log.debug(self.log.format(' {0} '.format(self.begin_message)))
         resp = self.application(environ, start_response)
-        console.debug(self.log.format(' {0} '.format(self.end_message)))
+        log.debug(self.log.format(' {0} '.format(self.end_message)))
         return resp
 
 if __name__ == '__main__':

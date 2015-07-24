@@ -9,7 +9,7 @@ from pybald.core import page
 from pybald.asset_filters.jsx import JsxFilter
 from webassets.filter import register_filter
 
-import project
+from pybald.config import project
 import os
 from urlparse import urlparse
 
@@ -23,7 +23,7 @@ except ImportError:
     hashfunc = hash
 
 import logging
-console = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 # python 3
 try:

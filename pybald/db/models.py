@@ -123,7 +123,7 @@ import zlib
 from pybald.db import engine, dump_engine
 from pybald.util import camel_to_underscore, pluralize
 
-import project
+from pybald.config import project
 # from project import mc
 
 # from sqlalchemy.orm.interfaces import SessionExtension

@@ -3,7 +3,7 @@
 '''HTML page helper functions as well as simple asset tag handling.'''
 
 import os
-import project
+from pybald.config import project
 
 # from urlparse import urlparse, ParseResult
 # global request_config... how can we eliminate?
@@ -11,28 +11,18 @@ import project
 from pybald.core.helpers import HTMLLiteral, AssetUrl
 
 import logging
-console = logging.getLogger(__name__)
-try:
-    import pyhash
-    hashfunc = pyhash.super_fast_hash()
-except ImportError:
-    console.warn("!"*10 + '''  Using python built-in hash() for asset URL
-generation. This is system implementation specific and may result in different
-hosts mapping static assets to different static hosts. That may cause
-inefficient use of browser caches. Optionally you can install pyhash to
-install additional fast, non-cryptographic, hashes that are not system
-dependent.
-
-pip install pyhash
-''')
-    hashfunc = hash
+log = logging.getLogger(__name__)
 
 
-
+# TODO - this singleton should be replaced
 asset_tag_cache = {}
 
-
 def compute_asset_tag(filename, pattern='{filename}{extension}?v={tag}'):
+    '''
+    Create a unique signature for a file.
+
+    This asset tag is used for cache busting.
+    '''
     asset_tag = asset_tag_cache.get(filename, None)
     try:
         if not asset_tag:
@@ -49,11 +39,19 @@ def compute_asset_tag(filename, pattern='{filename}{extension}?v={tag}'):
 
 
 def add_js(filename):
+    '''Add a script tag to a template.
+
+    This helper function is also config aware and will re-write asset urls
+    based on CDN and other rules.'''
     return HTMLLiteral('''<script src="{0}"></script>'''.format(
                                         AssetUrl(compute_asset_tag(filename))))
 
 
 def add_css(filename, media="screen"):
+    '''Add a link/css tag to a template.
+
+    This helper function is also config aware and will re-write asset urls
+    based on CDN and other rules.'''
     return HTMLLiteral('''<link type="text/css" href="{0}" media="{1}" rel="stylesheet">'''.format(
                                                 AssetUrl(compute_asset_tag(filename)),
                                                 str(media)))

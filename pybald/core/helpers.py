@@ -15,11 +15,25 @@ from routes import url_for
 from mako import filters
 from urlparse import urlparse, ParseResult
 from routes import request_config
-import project
+from pybald.config import project
+import logging
+log = logging.getLogger(__name__)
+
 try:
     import pyhash
     hashfunc = pyhash.super_fast_hash()
 except ImportError:
+    log.warn("-"*80 + '''
+    Warning
+    -------
+    Using python built-in hash() for asset URL generation. This is system
+    implementation specific and may result in different hosts mapping static
+    assets to different static hosts. That may cause inefficient use of browser
+    caches. Optionally you can install pyhash to install additional fast,
+    non-cryptographic, hashes that are not system dependent.
+
+    pip install pyhash
+'''+"-"*80)
     hashfunc = hash
 
 
@@ -52,7 +66,11 @@ class AssetUrl(dict):
             # this requires the custom HTTP header X-Forwarded-Proto
             # set if running behind a proxy (or if SSL is terminated
             # upstream)
-            protocol = request_config().protocol
+            try:
+                protocol = request_config().protocol
+            except AttributeError:
+                # are we not in a request? Default to http
+                protocol = project.DEFAULT_PROTOCOL
             # use the round robin hosts to speed download when not https
             if protocol != "https" and project.STATIC_HOSTS:
                 self['netloc'] = project.STATIC_HOSTS[hashfunc(self.raw_url) %

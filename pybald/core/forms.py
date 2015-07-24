@@ -3,7 +3,7 @@
 
 import os
 
-import project
+# from pyald.config import project
 from formalchemy import templates, config
 from formalchemy import FieldSet as FAFieldSet, Field as FAField, Grid as FAGrid, validators
 
