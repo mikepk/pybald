@@ -3,7 +3,7 @@
 '''HTML page helper functions as well as simple asset tag handling.'''
 
 import os
-from pybald.config import project
+from pybald import app
 
 # from urlparse import urlparse, ParseResult
 # global request_config... how can we eliminate?
@@ -27,7 +27,7 @@ def compute_asset_tag(filename, pattern='{filename}{extension}?v={tag}'):
     try:
         if not asset_tag:
             asset_tag = str(
-                int(round(os.path.getmtime(os.path.join(project.path,
+                int(round(os.path.getmtime(os.path.join(app.config.path,
                                                         "public",
                                                         filename.lstrip("/"))))
                 ))

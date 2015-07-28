@@ -3,7 +3,7 @@
 
 import os
 import unittest
-from pybald.config import project
+from pybald.app import config
 from mako.template import Template
 from mako.lookup import TemplateLookup
 import re
@@ -28,26 +28,24 @@ class TemplateEngine(object):
                             'from pybald.core.helpers import js_escape as js',
                             'from mako.filters import html_escape']
 
-        if project.template_helpers:
-            self.template_helpers.extend(project.template_helpers)
+        if config.template_helpers:
+            self.template_helpers.extend(config.template_helpers)
 
         # set the default filters to auto-html escape all content
         self.default_filters = ['h', 'unicode']
-        if project.template_default_filters:
-            self.default_filters = project.template_default_filters
+        if config.template_default_filters:
+            self.default_filters = config.template_default_filters
 
-        self.project_path = project.path
-        log.debug(os.path.join(os.path.dirname(
-                                                os.path.realpath(__file__)),
-                                                'default_templates'))
+        self.project_path = config.path
+
         try:
             default_template_path = os.path.join(os.path.dirname(
                                                 os.path.realpath(__file__)),
                                                 'default_templates')
-            project_template_path = project.template_path or os.path.join(
+            project_template_path = config.template_path or os.path.join(
                                                             self.project_path,
                                                             'app/views')
-            project_cache_path = project.cache_path or os.path.join(
+            project_cache_path = config.cache_path or os.path.join(
                                                            self.project_path,
                                                            'tmp/viewscache')
         except AttributeError:
@@ -58,7 +56,7 @@ class TemplateEngine(object):
             project_template_path = ""
             project_cache_path = ""
 
-        fs_test = project.template_filesystem_check or project.debug or False
+        fs_test = config.template_filesystem_check or config.debug or False
         self.lookup = TemplateLookup(directories=[project_template_path,
                                                   default_template_path],
                                      module_directory=project_cache_path,
@@ -129,7 +127,7 @@ class TemplateEngine(object):
 
         Calls _get_template to retrieve the template and then renders it.
         '''
-        template_data = dict(project.page_options.items() + data.items())
+        template_data = dict(config.page_options.items() + data.items())
         mytemplate = self._get_template(template, format)
         log.debug("Rendering template")
         return mytemplate.render(**template_data)

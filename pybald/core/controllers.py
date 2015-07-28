@@ -4,7 +4,8 @@
 import unittest
 
 from functools import wraps
-from pybald.core.templates import render as render_view, engine as old_style_render_view
+# from pybald.core.templates import render as render_view, engine as old_style_render_view
+from pybald import app
 
 from webob import Request, Response
 from webob import exc
@@ -185,7 +186,7 @@ def action(method):
         # the return which has precedence over the view
         resp = (pre(req) or
                  method(self, req) or
-                 render_view(template=self.template_id,
+                 app.render(template=self.template_id,
                              data=self.__dict__ or {}))
         # if the response is currently a string
         # wrap it in a response object
@@ -262,7 +263,7 @@ def action_cached(prefix=content_cache_prefix, keys=None, time=0):
     #     return replacement
     # return cached_wrapper
 
-
+from pybald.app import class_registry
 class RegistryMount(type):
     '''
     A registry creating metaclass that keeps track of all defined classes that
@@ -274,7 +275,7 @@ class RegistryMount(type):
             cls.registry.append(cls)
         except AttributeError:
             # this is processing the first class (the mount point)
-            cls.registry = []
+            cls.registry = class_registry
 
         return super(RegistryMount, cls).__init__(name, bases, attrs)
 
@@ -317,17 +318,17 @@ class Controller(object):
             )
         return res
 
-    def _view(self, data=None):
-        '''
-        This method is a shim between the old view rendering code and the new
-        template rendering methods. It should not be used and is present only
-        to maintain backward compatibility.
+    # def _view(self, data=None):
+    #     '''
+    #     This method is a shim between the old view rendering code and the new
+    #     template rendering methods. It should not be used and is present only
+    #     to maintain backward compatibility.
 
-        This is targeted for deprecation.
-        '''
-        return old_style_render_view(data or self.__dict__ or {})
+    #     This is targeted for deprecation.
+    #     '''
+    #     return old_style_render_view(data or self.__dict__ or {})
 
-    _render_view = render_view
+    # _render_view = render_view
 
 # alias for backwards copatibility
 BaseController = Controller

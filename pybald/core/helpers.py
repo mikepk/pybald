@@ -15,7 +15,7 @@ from routes import url_for
 from mako import filters
 from urlparse import urlparse, ParseResult
 from routes import request_config
-from pybald.config import project
+from pybald import app
 import logging
 log = logging.getLogger(__name__)
 
@@ -58,10 +58,10 @@ class AssetUrl(dict):
         host = self.get('netloc', None)
         # Don't CDN urls with hosts we're not re-writing
         if host:
-            if (project.STATIC_SOURCES is None or
-                                           host not in project.STATIC_SOURCES):
+            if (app.config.STATIC_SOURCES is None or
+                                           host not in app.config.STATIC_SOURCES):
                 return self.raw_url
-        if (project.USE_CDN and (project.CDN_HOST or project.STATIC_HOSTS)):
+        if (app.config.USE_CDN and (app.config.CDN_HOST or app.config.STATIC_HOSTS)):
             # get the protocol for the current request
             # this requires the custom HTTP header X-Forwarded-Proto
             # set if running behind a proxy (or if SSL is terminated
@@ -70,13 +70,13 @@ class AssetUrl(dict):
                 protocol = request_config().protocol
             except AttributeError:
                 # are we not in a request? Default to http
-                protocol = project.DEFAULT_PROTOCOL
+                protocol = app.config.DEFAULT_PROTOCOL
             # use the round robin hosts to speed download when not https
-            if protocol != "https" and project.STATIC_HOSTS:
-                self['netloc'] = project.STATIC_HOSTS[hashfunc(self.raw_url) %
-                                                      len(project.STATIC_HOSTS)]
+            if protocol != "https" and app.config.STATIC_HOSTS:
+                self['netloc'] = app.config.STATIC_HOSTS[hashfunc(self.raw_url) %
+                                                      len(app.config.STATIC_HOSTS)]
             else:
-                self['netloc'] = project.CDN_HOST
+                self['netloc'] = app.config.CDN_HOST
             # adjust the scheme of any link with a net location
             # to match the current request so we don't have mixed link
             # protocols

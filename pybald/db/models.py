@@ -123,7 +123,7 @@ import zlib
 from pybald.db import engine, dump_engine
 from pybald.util import camel_to_underscore, pluralize
 
-from pybald.config import project
+from pybald import app
 # from project import mc
 
 # from sqlalchemy.orm.interfaces import SessionExtension
@@ -146,7 +146,7 @@ else:
 
 session_args = {}
 
-if project.green:
+if app.config.green:
     from SAGreen import eventlet_greenthread_scope
     session_args['scopefunc'] = eventlet_greenthread_scope
 
@@ -422,11 +422,11 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         # tableargs adds autoload to create schema reflection
         cls.__table_args__ = getattr(cls, "__table_args__", {})
 
-        if project.schema_reflection:
+        if app.config.schema_reflection:
             # create or update the __table_args__ attribute
             cls.__table_args__['autoload'] = True
-        if project.global_table_args:
-            cls.__table_args__.update(project.global_table_args)
+        if app.config.global_table_args:
+            cls.__table_args__.update(app.config.global_table_args)
 
         # check if the class has at least one primary key
         # if not, automatically generate one.

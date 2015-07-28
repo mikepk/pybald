@@ -6,48 +6,50 @@
 # Copyright (c) 2009 Michael Kowalchik. All rights reserved.
 import imp
 import sys
+from pybald.util.context import AppContext
 
 __version__ = '0.4-dev'
 
-class AppObject(object):
-    pass
+# unconfigured application stack context
+app = AppContext()
+sys.modules['pybald.app'] = app
 
-from pybald.config import project
+class AppAttributeProxy(object):
+    def __init__(self, app, attribute):
+        self.app = app
+        self.attribute = attribute
 
-from paste.registry import StackedObjectProxy
+    def __getattr__(self, attr):
+        return getattr(getattr(self.app, "_"+self.attribute), attr)
+        # return getattr(self.app, "_"+attr)
 
+    def __repr__(self):
+        try:
+            return repr(getattr(self.app, "_"+self.attribute))
+        except (TypeError, AttributeError):
+            return str(self)
 
-
-# >>> import imp
-# >>> foo = imp.new_module("foo")
-# >>> foo_code = """
-# ... class Foo:
-# ...     pass
-# ... """
-# >>> exec foo_code in foo.__dict__
-# >>> foo.Foo.__module__
-# >>> import sys
-# >>> sys.modules["foo"] = foo
-# >>> from foo import Foo
-# <class 'Foo' …>
-# >>>
-
-app = StackedObjectProxy()
 
 def pybald_app(name, config):
     '''
-    Generate a dynamic app module / namespace that's pushed / popped on
-    the application / thread context.
+    Generate a dynamic app module that's pushed / popped on
+    the application context stack.
     '''
-    project._push_object(config)
     app_template = '''
+from pybald.app import config as project
 from pybald.core.templates import TemplateEngine
 render = TemplateEngine()
 
 from pybald.db import models
 '''
     new_app = imp.new_module("app")
+    app._set_proxy(new_app)
+    new_app.__dict__['_config'] = config
+    new_app.__dict__['_class_registry'] = []
+    new_app.__dict__['_model_registry'] = []
+    new_app.__dict__['config'] = AppAttributeProxy(app, 'config')
+    new_app.__dict__['class_registry'] = AppAttributeProxy(app, 'class_registry')
+    new_app.__dict__['model_registry'] = AppAttributeProxy(app, 'model_registry')
+    # now execute the app context with this config
     exec app_template in new_app.__dict__
-    app._push_object(new_app)
-    sys.modules['pybald.app'] = app
     return app

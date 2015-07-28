@@ -51,15 +51,12 @@ class Router(object):
         routes(self.map)
         # debug print the whole URL map
         console.debug(str(self.map))
-        if controllers is None:
-            self.load_old_style()
-        else:
-            self.load(controllers)
+        self.load(controllers)
 
     def load(self, controllers):
         '''
-        Handles walking the registry (or old-style controller module) and
-        builds the lookup table for controller classes to match against.
+        Walks the controller registry and builds the lookup table for
+        controller classes to match against.
 
         Does some text munging to change the camel-case class names into
         underscore-separated url like names. (HomeController to home)
@@ -72,20 +69,11 @@ class Router(object):
         The _controller suffix is removed from the module name for the url
         route mapping table (so controller="home" matches home_controller).
 
-        against and the routes regex is initialized with a list of controller
-        names.
-
         Called only once at the start of a pybald application.
         '''
 
         controller_names = []
-        # switch between old-style package container and registry model
-        # both should work here
-        if hasattr(controllers, '__all__'):
-            controller_iterator = ((name, getattr(controllers, name)) for
-                                   name in controllers.__all__)
-        else:
-            controller_iterator = ((controller.__name__, controller) for
+        controller_iterator = ((controller.__name__, controller) for
                                    controller in controllers)
         for name, controller in controller_iterator:
             controller_name = camel_to_underscore(name)
@@ -105,7 +93,7 @@ class Router(object):
         self.map.create_regs(controller_names)
 
     def __repr__(self):
-        return "<Pybald Router Object>"
+        return "<Router Object>"
 
     def get_handler(self, urlvars):
         '''Method that returns the callable code mapped to this current

@@ -1,13 +1,13 @@
 import sqlalchemy as sa
 import sys
-from pybald.config import project
+from pybald import app
 
 import logging
 log = logging.getLogger(__name__)
 
-engine_args = project.database_engine_args
+engine_args = app.config.database_engine_args
 
-if project.green:
+if app.config.green:
     from SAGreen import green_connection, GreenThreadQueuePool
     engine_args["creator"] = green_connection()
     engine_args["poolclass"] = GreenThreadQueuePool
@@ -20,7 +20,7 @@ def dump(sql, *multiparams, **params):
 dump_engine = sa.create_engine('postgresql://', strategy='mock', executor=dump)
 
 try:
-    engine = sa.create_engine(project.database_engine_uri, **engine_args)
+    engine = sa.create_engine(app.config.database_engine_uri, **engine_args)
 except AttributeError:
     log.warning("**WARNING**\nSQLALchemy/pybald is using a mock"
                      " db connection.\n")
