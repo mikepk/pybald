@@ -14,21 +14,6 @@ __version__ = '0.4-dev'
 app = AppContext()
 sys.modules['pybald.app'] = app
 
-class AppAttributeProxy(object):
-    def __init__(self, app, attribute):
-        self.app = app
-        self.attribute = attribute
-
-    def __getattr__(self, attr):
-        return getattr(getattr(self.app, "_"+self.attribute), attr)
-        # return getattr(self.app, "_"+attr)
-
-    def __repr__(self):
-        try:
-            return repr(getattr(self.app, "_"+self.attribute))
-        except (TypeError, AttributeError):
-            return str(self)
-
 
 def pybald_app(name, config):
     '''
@@ -44,12 +29,9 @@ from pybald.db import models
 '''
     new_app = imp.new_module("app")
     app._set_proxy(new_app)
-    new_app.__dict__['_config'] = config
-    new_app.__dict__['_class_registry'] = []
-    new_app.__dict__['_model_registry'] = []
-    new_app.__dict__['config'] = AppAttributeProxy(app, 'config')
-    new_app.__dict__['class_registry'] = AppAttributeProxy(app, 'class_registry')
-    new_app.__dict__['model_registry'] = AppAttributeProxy(app, 'model_registry')
+    new_app.__dict__['config'] = config
+    new_app.__dict__['class_registry'] = []
+    new_app.__dict__['model_registry'] = []
     # now execute the app context with this config
     exec app_template in new_app.__dict__
     return app

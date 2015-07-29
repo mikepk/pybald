@@ -2,37 +2,14 @@ from threading import local
 import logging
 log = logging.getLogger(__name__)
 
-class AppAttributeProxy(object):
-    def __init__(self, app):
-        self.app = app
 
-    def __getattr__(self, attr):
-        print "inside", attr
-        # return self._proxied()
-        print type(self.app._proxied())
-        # print type(getattr(self.app, attr))
-        return getattr(getattr(self.app._proxied(), attr), attr)
-
-class AppContext(object):
-    '''A convenience proxy that represents the configured application.
-
-    Stores data in a simple thread local on a stacked list.'''
-    def __init__(self, *pargs, **kargs):
-        self.__dict__['___threadlocal__'] = local()
-        self.__dict__['___threadlocal__'].stack = []
-        self.__dict__['___stack__'] = self.__dict__['___threadlocal__'].stack
-
-    def _set_proxy(self, obj):
-        self.__dict__['___stack__'].append(obj)
-
-    def _pop_proxy(self):
-        return self.__dict__['___stack__'].pop()
+class Proxy(object):
+    '''A convenience proxy.'''
+    def __init__(self, proxied_object):
+        self._proxied_object = proxied_object
 
     def _proxied(self):
-        try:
-            return self.__dict__['___stack__'][-1]
-        except IndexError:
-            raise RuntimeError("No Pybald application is configured.")
+        return self._proxied_object
 
     def __dir__(self):
         return sorted(dir(self.__class__) + self.__dict__.keys() + dir(self._proxied()))
@@ -41,7 +18,6 @@ class AppContext(object):
         return getattr(self._proxied(), attr)
 
     def __setattr__(self, attr, value):
-        log.debug(attr)
         setattr(self._proxied(), attr, value)
 
     def __delattr__(self, attr):
@@ -76,4 +52,51 @@ class AppContext(object):
 
     def __nonzero__(self):
         return bool(self._proxied())
+
+
+class AppAttributeProxy(Proxy):
+    def __init__(self, parent, attribute):
+        self.parent = parent
+        self.attribute = attribute
+
+    def _proxied(self):
+        return getattr(self.parent._proxied(), self.attribute)
+
+    def __setattr__(self, attr, value):
+        if attr in ('parent', 'attribute', '_proxied'):
+            object.__setattr__(self, attr, value)
+        else:
+            super(AppAttributeProxy, self).__setattr__(attr, value)
+
+    def __getattr__(self, attr):
+        if attr in ('parent', 'attribute', '_proxied'):
+            return object.__getattribute__(self, attr)
+        else:
+            return getattr(self._proxied(), attr)
+
+
+class AppContext(Proxy):
+    '''A convenience proxy that represents the configured application.
+
+    Stores data in a simple thread local on a stacked list.'''
+    def __init__(self, *pargs, **kargs):
+        self.__dict__['___threadlocal__'] = local()
+        self.__dict__['___threadlocal__'].stack = []
+        self.__dict__['___stack__'] = self.__dict__['___threadlocal__'].stack
+
+    def _set_proxy(self, obj):
+        self.__dict__['___stack__'].append(obj)
+
+    def _pop_proxy(self):
+        return self.__dict__['___stack__'].pop()
+
+    def _proxied(self):
+        try:
+            return self.__dict__['___stack__'][-1]
+        except IndexError:
+            raise RuntimeError("No Pybald application is configured.")
+
+    def __getattr__(self, attr):
+        # return getattr(self._proxied(), attr)
+        return AppAttributeProxy(self, attr)
 

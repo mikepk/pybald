@@ -263,7 +263,6 @@ def action_cached(prefix=content_cache_prefix, keys=None, time=0):
     #     return replacement
     # return cached_wrapper
 
-from pybald.app import class_registry
 class RegistryMount(type):
     '''
     A registry creating metaclass that keeps track of all defined classes that
@@ -275,7 +274,7 @@ class RegistryMount(type):
             cls.registry.append(cls)
         except AttributeError:
             # this is processing the first class (the mount point)
-            cls.registry = class_registry
+            cls.registry = app.class_registry
 
         return super(RegistryMount, cls).__init__(name, bases, attrs)
 

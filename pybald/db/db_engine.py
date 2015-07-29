@@ -17,10 +17,10 @@ def dump(sql, *multiparams, **params):
     print str(sql.compile(dialect=dump_engine.dialect) )
 
 # dump_engine = sa.create_engine('mysql://', strategy='mock', executor=dump)
-dump_engine = sa.create_engine('postgresql://', strategy='mock', executor=dump)
+dump_engine = sa.create_engine('postgresql+psycopg2://', strategy='mock', executor=dump)
 
 try:
-    engine = sa.create_engine(app.config.database_engine_uri, **engine_args)
+    engine = sa.create_engine(app.config.database_engine_uri, **app.config.database_engine_args)
 except AttributeError:
     log.warning("**WARNING**\nSQLALchemy/pybald is using a mock"
                      " db connection.\n")

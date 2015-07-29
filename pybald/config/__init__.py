@@ -12,6 +12,3 @@
 #     namedtuple('Field', ['key1', 'key2', 'key3']).keys()
 #         )._make(dict(config.items(section)).values())
 #             for section in config.sections() ])
-
-from paste.registry import StackedObjectProxy
-project = StackedObjectProxy()
