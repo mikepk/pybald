@@ -14,10 +14,18 @@ if app.config.green:
 
 
 def dump(sql, *multiparams, **params):
-    print str(sql.compile(dialect=dump_engine.dialect) )
+    sys.stdout.write( str(sql.compile(dialect=dump_engine.dialect) ).strip() +"\n")
 
-# dump_engine = sa.create_engine('mysql://', strategy='mock', executor=dump)
-dump_engine = sa.create_engine('postgresql+psycopg2://', strategy='mock', executor=dump)
+
+import re
+def dialect():
+    match = re.search(r'^([^\:]*\:\/\/)', app.config.database_engine_uri)
+    if match:
+        return match.group(1)
+    else:
+        return "mysql://"
+
+dump_engine = sa.create_engine(dialect(), strategy='mock', executor=dump)
 
 try:
     engine = sa.create_engine(app.config.database_engine_uri, **app.config.database_engine_args)

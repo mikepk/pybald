@@ -274,7 +274,7 @@ class RegistryMount(type):
             cls.registry.append(cls)
         except AttributeError:
             # this is processing the first class (the mount point)
-            cls.registry = app.class_registry
+            cls.registry = app.controller_registry
 
         return super(RegistryMount, cls).__init__(name, bases, attrs)
 
