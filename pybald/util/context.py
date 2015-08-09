@@ -4,7 +4,7 @@ log = logging.getLogger(__name__)
 
 
 class Proxy(object):
-    '''A convenience proxy.'''
+    '''A convenience proxy implementing most of the pass through methods.'''
     def __init__(self, proxied_object):
         self._proxied_object = proxied_object
 
@@ -36,10 +36,7 @@ class Proxy(object):
         return self._proxied()(*args, **kw)
 
     def __repr__(self):
-        try:
-            return repr(self._proxied())
-        except (TypeError, AttributeError):
-            return str(self)
+        return repr(self._proxied())
 
     def __iter__(self):
         return iter(self._proxied())
@@ -74,29 +71,44 @@ class AppAttributeProxy(Proxy):
         else:
             return getattr(self._proxied(), attr)
 
-
 class AppContext(Proxy):
-    '''A convenience proxy that represents the configured application.
+    '''A convenience proxy that represents the current active configured
+    application.
 
     Stores data in a simple thread local on a stacked list.'''
+
     def __init__(self, *pargs, **kargs):
         self.__dict__['___threadlocal__'] = local()
         self.__dict__['___threadlocal__'].stack = []
         self.__dict__['___stack__'] = self.__dict__['___threadlocal__'].stack
 
-    def _set_proxy(self, obj):
+    def _push(self, obj):
         self.__dict__['___stack__'].append(obj)
 
-    def _pop_proxy(self):
+    def _pop(self):
         return self.__dict__['___stack__'].pop()
 
     def _proxied(self):
         try:
             return self.__dict__['___stack__'][-1]
         except IndexError:
-            raise RuntimeError("No Pybald application is configured.")
+            raise RuntimeError("No Pybald application is configured."
+                " First make sure a pybald application has been created"
+                " and configured before creating pybald objects like Controllers"
+                " or Models. This is usually the result of attempting to"
+                " import pybald code before running pybald_app().")
 
     def __getattr__(self, attr):
-        # return getattr(self._proxied(), attr)
+        '''For all attributes of the wrapped object, return an AttributeProxy.
+
+        This attribute proxy allows importing attributes and still maintaining
+        the proxy behavior to look up the current context when accessing
+        variables.
+
+        This also allows late binding runtime configuration variables. This
+        could be dangerous if a typo is introduced or other issue, the
+        late code won't show an import error and instead will throw an
+        attribute error when the late bound variable is accessed.
+        '''
         return AppAttributeProxy(self, attr)
 

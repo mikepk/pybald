@@ -33,26 +33,29 @@ root_log = logging.getLogger()
 
 
 def set_root_logger(level=logging.DEBUG, log_class=logging.StreamHandler):
+    '''Adds a handler and log level to the root logger.
+
+    By default, sets log level to DEBUG and the handler to a StreamHandler.
+    '''
     # log all debug messages
     # pull the root logger and set it's logging to *level*
     # root = logging.getLogger()
     root_log.setLevel(level)
 
-    h = log_class()
-    root_log.addHandler(h)
+    handler = log_class()
+    root_log.addHandler(handler)
 
 
-def set_sql_logger(level=logging.DEBUG, log_class=logging.StreamHandler):
+def set_sql_logger(level=logging.INFO, log_class=logging.StreamHandler):
+    '''Adds a handler and log level to the sqlalchemy engine logger.
+    '''
     # setup indented logging for SQL output
-    h2 = log_class()
+    sql_log_handler = log_class()
     formatter = WrappedFormatter("%(message)s")
-    h2.setFormatter(formatter)
+    sql_log_handler.setFormatter(formatter)
     # For SQL log, INFO is better than DEBUG
-    if level == logging.DEBUG:
-        engine_log.setLevel(logging.INFO)
-    else:
-        engine_log.setLevel(logging.ERROR)
-    engine_log.addHandler(h2)
+    engine_log.setLevel(level)
+    engine_log.addHandler(sql_log_handler)
     # avoid repeat log entries by stopping propagation
     # of the engine log
     # we're handling it with the indented logger above
