@@ -117,7 +117,7 @@ from sqlalchemy.ext.hybrid import (
 
 from sqlalchemy import func
 
-from pybald.db import engine, dump_engine
+# from pybald.db import engine, dump_engine
 from pybald.util import camel_to_underscore, pluralize
 
 from pybald import app
@@ -139,27 +139,22 @@ else:
         impl = state.manager[key].impl
         state.modified_event(dict_, impl, True, NO_VALUE)
 
-
-session_args = {}
-
-if app.config.green:
-    from SAGreen import eventlet_greenthread_scope
-    session_args['scopefunc'] = eventlet_greenthread_scope
-
-session = scoped_session(sessionmaker(bind=engine, **session_args))
-
 import sqlalchemy.ext.declarative
 from sqlalchemy.ext.declarative import declarative_base
-Base = declarative_base(bind=engine)
 
+# originally this had bind=engine as an argument. The engine bindinding here
+# allows the classes to be defined via schema reflection as well as allow
+# MODEL.__table__.create() type methods to work without passing in an explicit
+# engine. Thinking if there's a way to pass an attribute proxy here instead.
+Base = declarative_base()
 
+# the surrogate_pk template that assures that surrogate primary keys
+# are allt he same and ordered with the pk first in the table
+surrogate_pk_template = Column(Integer, nullable=False, primary_key=True)
 
 class NotFound(NoResultFound):
     '''Generic Not Found Error'''
     pass
-
-
-surrogate_pk_template = Column(Integer, nullable=False, primary_key=True)
 
 
 class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
@@ -277,7 +272,7 @@ class Model(Base):
         for that use :py:meth:`~pybald.db.models.Model.commit`)
         '''
 
-        session.add(self)
+        app.db.add(self)
 
         if flush:
             self.flush()
@@ -292,7 +287,7 @@ class Model(Base):
         operation with a commit to emit the SQL to delete the item from
         the database and commit the transaction.
         '''
-        session.delete(self)
+        app.db.delete(self)
         if flush:
             self.flush()
         return self
@@ -306,7 +301,7 @@ class Model(Base):
         **not** commit the current transaction or close the current
         database session.
         '''
-        session.flush()
+        app.db.flush()
         return self
 
     def commit(self):
@@ -318,7 +313,7 @@ class Model(Base):
         and returns it to the connection pool. Any data operations after this
         will pull a new database session from the connection pool.
         '''
-        session.commit()
+        app.db.commit()
         return self
 
     @classmethod
@@ -351,9 +346,9 @@ class Model(Base):
         actual items from the database.
         '''
         if where:
-            return session.query(cls).filter_by(**where)
+            return app.db.query(cls).filter_by(**where)
         else:
-            return session.query(cls)
+            return app.db.query(cls)
 
     @classmethod
     def filter(cls, *pargs, **kargs):
@@ -363,7 +358,7 @@ class Model(Base):
 
         Returns a query object.
         '''
-        return session.query(cls).filter(*pargs, **kargs)
+        return app.db.query(cls).filter(*pargs, **kargs)
 
     @classmethod
     def query(cls):
@@ -371,7 +366,7 @@ class Model(Base):
         Convenience method to return a query based on the current object
         class.
         '''
-        return session.query(cls)
+        return app.db.query(cls)
 
     @classmethod
     def show_create_table(cls):

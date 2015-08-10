@@ -15,7 +15,6 @@ __version__ = '0.4-dev'
 
 
 def build_config(root_path='.', filename='project.py'):
-    # TODO FIXME - this hardcoded path needs to be found somehow
     filename = os.path.join(root_path, filename)
     config_module = imp.new_module("config")
     try:
@@ -26,9 +25,7 @@ def build_config(root_path='.', filename='project.py'):
         raise
     return config_module
 
-# unconfigured application stack context
-app = AppContext()
-sys.modules['pybald.app'] = app
+
 
 class DefaultApp(dict):
     def __init__(self, *pargs, **kargs):
@@ -41,18 +38,28 @@ class DefaultApp(dict):
         self.default = True
         super(DefaultApp, self).__init__(*pargs, **kargs)
 
+# unconfigured application stack context
+app = AppContext()
+sys.modules['pybald.app'] = app
+# push the default placeholder app onto the context stack
+# the default allows for temporary storage of elements required
+# for bootstrapping (and eliminates some sequencing requirements
+# for configuration)
 app._push(DefaultApp())
 
+# the template engine and database session are built at config time
+# TODO: change the db session to be a member
 app_template = '''
 from pybald.core.templates import TemplateEngine
 render = TemplateEngine()
 
-from pybald.db import models
+from pybald.db.db_engine import connect_database
+db = connect_database()
 '''
 
 
 
-def configure(name, config_file=None):
+def configure(name, config_file=None, config_object=None):
     '''
     Generate a dynamic app module that's pushed / popped on
     the application context stack.
@@ -61,7 +68,9 @@ def configure(name, config_file=None):
     # if mod is not None and hasattr(mod, '__file__'):
     root_path = os.path.dirname(os.path.abspath(mod.__file__))
 
-    if config_file:
+    if config_object:
+        config = config_object
+    elif config_file:
         config = build_config(root_path=root_path, filename=config_file)
     else:
         config = build_config(root_path=root_path, filename='project.py')
