@@ -1,6 +1,7 @@
 from sqlalchemy.exc import SQLAlchemyError
 from pybald.db import models
 import sys
+from pybald import app
 
 
 class EndPybaldMiddleware(object):
@@ -14,7 +15,7 @@ class EndPybaldMiddleware(object):
             return self.application(environ, start_response)
         finally:
             # always, always, ALWAYS close the session regardless
-            models.session.remove()
+            app.db.remove()
 
 
 class DbMiddleware(object):
@@ -36,13 +37,13 @@ class DbMiddleware(object):
         try:
             resp = self.application(environ, start_response)
             # commit any outstanding sql
-            models.session.commit()
+            app.db.commit()
         # on any SQLAlchemy Errors, rollback the transaction
         except SQLAlchemyError:
             # This pattern can cause memory leaks, so hopefully db errors
             # will be scrubbed from the code so this won't be hit
             excpt, detail, tb = sys.exc_info()
-            models.session.rollback()
+            app.db.rollback()
 
             # reraise the original details
             # can't use raw 'raise' because SA + eventlet
@@ -56,5 +57,6 @@ class DbMiddleware(object):
             # so that other things needing db sessions can still access the
             # db (like error reporting)
             # models.session.remove()
+            app.db.remove()
             del tb
 

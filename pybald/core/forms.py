@@ -5,13 +5,17 @@ import os
 
 # from pyald.config import project
 from formalchemy import templates, config
-from formalchemy import FieldSet as FAFieldSet, Field as FAField, Grid as FAGrid, validators
+from formalchemy import (FieldSet as FAFieldSet,
+                         Field as FAField,
+                         Grid as FAGrid,
+                         validators)
 
 from pybald.core.templates import engine
 from pybald.core.helpers import HTMLLiteral
 
 import pybald.db.models
 import inspect
+
 
 # set the Pybald Mako engine to be the main
 # form template engine

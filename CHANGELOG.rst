@@ -28,3 +28,8 @@ Release 0.3.2 (March 25, 2015)
 ================================
 
 * Add jsx filters for react components
+
+Release 0.4.0 (???)
+================================
+
+* Major configuration changes.

@@ -4,15 +4,9 @@
 
 import os
 from pybald import app
-
-# from urlparse import urlparse, ParseResult
-# global request_config... how can we eliminate?
-# from routes import request_config
 from pybald.core.helpers import HTMLLiteral, AssetUrl
-
 import logging
 log = logging.getLogger(__name__)
-
 
 # TODO - this singleton should be replaced
 asset_tag_cache = {}

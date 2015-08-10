@@ -26,17 +26,23 @@ def build_config(root_path='.', filename='project.py'):
     return config_module
 
 
+class MockEngine(object):
+    def __getattr__(self, key):
+        raise RuntimeError("Pybald is not configured")
+
 
 class DefaultApp(dict):
     def __init__(self, *pargs, **kargs):
-        self['config'] = {}
-        self['controller_registry'] = []
-        self['model_registry'] = []
-        self.config = self['config']
-        self.controller_registry = self['controller_registry']
-        self.model_registry = self['model_registry']
+        self.register('config', {})
+        self.register('engine', MockEngine())
+        self.register('controller_registry', [])
+        self.register('model_registry', [])
         self.default = True
         super(DefaultApp, self).__init__(*pargs, **kargs)
+
+    def register(self, key, value):
+        self[key] = value
+        setattr(self, key, self[key])
 
 # unconfigured application stack context
 app = AppContext()
@@ -48,15 +54,15 @@ sys.modules['pybald.app'] = app
 app._push(DefaultApp())
 
 # the template engine and database session are built at config time
-# TODO: change the db session to be a member
 app_template = '''
 from pybald.core.templates import TemplateEngine
+from pybald.db.db_engine import create_session, create_engine, create_dump_engine
+
 render = TemplateEngine()
-
-from pybald.db.db_engine import connect_database
-db = connect_database()
+dump_engine = create_dump_engine()
+engine = create_engine()
+db = create_session(engine=engine)
 '''
-
 
 
 def configure(name, config_file=None, config_object=None):

@@ -127,17 +127,17 @@ from .ext import (ASCII, JSONEncodedDict, ZipPickler, MutationDict)
 
 from sqlalchemy import __version__ as sa_ver
 
-sa_maj_ver, sa_min_ver, sa_rev_ver = sa_ver.split(".")
+sa_maj_ver, sa_min_ver, sa_rev_ver = [int(n) for n in sa_ver.split(".")]
 
-if int(sa_min_ver) >= 7:
-    from sqlalchemy.orm.attributes import flag_modified
-else:
+if sa_maj_ver < 1 and sa_min_ver < 7:
     from sqlalchemy.orm.attributes import instance_dict, NO_VALUE
 
     def flag_modified(instance, key):
         state, dict_ = instance_state(instance), instance_dict(instance)
         impl = state.manager[key].impl
         state.modified_event(dict_, impl, True, NO_VALUE)
+else:
+    from sqlalchemy.orm.attributes import flag_modified
 
 import sqlalchemy.ext.declarative
 from sqlalchemy.ext.declarative import declarative_base
@@ -146,15 +146,11 @@ from sqlalchemy.ext.declarative import declarative_base
 # allows the classes to be defined via schema reflection as well as allow
 # MODEL.__table__.create() type methods to work without passing in an explicit
 # engine. Thinking if there's a way to pass an attribute proxy here instead.
-Base = declarative_base()
+Base = declarative_base(bind=app.engine)
 
 # the surrogate_pk template that assures that surrogate primary keys
 # are allt he same and ordered with the pk first in the table
 surrogate_pk_template = Column(Integer, nullable=False, primary_key=True)
-
-class NotFound(NoResultFound):
-    '''Generic Not Found Error'''
-    pass
 
 
 class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
@@ -232,10 +228,6 @@ class Model(Base):
 
     def is_modified(self):
         '''Check if SQLAlchemy believes this instance is modified.'''
-        # TODO: Using this internal flag, is this a private internal
-        # behavior? Is there a better, public-api way of getting this info?
-        # alternatively is session.is_modified(self) although will this fail
-        # if the instance isn't part of the session?
         return instance_state(self).modified
 
     def clear_modified(self):
@@ -243,13 +235,14 @@ class Model(Base):
         Unconditionally clear all modified state from the attibutes on
         this instance.
         '''
-        # Uses this method: http://www.sqlalchemy.org/docs/orm/internals.html?highlight=commit_all#sqlalchemy.orm.state.InstanceState.commit_all
-        if int(sa_min_ver) > 7:
+        # app.db.expire(self)
+        # Uses this method: http://docs.sqlalchemy.org/en/rel_0_7/orm/internals.html?highlight=commit_all#sqlalchemy.orm.state.InstanceState.commit_all
+        if sa_maj_ver < 1 and sa_min_ver <= 7:
+            return instance_state(self).commit_all({})
+        else:
             # the methods became private in SA 8, need to check if
             # this is a problem
             return instance_state(self)._commit_all({})
-        else:
-            return instance_state(self).commit_all({})
 
     def is_persisted(self):
         '''
@@ -374,7 +367,7 @@ class Model(Base):
         Uses the simple dump_engine to print to stdout the SQL for this
         table.
         '''
-        cls.__table__.create(dump_engine)
+        cls.__table__.create(app.dump_engine)
 
 
 class NonDbModel(object):

@@ -20,7 +20,7 @@ class Client(object):
             # cookie = match.group(1)
             key, value = match.group(1).split('=')
             self.cookies[key] = value
-    
+
     def get(self, url):
         '''Issue a GET request directly against the WSGI pybald app'''
         req = Request.blank(url)

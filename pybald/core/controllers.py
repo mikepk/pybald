@@ -2,19 +2,13 @@
 # encoding: utf-8
 
 import unittest
-
 from functools import wraps
-# from pybald.core.templates import render as render_view, engine as old_style_render_view
-from pybald import app
-
-from webob import Request, Response
-from webob import exc
+from webob import Request, Response, exc
 import re
 from pybald.util import camel_to_underscore
 from routes import redirect_to
+from pybald import app
 
-import hashlib
-import base64
 import json
 import random
 

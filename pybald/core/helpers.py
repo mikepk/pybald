@@ -36,6 +36,10 @@ except ImportError:
 '''+"-"*80)
     hashfunc = hash
 
+try:
+    type(unicode)
+except NameError:
+    unicode = str
 
 # parse result keys
 class AssetUrl(dict):
