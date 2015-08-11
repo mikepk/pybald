@@ -1,10 +1,9 @@
 from celery.loaders.base import BaseLoader
 import site
-from celery.utils import cwd_in_path
-with cwd_in_path():
-    import project
-site.addsitedir(project.path)
-site.addsitedir(project.toplevel)
+import pybald
+from pybald.app import config as project
+
+context = pybald.configure('quiz_site')
 
 
 def celery_config_item(item):
