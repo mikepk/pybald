@@ -10,10 +10,12 @@ from formalchemy import (FieldSet as FAFieldSet,
                          Grid as FAGrid,
                          validators)
 
-from pybald.core.templates import engine
+from pybald.app import render as engine
 from pybald.core.helpers import HTMLLiteral
 
-import pybald.db.models
+from pybald import app
+from pybald.db import models
+
 import inspect
 
 
@@ -43,9 +45,9 @@ class BaseForm(FAFieldSet):
         # primarily for loading the relations in models, otherwise
         # session has to be explicitly assigned (I think, can't find
         # docs to the contrary)
-        if (pargs and isinstance(pargs[0], pybald.db.models.ModelMeta) and not
+        if (pargs and isinstance(pargs[0], models.ModelMeta) and not
             'session' in kargs):
-            kargs['session'] = pybald.db.models.session
+            kargs['session'] = app.db
 
         # Init the standard FieldSet
         super(BaseForm, self).__init__(*pargs, **kargs)
