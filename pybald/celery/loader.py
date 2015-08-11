@@ -1,10 +1,9 @@
 from celery.loaders.base import BaseLoader
-import site
-import pybald
 from pybald.app import config as project
 
-context = pybald.configure('quiz_site')
-
+# TODO: need a runtime way of getting an external config
+# pybald.configure('quiz_site', '/usr/share/ps/quiz_site/project.py')
+# todo, how does celery 
 
 def celery_config_item(item):
     # check if the config item starts with any of the celery config start keys
@@ -20,7 +19,7 @@ def celery_config_item(item):
 class PybaldLoader(BaseLoader):
     """Pybald celery loader.
 
-        * Maps the pybald.project config onto the celery config dict
+        * Maps the pybald config onto the celery config dict
 
     """
     def read_configuration(self):

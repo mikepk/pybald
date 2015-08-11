@@ -11,7 +11,7 @@ from pybald.util.context import AppContext
 import logging
 log = logging.getLogger(__name__)
 
-__version__ = '0.4-dev'
+__version__ = '0.0.4-dev'
 
 
 def build_config(root_path='.', filename='project.py'):
@@ -87,7 +87,8 @@ def configure(name, config_file=None, config_object=None):
         config = build_config(root_path=root_path, filename='project.py')
 
     new_app = imp.new_module("app")
-    new_app._MODULE_SOURCE_CODE = app_template
+    # new_app._MODULE_SOURCE_CODE = app_template
+    # new_app.__file__ = "<string>"
     if hasattr(app._proxied(), 'default'):
         placeholder = app._pop()
         new_app.__dict__.update(placeholder)

@@ -36,9 +36,11 @@ version = pybald.__version__
 here = os.path.abspath(os.path.dirname(__file__))
 with io.open(os.path.join(here, 'README.rst'), encoding='utf8') as f:
     README = f.read()
-# with io.open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf8') as f:
-#     CHANGES = f.read() or ''
-CHANGES = ''
+try:
+    with io.open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf8') as f:
+        CHANGES = f.read() or ''
+except IOError:
+    CHANGES = ''
 
 setup(name='pybald',
       version=version,
@@ -54,8 +56,8 @@ setup(name='pybald',
       install_requires=[
           "pybald-routes==2.11",
           "FormAlchemy==1.5.5", "SQLAlchemy==1.0.8",
-          "WebOb==1.4.1", "Mako==1.0.1", "python-memcached==1.53", "webassets==0.8",
-          "lxml==3.2.3", "rjsmin==1.0.10", "cssmin==0.2.0", "PyReact==0.5.2"
+          "WebOb==1.4.1", "Mako==1.0.1", "webassets==0.10.1",
+          "lxml==3.4.4", "rjsmin==1.0.10", "cssmin==0.2.0", "PyReact==0.5.2"
       ],
 )
 

@@ -148,9 +148,8 @@ def bundle(input_text):
 
             # every asset type has a default 'link type'
             link_func = getattr(page, 'add_{0}'.format(asset_type))
-            # construct the asset urls
-            # try:
-            assets = [link_func(url) for url in bundle.urls(env=env)]
+            with bundle.bind(env):
+                assets = [link_func(url) for url in bundle.urls()]
             output_buffer.extend(assets)
             # add any text nodes that got glommed onto
             # the node
