@@ -50,6 +50,16 @@ class Proxy(object):
     def __nonzero__(self):
         return bool(self._proxied())
 
+    def __add__(self, obj):
+        return self._proxied().__add__(obj)
+
+    def __radd__(self, obj):
+        return self._proxied().__radd__(obj)
+
+    @property
+    def __class__(self):
+        return self._proxied().__class__
+
 
 class AppAttributeProxy(Proxy):
     def __init__(self, parent, attribute):

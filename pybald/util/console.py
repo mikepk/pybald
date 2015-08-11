@@ -59,3 +59,24 @@ class Console(code.InteractiveConsole):
         # Fire up the console with the project, controllers, and models defined.
         self.interact('''Welcome to the pybald interactive console\n'''
                       ''' ** project: {0} **'''.format(self.project_name))
+
+
+def start_console(app):
+    '''Start a console with a particular app.
+
+    :app: A wsgi application.
+
+    A pybald application must be configured before starting a console.
+    '''
+    import pybald
+    from pybald.db import models
+    # now the models registry is loaded and the additional_symbols
+    # added so models are available in the console
+    from pybald.db.models import Model
+    symbols = dict([(model.__name__, model) for model in Model.registry])
+    symbols['models'] = models
+    symbols['db'] = pybald.app.db
+    # create a pybald console around it
+    console = Console(project_name=pybald.app.name, app=app,
+                      additional_symbols=symbols)
+    console.run()

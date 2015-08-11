@@ -57,6 +57,8 @@ app._push(DefaultApp())
 app_template = '''
 from pybald.core.templates import TemplateEngine
 from pybald.db.db_engine import create_session, create_engine, create_dump_engine
+from pybald.util.console import start_console as console
+from pybald.util.dev_server import start_dev_server as serve
 
 render = TemplateEngine()
 dump_engine = create_dump_engine()
@@ -72,7 +74,10 @@ def configure(name, config_file=None, config_object=None):
     '''
     mod = sys.modules.get(name)
     # if mod is not None and hasattr(mod, '__file__'):
-    root_path = os.path.dirname(os.path.abspath(mod.__file__))
+    try:
+        root_path = os.path.dirname(os.path.abspath(mod.__file__))
+    except AttributeError:
+        root_path = os.getcwd()
 
     if config_object:
         config = config_object
@@ -82,6 +87,7 @@ def configure(name, config_file=None, config_object=None):
         config = build_config(root_path=root_path, filename='project.py')
 
     new_app = imp.new_module("app")
+    new_app._MODULE_SOURCE_CODE = app_template
     if hasattr(app._proxied(), 'default'):
         placeholder = app._pop()
         new_app.__dict__.update(placeholder)
@@ -91,7 +97,13 @@ def configure(name, config_file=None, config_object=None):
     # always set the runtime config
     new_app.__dict__['path'] = root_path
     new_app.__dict__['config'] = config
+    new_app.__dict__['name'] = name
     # now execute the app context with this config
     app._push(new_app)
     exec(compile(app_template, '<string>', 'exec'), new_app.__dict__)
     return new_app
+
+# aliases for convenience
+from pybald.core.controllers import Controller, action
+from pybald.core.router import Router
+from pybald.core.logs import default_debug_log as debug_log
