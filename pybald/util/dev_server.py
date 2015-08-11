@@ -1,6 +1,3 @@
-# from optparse import OptionParser
-# from wsgiref.simple_server import make_server
-# from pybald.util.static_serve import StaticServer
 import sys
 
 

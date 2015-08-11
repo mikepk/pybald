@@ -1,15 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
-import sys
-import os
-import unittest
-
-import datetime
-
 from webob import Request, Response
 
-import re
 
 class SessionManager(object):
     '''Code to handle anonymous and user sessions, implemented as WSGI middleware.'''
