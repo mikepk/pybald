@@ -125,3 +125,27 @@ class MutationDict(Mutable, dict):
         Mutable dict.
         '''
         self.update(state)
+
+    def pop(self, *pargs, **kargs):
+        """
+        Wrap standard pop() to trigger self.changed()
+        """
+        try:
+            result = super(MutationDict, self).pop(*pargs, **kargs)
+        except Exception:
+            raise
+        else:
+            self.changed()
+            return result
+
+    def popitem(self, *pargs, **kargs):
+        """
+        Wrap standard popitem() to trigger self.changed()
+        """
+        try:
+            result = super(MutationDict, self).popitem(*pargs, **kargs)
+        except Exception:
+            raise
+        else:
+            self.changed()
+            return result
