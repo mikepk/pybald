@@ -61,7 +61,7 @@ class Console(code.InteractiveConsole):
                       ''' ** project: {0} **'''.format(self.project_name))
 
 
-def start_console(app):
+def start_console(app, options=None):
     '''Start a console with a particular app.
 
     :app: A wsgi application.

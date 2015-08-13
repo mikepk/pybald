@@ -57,8 +57,7 @@ context._push(DefaultApp())
 context_template = '''
 from pybald.core.templates import TemplateEngine
 from pybald.db.db_engine import create_session, create_engine, create_dump_engine
-from pybald.util.console import start_console as console
-from pybald.util.dev_server import start_dev_server as serve
+from pybald.util.command_line import start
 
 render = TemplateEngine()
 dump_engine = create_dump_engine()
