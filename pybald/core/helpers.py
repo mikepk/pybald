@@ -15,7 +15,7 @@ from routes import url_for
 from mako import filters
 from urlparse import urlparse, ParseResult
 from routes import request_config
-from pybald import app
+from pybald import context
 import logging
 log = logging.getLogger(__name__)
 
@@ -62,10 +62,10 @@ class AssetUrl(dict):
         host = self.get('netloc', None)
         # Don't CDN urls with hosts we're not re-writing
         if host:
-            if (app.config.STATIC_SOURCES is None or
-                                           host not in app.config.STATIC_SOURCES):
+            if (context.config.STATIC_SOURCES is None or
+                                           host not in context.config.STATIC_SOURCES):
                 return self.raw_url
-        if (app.config.USE_CDN and (app.config.CDN_HOST or app.config.STATIC_HOSTS)):
+        if (context.config.USE_CDN and (context.config.CDN_HOST or context.config.STATIC_HOSTS)):
             # get the protocol for the current request
             # this requires the custom HTTP header X-Forwarded-Proto
             # set if running behind a proxy (or if SSL is terminated
@@ -74,13 +74,13 @@ class AssetUrl(dict):
                 protocol = request_config().protocol
             except AttributeError:
                 # are we not in a request? Default to http
-                protocol = app.config.DEFAULT_PROTOCOL
+                protocol = context.config.DEFAULT_PROTOCOL
             # use the round robin hosts to speed download when not https
-            if protocol != "https" and app.config.STATIC_HOSTS:
-                self['netloc'] = app.config.STATIC_HOSTS[hashfunc(self.raw_url) %
-                                                      len(app.config.STATIC_HOSTS)]
+            if protocol != "https" and context.config.STATIC_HOSTS:
+                self['netloc'] = context.config.STATIC_HOSTS[hashfunc(self.raw_url) %
+                                                      len(context.config.STATIC_HOSTS)]
             else:
-                self['netloc'] = app.config.CDN_HOST
+                self['netloc'] = context.config.CDN_HOST
             # adjust the scheme of any link with a net location
             # to match the current request so we don't have mixed link
             # protocols

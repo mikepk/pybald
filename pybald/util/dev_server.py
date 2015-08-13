@@ -3,7 +3,7 @@ import sys
 
 def start_dev_server(app, options=None):
     import os
-    from pybald.app import config
+    from pybald.context import config
     from collections import namedtuple
     from wsgiref.simple_server import make_server
     # from pybald.util.static_serve import StaticServer

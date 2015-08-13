@@ -1,5 +1,5 @@
 from celery.loaders.base import BaseLoader
-from pybald.app import config as project
+from pybald.context import config as project
 
 # TODO: need a runtime way of getting an external config
 # pybald.configure('quiz_site', '/usr/share/ps/quiz_site/project.py')

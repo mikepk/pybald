@@ -45,16 +45,16 @@ class DefaultApp(dict):
         setattr(self, key, self[key])
 
 # unconfigured application stack context
-app = AppContext()
-sys.modules['pybald.app'] = app
+context = AppContext()
+sys.modules['pybald.context'] = context
 # push the default placeholder app onto the context stack
 # the default allows for temporary storage of elements required
 # for bootstrapping (and eliminates some sequencing requirements
 # for configuration)
-app._push(DefaultApp())
+context._push(DefaultApp())
 
 # the template engine and database session are built at config time
-app_template = '''
+context_template = '''
 from pybald.core.templates import TemplateEngine
 from pybald.db.db_engine import create_session, create_engine, create_dump_engine
 from pybald.util.console import start_console as console
@@ -64,12 +64,16 @@ render = TemplateEngine()
 dump_engine = create_dump_engine()
 engine = create_engine()
 db = create_session(engine=engine)
+
+def register(key, value):
+    globals()[key] = value
+
 '''
 
 
 def configure(name, config_file=None, config_object=None):
     '''
-    Generate a dynamic app module that's pushed / popped on
+    Generate a dynamic context module that's pushed / popped on
     the application context stack.
     '''
     mod = sys.modules.get(name)
@@ -86,25 +90,25 @@ def configure(name, config_file=None, config_object=None):
     else:
         config = build_config(root_path=root_path, filename='project.py')
 
-    new_app = imp.new_module("app")
+    new_context = imp.new_module("context")
     # new_app._MODULE_SOURCE_CODE = app_template
     # new_app.__file__ = "<string>"
-    if hasattr(app._proxied(), 'default'):
-        placeholder = app._pop()
-        new_app.__dict__.update(placeholder)
+    if hasattr(context._proxied(), 'default'):
+        placeholder = context._pop()
+        new_context.__dict__.update(placeholder)
     else:
-        new_app.__dict__['controller_registry'] = []
-        new_app.__dict__['model_registry'] = []
+        new_context.__dict__['controller_registry'] = []
+        new_context.__dict__['model_registry'] = []
     # always set the runtime config
-    new_app.__dict__['path'] = root_path
-    new_app.__dict__['config'] = config
-    new_app.__dict__['name'] = name
+    new_context.__dict__['path'] = root_path
+    new_context.__dict__['config'] = config
+    new_context.__dict__['name'] = name
     # now execute the app context with this config
-    app._push(new_app)
-    exec(compile(app_template, '<string>', 'exec'), new_app.__dict__)
-    return new_app
+    context._push(new_context)
+    exec(compile(context_template, '<string>', 'exec'), new_context.__dict__)
+    return new_context
 
 # aliases for convenience
-from pybald.core.controllers import Controller, action
-from pybald.core.router import Router
-from pybald.core.logs import default_debug_log as debug_log
+# from pybald.core.controllers import Controller, action
+# from pybald.core.router import Router
+# from pybald.core.logs import default_debug_log as debug_log

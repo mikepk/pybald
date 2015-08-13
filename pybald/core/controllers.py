@@ -7,7 +7,7 @@ from webob import Request, Response, exc
 import re
 from pybald.util import camel_to_underscore
 from routes import redirect_to
-from pybald import app
+from pybald import context
 
 import json
 import random
@@ -180,7 +180,7 @@ def action(method):
         # the return which has precedence over the view
         resp = (pre(req) or
                  method(self, req) or
-                 app.render(template=self.template_id,
+                 context.render(template=self.template_id,
                              data=self.__dict__ or {}))
         # if the response is currently a string
         # wrap it in a response object
@@ -268,7 +268,7 @@ class RegistryMount(type):
             cls.registry.append(cls)
         except AttributeError:
             # this is processing the first class (the mount point)
-            cls.registry = app.controller_registry
+            cls.registry = context.controller_registry
 
         return super(RegistryMount, cls).__init__(name, bases, attrs)
 

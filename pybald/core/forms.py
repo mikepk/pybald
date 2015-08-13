@@ -9,10 +9,10 @@ from formalchemy import (FieldSet as FAFieldSet,
                          Grid as FAGrid,
                          validators)
 
-from pybald.app import render as engine
+from pybald.context import render
 from pybald.core.helpers import HTMLLiteral
 
-from pybald import app
+from pybald import context
 from pybald.db import models
 
 import inspect
@@ -20,7 +20,7 @@ import inspect
 
 # set the Pybald Mako engine to be the main
 # form template engine
-config.engine = engine.form_render
+config.engine = render.form_render
 
 
 class Field(FAField):
@@ -46,7 +46,7 @@ class BaseForm(FAFieldSet):
         # docs to the contrary)
         if (pargs and isinstance(pargs[0], models.ModelMeta) and not
             'session' in kargs):
-            kargs['session'] = app.db
+            kargs['session'] = context.db
 
         # Init the standard FieldSet
         super(BaseForm, self).__init__(*pargs, **kargs)

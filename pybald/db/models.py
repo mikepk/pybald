@@ -120,7 +120,7 @@ from sqlalchemy import func
 # from pybald.db import engine, dump_engine
 from pybald.util import camel_to_underscore, pluralize
 
-from pybald import app
+from pybald import context
 # from project import mc
 
 from .ext import (ASCII, JSONEncodedDict, ZipPickler, MutationDict)
@@ -146,7 +146,7 @@ from sqlalchemy.ext.declarative import declarative_base
 # allows the classes to be defined via schema reflection as well as allow
 # MODEL.__table__.create() type methods to work without passing in an explicit
 # engine. Thinking if there's a way to pass an attribute proxy here instead.
-Base = declarative_base(bind=app.engine)
+Base = declarative_base(bind=context.engine)
 
 # the surrogate_pk template that assures that surrogate primary keys
 # are allt he same and ordered with the pk first in the table
@@ -180,11 +180,11 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         # tableargs adds autoload to create schema reflection
         cls.__table_args__ = getattr(cls, "__table_args__", {})
 
-        if app.config.schema_reflection:
+        if context.config.schema_reflection:
             # create or update the __table_args__ attribute
             cls.__table_args__['autoload'] = True
-        if app.config.global_table_args:
-            cls.__table_args__.update(app.config.global_table_args)
+        if context.config.global_table_args:
+            cls.__table_args__.update(context.config.global_table_args)
 
         # check if the class has at least one primary key
         # if not, automatically generate one.
@@ -210,7 +210,7 @@ class RegistryMount(type):
             cls.registry.append(cls)
         except AttributeError:
             # this is processing the first class (the mount point)
-            cls.registry = app.model_registry
+            cls.registry = context.model_registry
 
         return super(RegistryMount, cls).__init__(name, bases, attrs)
 
@@ -235,7 +235,7 @@ class Model(Base):
         Unconditionally clear all modified state from the attibutes on
         this instance.
         '''
-        # app.db.expire(self)
+        # context.db.expire(self)
         # Uses this method: http://docs.sqlalchemy.org/en/rel_0_7/orm/internals.html?highlight=commit_all#sqlalchemy.orm.state.InstanceState.commit_all
         if sa_maj_ver < 1 and sa_min_ver <= 7:
             return instance_state(self).commit_all({})
@@ -265,7 +265,7 @@ class Model(Base):
         for that use :py:meth:`~pybald.db.models.Model.commit`)
         '''
 
-        app.db.add(self)
+        context.db.add(self)
 
         if flush:
             self.flush()
@@ -280,7 +280,7 @@ class Model(Base):
         operation with a commit to emit the SQL to delete the item from
         the database and commit the transaction.
         '''
-        app.db.delete(self)
+        context.db.delete(self)
         if flush:
             self.flush()
         return self
@@ -294,7 +294,7 @@ class Model(Base):
         **not** commit the current transaction or close the current
         database session.
         '''
-        app.db.flush()
+        context.db.flush()
         return self
 
     def commit(self):
@@ -306,7 +306,7 @@ class Model(Base):
         and returns it to the connection pool. Any data operations after this
         will pull a new database session from the connection pool.
         '''
-        app.db.commit()
+        context.db.commit()
         return self
 
     @classmethod
@@ -339,9 +339,9 @@ class Model(Base):
         actual items from the database.
         '''
         if where:
-            return app.db.query(cls).filter_by(**where)
+            return context.db.query(cls).filter_by(**where)
         else:
-            return app.db.query(cls)
+            return context.db.query(cls)
 
     @classmethod
     def filter(cls, *pargs, **kargs):
@@ -351,7 +351,7 @@ class Model(Base):
 
         Returns a query object.
         '''
-        return app.db.query(cls).filter(*pargs, **kargs)
+        return context.db.query(cls).filter(*pargs, **kargs)
 
     @classmethod
     def query(cls):
@@ -359,7 +359,7 @@ class Model(Base):
         Convenience method to return a query based on the current object
         class.
         '''
-        return app.db.query(cls)
+        return context.db.query(cls)
 
     @classmethod
     def show_create_table(cls):
@@ -367,7 +367,7 @@ class Model(Base):
         Uses the simple dump_engine to print to stdout the SQL for this
         table.
         '''
-        cls.__table__.create(app.dump_engine)
+        cls.__table__.create(context.dump_engine)
 
 
 class NonDbModel(object):

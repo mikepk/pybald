@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 import sys
-from pybald import app
+from pybald import context
 import re
 
 from sqlalchemy.orm import (
@@ -12,8 +12,8 @@ import logging
 log = logging.getLogger(__name__)
 
 def create_engine():
-    return sa.create_engine(app.config.database_engine_uri,
-                                  **app.config.database_engine_args)
+    return sa.create_engine(context.config.database_engine_uri,
+                                  **context.config.database_engine_args)
 
 
 def create_dump_engine():
@@ -26,7 +26,7 @@ def create_dump_engine():
         sys.stdout.write( str(sql.compile(dialect=dump_engine.dialect) ).strip() +"\n")
 
     def dialect():
-        match = re.search(r'^([^\:]*\:\/\/)', app.config.database_engine_uri)
+        match = re.search(r'^([^\:]*\:\/\/)', context.config.database_engine_uri)
         if match:
             return match.group(1)
         else:

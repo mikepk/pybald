@@ -75,8 +75,8 @@ def start_console(app):
     from pybald.db.models import Model
     symbols = dict([(model.__name__, model) for model in Model.registry])
     symbols['models'] = models
-    symbols['db'] = pybald.app.db
+    symbols['db'] = pybald.context.db
     # create a pybald console around it
-    console = Console(project_name=pybald.app.name, app=app,
+    console = Console(project_name=pybald.context.name, app=app,
                       additional_symbols=symbols)
     console.run()

@@ -3,7 +3,7 @@
 
 import os
 import unittest
-from pybald.app import config
+from pybald.context import config
 from mako.template import Template
 from mako.lookup import TemplateLookup
 import re
