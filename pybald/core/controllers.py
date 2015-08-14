@@ -18,6 +18,10 @@ console = logging.getLogger(__name__)
 
 controller_pattern = re.compile(r'(\w+)Controller')
 
+try:
+    type(basestring)
+except NameError:
+    basestring = str
 
 class CSRFValidationFailure(exc.HTTPForbidden):
     pass

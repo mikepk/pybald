@@ -15,6 +15,7 @@ import sys
 import os
 from pybald.util.context import AppContext
 import logging
+from default import default_config
 log = logging.getLogger(__name__)
 
 __version__ = '0.0.4-dev'
@@ -23,12 +24,12 @@ __version__ = '0.0.4-dev'
 def build_config(root_path='.', filename='project.py'):
     filename = os.path.join(root_path, filename)
     config_module = imp.new_module("config")
+    config_module.__dict__.update(default_config)
     try:
         with open(filename) as config_file:
             exec(compile(config_file.read(), filename, 'exec'), config_module.__dict__)
     except IOError:
-        log.exception('Problem loading config file {0}'.format(filename))
-        raise
+        sys.stderr.write("Warning: Using default pybald configuration\n")
     return config_module
 
 

@@ -30,7 +30,7 @@ def create_dump_engine():
         if match:
             return match.group(1)
         else:
-            return "sqllite://"
+            return "sqlite://"
     dump_engine = sa.create_engine(dialect(), strategy='mock', executor=dump)
     return dump_engine
 
