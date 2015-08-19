@@ -14,7 +14,6 @@ console = logging.getLogger(__name__)
 
 class Router(object):
     # class method match patterns
-    has_underscore = re.compile(r'^\_')
     controller_pattern = re.compile(r'(\w+)_controller')
 
     # add controllers=None to the call sig and use that for controller
@@ -102,9 +101,8 @@ class Router(object):
         This method can be overriden to change the behavior of mapping.
         '''
         controller_name, action_name = urlvars["controller"], urlvars["action"]
-
         #methods starting with underscore can't be used as actions
-        if self.has_underscore.match(action_name):
+        if action_name.startswith("_"):
             raise exc.HTTPNotFound("Invalid Action")
 
         for key, value in urlvars.items():
@@ -120,7 +118,7 @@ class Router(object):
         except (KeyError, AttributeError):
             raise exc.HTTPNotFound("Missing Controller or Action")
 
-        return controller, handler
+        return handler
 
     def __call__(self, environ, start_response):
         '''
@@ -157,9 +155,9 @@ class Router(object):
 
         results = self.map.routematch(environ=environ)
         if results:
-            match, route = results[0], results[1]
+            urlvars, route = results
         else:
-            match = route = None
+            urlvars, route = {}, None
 
         url = URLGenerator(self.map, environ)
         config = request_config()
@@ -167,16 +165,16 @@ class Router(object):
         # Your mapper object
         config.mapper = self.map
         # The dict from m.match for this URL request
-        config.mapper_dict = match
+        config.mapper_dict = urlvars
         config.host = req.host
         config.protocol = req.scheme
-        # host_port
         # defines the redirect method. In this case it generates a
         # Webob Response object with the location and status headers
         # set
         config.redirect = lambda url: Response(location=url, status=302)
 
-        environ.update({'wsgiorg.routing_args': ((url), match),
+        # TODO: routing args is supposed to be pos, key dict
+        environ.update({'wsgiorg.routing_args': ((url), urlvars),
                         'routes.route': route,
                         'routes.url': url,
                         'pybald.router': self})
@@ -190,13 +188,6 @@ class Router(object):
         console.debug('{0:=^79}'.format(' {0} '.format(req.path_qs)))
         console.debug('Method: {0}'.format(req.method))
 
-        # use routes to match the url to a path
-        # urlvars will contain controller + other non query string
-        # URL data. Middleware above this can override and set urlvars
-        # and the router will use those values.
-        # TODO: allow individual variable overrides?
-        urlvars = environ.get('urlvars', match) or {}
-
         # lifted from Routes middleware, handles 'redirect'
         # routes (map.redirect)
         if route and route.redirect:
@@ -206,11 +197,8 @@ class Router(object):
                             status=route.redirect_status
                             )(environ, start_response)
 
-        req.urlvars = urlvars
-        environ['urlvars'] = urlvars
-
         if urlvars:
-            controller, handler = self.get_handler(urlvars)
+            handler = self.get_handler(urlvars)
         # No URL vars means nothing matched in the mapper function
         else:
             raise exc.HTTPNotFound("No URL match")

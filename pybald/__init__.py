@@ -18,7 +18,7 @@ import logging
 from default import default_config
 log = logging.getLogger(__name__)
 
-__version__ = '0.0.4-dev'
+__version__ = '0.4.0-dev'
 
 
 def build_config(root_path='.', filename='project.py'):
@@ -77,11 +77,13 @@ def register(key, value):
 '''
 
 
-def configure(name, config_file=None, config_object=None):
+def configure(name=None, config_file=None, config_object=None):
     '''
     Generate a dynamic context module that's pushed / popped on
     the application context stack.
     '''
+    if name is None and config_file is None and config_object is None:
+        log.warning("Warning: Using current path for the config file")
     mod = sys.modules.get(name)
     # if mod is not None and hasattr(mod, '__file__'):
     try:
