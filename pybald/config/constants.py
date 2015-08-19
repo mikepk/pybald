@@ -1,4 +1,7 @@
-from ConfigParser import ConfigParser as configparser
+try:
+    from ConfigParser import ConfigParser as configparser
+except ImportError:
+    from configparser import ConfigParser as configparser
 from collections import namedtuple
 
 # generate constants for templates

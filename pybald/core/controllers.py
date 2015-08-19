@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
+from six import with_metaclass
 import unittest
 from functools import wraps
 from webob import Request, Response, exc
@@ -277,9 +277,12 @@ class RegistryMount(type):
         return super(RegistryMount, cls).__init__(name, bases, attrs)
 
 
-class Controller(object):
-    '''Base controller that includes the view and a default index method.'''
-    __metaclass__ = RegistryMount
+class Controller(with_metaclass(RegistryMount, object)):
+    '''Base Controller that provides a registry mount
+
+    The registry keeps track of all countrollers defined in the project. The
+    Controller class also has some minor convenience methods attached.
+    '''
 
     def __init__(self, *pargs, **kargs):
         for key, value in kargs.items():

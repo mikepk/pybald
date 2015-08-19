@@ -47,6 +47,9 @@ class Proxy(object):
     def __contains__(self, key):
         return key in self._proxied()
 
+    def __bool__(self):
+        return bool(self._proxied())
+
     def __nonzero__(self):
         return bool(self._proxied())
 

@@ -1,7 +1,8 @@
-from sqlalchemy.exc import SQLAlchemyError
-from pybald.db import models
 import sys
+from six import reraise as raise_
+from sqlalchemy.exc import SQLAlchemyError
 from pybald import context
+from webob import Response
 import logging
 log = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ class DbMiddleware(object):
             # reraise the original details
             # can't use raw 'raise' because SA + eventlet
             # nukes sys_info
-            raise excpt, detail, tb
+            raise_(excpt, detail, tb)
         else:
             return resp
         finally:

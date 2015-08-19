@@ -17,7 +17,6 @@ from pybald.util.context import AppContext
 import logging
 from .default import default_config
 from collections import namedtuple
-
 log = logging.getLogger(__name__)
 
 __version__ = '0.4.0-dev'

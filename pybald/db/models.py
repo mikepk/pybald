@@ -1,3 +1,4 @@
+from six import with_metaclass
 from sqlalchemy import dialects
 
 # load sqlalchemy modules proxied through the models object
@@ -219,9 +220,9 @@ class RegistryModelMeta(RegistryMount, ModelMeta):
     pass
 
 
-class Model(Base):
+class Model(with_metaclass(RegistryModelMeta, Base)):
     '''Pybald Model class, inherits from SQLAlchemy Declarative Base.'''
-    __metaclass__ = RegistryModelMeta
+    # __metaclass__ = RegistryModelMeta
 
     NotFound = sqlalchemy.orm.exc.NoResultFound
     MultipleFound = sqlalchemy.orm.exc.MultipleResultsFound
@@ -370,12 +371,12 @@ class Model(Base):
         cls.__table__.create(context.dump_engine)
 
 
-class NonDbModel(object):
+class NonDbModel(with_metaclass(RegistryMount, object)):
     '''
     A plain Python object that uses the RegistryMount system to register
     non database models. Inheriting from this allows the object to be registered
     as a Model.
     '''
-    __metaclass__ = RegistryMount
+    # __metaclass__ = RegistryMount
     # use the same registry space for NonDbModels
     registry = Model.registry

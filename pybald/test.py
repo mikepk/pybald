@@ -3,7 +3,7 @@ Test Module for pybald including a simple client for issuing web-like
 requests against the WSGI application pipeline.
 '''
 from webob import Request
-from urllib import urlencode
+from six.moves.urllib.parse import urlencode
 
 import re
 
@@ -42,14 +42,14 @@ class Client(object):
         req = Request.blank(url,
                          content_type="application/x-www-form-urlencoded",
                          method="POST",
-                         body=urlencode(data))        
+                         body=urlencode(data))
         for key, value in self.cookies.items():
             req.cookies[key] = value
-            
+
         resp = req.get_response(self.app)
         # naively handle cookies. This can be made more robust later
         cookie_string = resp.headers.get("set-cookie")
         if cookie_string:
             self._set_cookie(cookie_string)
-        
+
         return resp

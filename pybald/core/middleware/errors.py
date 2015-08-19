@@ -37,13 +37,13 @@ class ErrorMiddleware:
         try:
             # catch stupid URLs before getting into webob
             try:
-                unicode(environ['PATH_INFO'])
+                # unicode(environ['PATH_INFO'])
                 urllib.unquote(environ['QUERY_STRING']).decode('utf8')
             except UnicodeDecodeError:
                 return Response(status=400, body="""<h1>Bad Request</h1>""")(environ, start_response)
             return self.application(environ, start_response)
         # handle HTTP errors
-        except exc.HTTPException, err:
+        except exc.HTTPException as err:
             # if the middleware is configured with an error controller
             # use that to display the errors
             log.debug("HTTP Exception Thrown {0}".format(err.__class__))
@@ -60,7 +60,7 @@ class ErrorMiddleware:
             else:
                 # HTTPExceptions are also WSGI apps and can be called as such
                 return err(environ, start_response)
-        except Exception, err:
+        except Exception as err:
             log.exception("General Exception thrown")
             if self.error_controller:
                 handler = self.error_controller(message=str(err))
@@ -68,5 +68,3 @@ class ErrorMiddleware:
                 # create a generic HTTP server Error webob exception
                 handler = exc.HTTPServerError('General Fault')
             return handler(environ, start_response)
-
-

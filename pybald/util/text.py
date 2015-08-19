@@ -42,7 +42,8 @@ plural_patterns = [(re.compile(pattern), re.compile(search), replace
                          ('$', '$', 's'))]
 
 
-def _build_plural_rule((pattern, search, replace)):
+def _build_plural_rule(input_pattern):
+    pattern, search, replace = input_pattern
     return lambda word: pattern.search(word) and search.sub(replace, word)
 
 
