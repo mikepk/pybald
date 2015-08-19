@@ -9,7 +9,7 @@ from routes import Mapper, request_config, URLGenerator
 from mako import exceptions
 from pybald.util import camel_to_underscore
 import logging
-console = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class Router(object):
@@ -49,7 +49,7 @@ class Router(object):
         self.map = Mapper(explicit=False)
         routes(self.map)
         # debug print the whole URL map
-        console.debug(str(self.map))
+        log.debug(str(self.map))
         self.load(controllers)
 
     def load(self, controllers):
@@ -106,7 +106,7 @@ class Router(object):
             raise exc.HTTPNotFound("Invalid Action")
 
         for key, value in urlvars.items():
-            console.debug(u'''{0}: {1}'''.format(key, value))
+            log.debug(u'''{0}: {1}'''.format(key, value))
 
         try:
             # create controller instance from controllers dictionary
@@ -150,7 +150,7 @@ class Router(object):
             override_method = req.POST.pop('_method', None)
             if override_method is not None:
                 environ['REQUEST_METHOD'] = override_method.upper()
-                console.debug("Changing request method to {0}".format(
+                log.debug("Changing request method to {0}".format(
                                                         environ["REQUEST_METHOD"]))
 
         results = self.map.routematch(environ=environ)
@@ -185,8 +185,8 @@ class Router(object):
         environ.setdefault('pybald.extension', {})["url_for"] = url
 
         # debug print messages
-        console.debug('{0:=^79}'.format(' {0} '.format(req.path_qs)))
-        console.debug('Method: {0}'.format(req.method))
+        log.debug('{0:=^79}'.format(' {0} '.format(req.path_qs)))
+        log.debug('Method: {0}'.format(req.method))
 
         # lifted from Routes middleware, handles 'redirect'
         # routes (map.redirect)
