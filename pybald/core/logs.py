@@ -42,13 +42,17 @@ def set_root_logger(level=logging.DEBUG, log_class=logging.StreamHandler):
     # root = logging.getLogger()
     root_log.setLevel(level)
 
-    handler = log_class()
-    root_log.addHandler(handler)
+    if not root_log.handlers:
+        handler = log_class()
+        root_log.addHandler(handler)
 
 
 def set_sql_logger(level=logging.INFO, log_class=logging.StreamHandler):
     '''Adds a handler and log level to the sqlalchemy engine logger.
     '''
+    if engine_log.handlers:
+        for handler in engine_log.handlers:
+            engine_log.removeHandler(handler)
     # setup indented logging for SQL output
     sql_log_handler = log_class()
     formatter = WrappedFormatter("%(message)s")
