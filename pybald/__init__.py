@@ -15,7 +15,9 @@ import sys
 import os
 from pybald.util.context import AppContext
 import logging
-from default import default_config
+from .default import default_config
+from collections import namedtuple
+
 log = logging.getLogger(__name__)
 
 __version__ = '0.4.0-dev'
@@ -25,11 +27,8 @@ def build_config(root_path='.', filename='project.py'):
     filename = os.path.join(root_path, filename)
     config_module = imp.new_module("config")
     config_module.__dict__.update(default_config)
-    try:
-        with open(filename) as config_file:
-            exec(compile(config_file.read(), filename, 'exec'), config_module.__dict__)
-    except IOError:
-        sys.stderr.write("Warning: Using default pybald configuration\n")
+    with open(filename) as config_file:
+        exec(compile(config_file.read(), filename, 'exec'), config_module.__dict__)
     return config_module
 
 
@@ -92,11 +91,24 @@ def configure(name=None, config_file=None, config_object=None):
         root_path = os.getcwd()
 
     if config_object:
-        config = config_object
+        # create a named tuple that's the combo of default plus input dict
+        keys = set(default_config.keys()) | set(config_object.keys())
+        ConfigObject = namedtuple("ConfigObject", keys)
+        config = ConfigObject(**dict(default_config.items() + config_object.items()))
     elif config_file:
-        config = build_config(root_path=root_path, filename=config_file)
+        try:
+            config = build_config(root_path=root_path, filename=config_file)
+        except IOError:
+            log.exception("Config Error:\nFile Error or File not found\n{0}".format(filename))
+            sys.exit(1)
     else:
-        config = build_config(root_path=root_path, filename='project.py')
+        try:
+            config = build_config(root_path=root_path, filename='project.py')
+            log.warning("Found project.py in default path, using for the config file")
+        except IOError:
+            ConfigObject = namedtuple("ConfigObject", default_config.keys())
+            config = ConfigObject(**default_config)
+            log.warning("No config file, using default pybald configuration")
 
     new_context = imp.new_module("context")
     # new_app._MODULE_SOURCE_CODE = app_template
