@@ -3,20 +3,22 @@ from pybald.core.controllers import Controller, action
 from pybald.core.router import Router
 from pybald.db import models
 context = pybald.configure(__name__)
-from pybald.core.logs import default_debug_log
-default_debug_log()
 
 def map(urls):
-    urls.connect('home', r'/', controller='hello')
+    urls.connect('home', r'/', controller='sample')
 
-class Test(models.Model):
-    t = models.Column(models.Text)
+class SampleModel(models.Model):
+    text = models.Column(models.Text)
 
-class HelloController(Controller):
+class SampleController(Controller):
     @action
     def index(self, req):
-        return "Hello world!"
+        pass
 
 app = Router(routes=map, controllers=context.controller_registry)
-context.start(app)
+
+if __name__ == "__main__":
+    from pybald.core.logs import default_debug_log
+    default_debug_log()
+    context.start(app)
 
