@@ -23,10 +23,11 @@ class TemplateEngine(object):
 
     def __init__(self, template_path=None, cache_path=None, helpers=None):
         # base template helpers all pybald projects have
-        self.template_helpers = ['from pybald.core.helpers import img, link, humanize, js_escape, as_p',
-                            'from pybald.core import page',
-                            'from pybald.core.helpers import js_escape as js',
-                            'from mako.filters import html_escape']
+        self.template_helpers = [
+            'from pybald.core.helpers import img, link, humanize, HTMLLiteral as literal',
+            'from pybald.core import page',
+            'from pybald.core.helpers import js_escape as js',
+            'from mako.filters import html_escape']
 
         if config.template_helpers:
             self.template_helpers.extend(config.template_helpers)

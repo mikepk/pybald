@@ -33,5 +33,6 @@ email_errors = False,
 env_name = "Default",
 host_name = 'localhost',
 path = '',
+USE_CDN = False
 #  green = False,
 )
