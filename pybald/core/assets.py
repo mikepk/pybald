@@ -11,7 +11,7 @@ from webassets.filter import register_filter
 
 from pybald import context
 import os
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
 
 # add custom JsxFilter
 register_filter(JsxFilter)
