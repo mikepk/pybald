@@ -93,7 +93,7 @@ def configure(name=None, config_file=None, config_object=None):
         # create a named tuple that's the combo of default plus input dict
         keys = set(default_config.keys()) | set(config_object.keys())
         ConfigObject = namedtuple("ConfigObject", keys)
-        config = ConfigObject(**dict(default_config.items() + config_object.items()))
+        config = ConfigObject(**dict(list(default_config.items()) + list(config_object.items())))
     elif config_file:
         try:
             config = build_config(root_path=root_path, filename=config_file)

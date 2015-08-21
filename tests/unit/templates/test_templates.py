@@ -16,7 +16,7 @@ class TestTemplate(unittest.TestCase):
     def test_template_render_with_data(self):
         from pybald import context
         template = context.render._get_template('sample')
-        assert template.render(sample_variable='sample') == "<h1>Hello sample!</h1>"
+        assert template.render(sample_variable='sample') == b"<h1>Hello sample!</h1>"
 
     def test_template_with_helpers(self):
         from pybald import context
@@ -27,14 +27,14 @@ class TestTemplate(unittest.TestCase):
                              dict(sample_variable='sample',
                              an_hour_ago=an_hour_ago,
                              a_day_ago=a_day_ago))
-        expected_result = '''page javascript:
+        expected_result = b'''page javascript:
     <script src="/test.js?v=None"></script>
     <link type="text/css" href="/sample.css?v=None" media="screen" rel="stylesheet">
 humanized dates:
     1 hour ago
     1 day ago
 link, img helpers:
-    <a href="A test link" >home</a>
+    <a href="/" >A test link</a>
     <img src="/sample.jpg" alt="/sample.jpg" />
 test default filters:
     <h2>This is a literal html h2</h2>

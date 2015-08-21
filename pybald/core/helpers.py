@@ -13,7 +13,7 @@
 from datetime import datetime
 from routes import url_for
 from mako import filters
-from urlparse import urlparse, ParseResult
+from six.moves.urllib.parse import urlparse, ParseResult
 from routes import request_config
 from pybald import context
 import logging

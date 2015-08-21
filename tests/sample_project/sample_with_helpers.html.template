@@ -5,7 +5,7 @@ humanized dates:
     ${humanize(an_hour_ago)}
     ${humanize(a_day_ago)}
 link, img helpers:
-    ${link('home').to('A test link')}
+    ${link('A test link').to('home')}
     ${img('/sample.jpg')}
 test default filters:
     ${literal('<h2>This is a literal html h2</h2>')}

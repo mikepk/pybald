@@ -47,7 +47,7 @@ def _build_plural_rule(input_pattern):
     return lambda word: pattern.search(word) and search.sub(replace, word)
 
 
-plural_rules = map(_build_plural_rule, plural_patterns)
+plural_rules = list(map(_build_plural_rule, plural_patterns))
 
 
 def pluralize(text):

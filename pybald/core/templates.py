@@ -24,10 +24,12 @@ class TemplateEngine(object):
     def __init__(self, template_path=None, cache_path=None, helpers=None):
         # base template helpers all pybald projects have
         self.template_helpers = [
-            'from pybald.core.helpers import img, link, humanize, HTMLLiteral as literal',
-            'from pybald.core import page',
-            'from pybald.core.helpers import js_escape as js',
-            'from mako.filters import html_escape']
+            'from pybald.core.helpers import img,'
+                                           ' link,'
+                                           ' humanize,'
+                                           ' HTMLLiteral as literal,'
+                                           ' url_for',
+            'from pybald.core import page']
 
         if config.template_helpers:
             self.template_helpers.extend(config.template_helpers)
@@ -39,27 +41,28 @@ class TemplateEngine(object):
 
         self.project_path = config.path
 
-        try:
-            default_template_path = os.path.join(os.path.dirname(
-                                                os.path.realpath(__file__)),
-                                                'default_templates')
-            project_template_path = config.template_path or os.path.join(
-                                                            self.project_path,
-                                                            'app/views')
-            project_cache_path = config.cache_path or os.path.join(
-                                                           self.project_path,
-                                                           'tmp/viewscache')
-        except AttributeError:
-            log.exception(("**Warning**\n"
-                             "Unable to load templates from template path\n"
-                             ))
-            default_template_path = ""
-            project_template_path = ""
-            project_cache_path = ""
+        template_paths = []
+
+        if config.template_path:
+            project_template_path = os.path.join(self.project_path,
+                                                 config.template_path)
+            template_paths.append(project_template_path)
+
+        # the pybald default templates, like forms and stack traces
+        default_template_path = os.path.join(os.path.dirname(
+                                            os.path.realpath(__file__)),
+                                            'default_templates')
+        template_paths.append(default_template_path)
+
+        #caching compiled python template modules, None disables the cache
+        if config.cache_path:
+            project_cache_path = os.path.join(self.project_path,
+                                              config.cache_path)
+        else:
+            project_cache_path = None
 
         fs_test = config.template_filesystem_check or config.debug or False
-        self.lookup = TemplateLookup(directories=[project_template_path,
-                                                  default_template_path],
+        self.lookup = TemplateLookup(directories=template_paths,
                                      module_directory=project_cache_path,
                                      imports=self.template_helpers,
                                      input_encoding='utf-8',
@@ -128,7 +131,7 @@ class TemplateEngine(object):
 
         Calls _get_template to retrieve the template and then renders it.
         '''
-        template_data = dict(config.page_options.items() + data.items())
+        template_data = dict(list(config.page_options.items()) + list(data.items()))
         mytemplate = self._get_template(template, format)
         log.debug("Rendering template")
         return mytemplate.render(**template_data)
