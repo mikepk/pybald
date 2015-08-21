@@ -10,11 +10,13 @@ class TestOrm(unittest.TestCase):
         Model.metadata.create_all()
 
     def test_model_save(self):
+        "Models can be saved."
         from tests.sample_project.sample import SampleModel
         test_model = SampleModel(text="This is just a test")
         test_model.save().commit()
 
     def test_model_save_load(self):
+        "Models can be read back after being saved."
         from tests.sample_project.sample import SampleModel
         test_model = SampleModel(text="This is just a test")
         test_model.save().commit()

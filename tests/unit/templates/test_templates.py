@@ -8,17 +8,20 @@ class TestTemplate(unittest.TestCase):
         from tests.sample_project.sample import app
 
     def test_template_lookup(self):
+        '''Templates can be looked up in the filesystem'''
         from pybald import context
         template = context.render._get_template('sample')
         # we've got a compiled template
         assert isinstance(template, Template)
 
     def test_template_render_with_data(self):
+        '''Render a template with data.'''
         from pybald import context
         template = context.render._get_template('sample')
         assert template.render(sample_variable='sample') == b"<h1>Hello sample!</h1>"
 
     def test_template_with_helpers(self):
+        '''Render a template with various template helpers.'''
         from pybald import context
         from datetime import datetime, timedelta
         a_day_ago = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
