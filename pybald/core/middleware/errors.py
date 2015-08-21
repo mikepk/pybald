@@ -2,12 +2,37 @@
 # encoding: utf-8
 
 from webob import Response, exc
-import urllib
+# from six.moves.urllib.parse import unquote
 import logging
 log = logging.getLogger(__name__)
 
+def create_default_error_controller():
+    from pybald.core.controllers import Controller, action
+    from pybald.context import render, config
+    class DefaultErrorController(Controller):
+        '''Minimum helpful error controller'''
+        def __init__(self, status_code=500, message=None, exception=None):
+            self.status_code = status_code
+            self.message = message
+            self.exception = exception
 
-class ErrorMiddleware:
+        @action
+        def __call__(self, req):
+            '''
+            The ErrorController will return a formatted stack trace if in debug
+            mode, or point to a regular error page otherwise.
+            '''
+            if 400 <= int(self.status_code) < 500:
+                return req.get_response(self.exception)
+            else:
+                if config.debug:
+                    stack_trace = render(template='stack_trace', data={'req': req})
+                    return Response(body=stack_trace, status=self.status_code)
+                else:
+                    return req.get_response(exc.HTTPServerError('General Fault'))
+    return DefaultErrorController
+
+class ErrorMiddleware(object):
     '''
     Handles exceptions during web transactions.
 
@@ -25,22 +50,20 @@ class ErrorMiddleware:
                           the error_controller to handle.
     '''
     def __init__(self, application=None, error_controller=None):
+        if error_controller is None:
+            self.error_controller = create_default_error_controller()
+        else:
+            self.error_controller = error_controller
+
         if application:
             self.application = application
         else:
             # no pipeline so just generate a generic response
             self.applicaion = Response()
-        self.error_controller = error_controller
 
     def __call__(self, environ, start_response):
         #pass through if no exceptions occur
         try:
-            # catch stupid URLs before getting into webob
-            try:
-                # unicode(environ['PATH_INFO'])
-                urllib.unquote(environ['QUERY_STRING']).decode('utf8')
-            except UnicodeDecodeError:
-                return Response(status=400, body="""<h1>Bad Request</h1>""")(environ, start_response)
             return self.application(environ, start_response)
         # handle HTTP errors
         except exc.HTTPException as err:
@@ -48,7 +71,7 @@ class ErrorMiddleware:
             # use that to display the errors
             log.debug("HTTP Exception Thrown {0}".format(err.__class__))
             if self.error_controller:
-                handler = self.error_controller(status_code=err.code)
+                handler = self.error_controller(status_code=err.code, exception=err)
 
                 try:
                     # try executing error_handler code
