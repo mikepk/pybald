@@ -18,10 +18,6 @@ console = logging.getLogger(__name__)
 
 controller_pattern = re.compile(r'(\w+)Controller')
 
-try:
-    type(basestring)
-except NameError:
-    basestring = str
 
 class CSRFValidationFailure(exc.HTTPForbidden):
     pass
@@ -188,7 +184,7 @@ def action(method):
                              data=self.__dict__ or {}))
         # if the response is currently a string
         # wrap it in a response object
-        if isinstance(resp, basestring):
+        if isinstance(resp, str) or isinstance(resp, bytes):
             resp = Response(body=resp, charset="utf-8")
         # run the controllers post code
         post(req, resp)
