@@ -42,7 +42,7 @@ class Client(object):
         req = Request.blank(url,
                          content_type="application/x-www-form-urlencoded",
                          method="POST",
-                         body=urlencode(data))
+                         body=urlencode(data).encode('utf-8'))
         for key, value in self.cookies.items():
             req.cookies[key] = value
 

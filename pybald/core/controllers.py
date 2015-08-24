@@ -313,17 +313,5 @@ class Controller(with_metaclass(RegistryMount, object)):
             )
         return res
 
-    # def _view(self, data=None):
-    #     '''
-    #     This method is a shim between the old view rendering code and the new
-    #     template rendering methods. It should not be used and is present only
-    #     to maintain backward compatibility.
-
-    #     This is targeted for deprecation.
-    #     '''
-    #     return old_style_render_view(data or self.__dict__ or {})
-
-    # _render_view = render_view
-
 # alias for backwards copatibility
 BaseController = Controller

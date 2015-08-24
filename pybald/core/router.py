@@ -190,7 +190,7 @@ class Router(object):
         # routes (map.redirect)
         if route and route.redirect:
             route_name = '_redirect_{0}'.format(id(route))
-            location = url(route_name, **match)
+            location = url(route_name, **urlvars)
             return Response(location=location,
                             status=route.redirect_status
                             )(environ, start_response)
