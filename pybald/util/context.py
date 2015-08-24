@@ -63,6 +63,10 @@ class Proxy(object):
     def __class__(self):
         return self._proxied().__class__
 
+    @property
+    def __file__(self):
+        return self._proxied().__file__
+
 
 class AppAttributeProxy(Proxy):
     def __init__(self, parent, attribute):

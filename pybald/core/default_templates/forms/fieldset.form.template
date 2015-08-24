@@ -1,9 +1,10 @@
+<%! from six import itervalues %>
 % for error in fieldset.errors.get(None, []):
 <div class="fieldset_error">
   ${error}
 </div>
 % endfor
-% for field in fieldset.render_fields.itervalues():
+% for field in itervalues(fieldset.render_fields):
   % if field.requires_label:
 %if field.errors:
 <div class="input_errors">

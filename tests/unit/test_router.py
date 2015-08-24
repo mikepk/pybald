@@ -14,7 +14,10 @@ class TestRouter(unittest.TestCase):
                          action='get', conditions=dict(method=["GET"]))
             urls.connect('method_test2', r'/method', controller='test2',
                          action='delete', conditions=dict(method=["DELETE"]))
+            # test3 is a 404 missing url
             urls.connect('test4', r'/test4', controller='test4', action='index')
+            urls.connect('test5', r'/test5', controller='test2',
+                         action='_iminvalid')
             urls.redirect('/here', '/there', _redirect_code='302 Found')
 
         class Test1Controller(object):
@@ -35,6 +38,10 @@ class TestRouter(unittest.TestCase):
                 start_response('200 OK', [('Content-Type','text/plain')])
                 return ["test2_get"]
 
+            def _iminvalid(self, environ, start_response):
+                start_response('200 OK', [('Content-Type','text/plain')])
+                return ["test5_invalid_action"]
+
         self.app = Router(routes=map, controllers=[Test1Controller, Test2Controller])
 
     def test_controller_match(self):
@@ -50,6 +57,14 @@ class TestRouter(unittest.TestCase):
             r.get_response(self.app)
         except exc.HTTPNotFound:
             pass
+
+    def test_invalid_action(self):
+        '''Fail to match an invalid action that starts with an underscore'''
+        r = Request.blank('/test5')
+        try:
+            r.get_response(self.app)
+        except exc.HTTPNotFound as err:
+            assert err.args[0] == "Invalid Action"
 
     def test_no_controller_in_registry(self):
         '''Match controller variable but miss on registry'''

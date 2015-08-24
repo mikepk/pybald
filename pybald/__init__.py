@@ -122,6 +122,7 @@ def configure(name=None, config_file=None, config_object=None):
     new_context.__dict__['path'] = root_path
     new_context.__dict__['config'] = config
     new_context.__dict__['name'] = name
+    new_context.__dict__['__file__'] = None
     # now execute the app context with this config
     context._push(new_context)
     exec(compile(context_template, '<string>', 'exec'), new_context.__dict__)
