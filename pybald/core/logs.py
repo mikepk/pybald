@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
-#import sys
-import unittest
-#from webob import Request, Response
-
 import logging
 import logging.handlers
 from textwrap import TextWrapper
@@ -101,5 +96,4 @@ class LogPoint(object):
         log.debug(self.log.format(' {0} '.format(self.end_message)))
         return resp
 
-if __name__ == '__main__':
-    unittest.main()
+

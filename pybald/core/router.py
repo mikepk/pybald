@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
-import unittest
 import re
 from webob import Request, Response, exc
 from routes import Mapper, request_config, URLGenerator
@@ -212,19 +210,3 @@ class Router(object):
         # All other program errors are allowed to bubble up
         # e.g. a 500 server error
 
-
-class routerTests(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def testMap(self):
-        router = Router()
-
-    def testRoute(self):
-        pass
-
-    def testLoad(self):
-        pass
-
-if __name__ == '__main__':
-    unittest.main()

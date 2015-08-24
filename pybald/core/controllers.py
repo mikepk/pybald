@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 from six import with_metaclass
-import unittest
 from functools import wraps
 from webob import Request, Response, exc
 import re
@@ -328,12 +327,3 @@ class Controller(with_metaclass(RegistryMount, object)):
 
 # alias for backwards copatibility
 BaseController = Controller
-
-
-class BaseControllerTests(unittest.TestCase):
-    def setUp(self):
-        pass
-
-
-if __name__ == '__main__':
-    unittest.main()

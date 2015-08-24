@@ -2,7 +2,6 @@
 # encoding: utf-8
 
 import os
-import unittest
 from pybald.context import config
 from mako.template import Template
 from mako.lookup import TemplateLookup
@@ -136,11 +135,3 @@ class TemplateEngine(object):
         log.debug("Rendering template")
         return mytemplate.render(**template_data)
 
-
-
-class TemplateEngineTests(unittest.TestCase):
-    def setUp(self):
-        pass
-
-if __name__ == '__main__':
-    unittest.main()
