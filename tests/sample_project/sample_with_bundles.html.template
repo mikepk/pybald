@@ -1,0 +1,19 @@
+<html>
+<head>
+<title>Test</title>
+<%block name="css" filter="assets.bundle">
+<bundle filters="cssmin">
+${page.add_css('/css/test1.css')}
+${page.add_css('/css/test2.css')}
+</bundle>
+</%block>
+<%block name="js" filter="assets.bundle">
+<bundle filters="rjsmin">
+${page.add_js('/js/test1.js')}
+${page.add_js('/js/test2.js')}
+</bundle>
+</%block>
+</head>
+<body>
+Test
+</body>
