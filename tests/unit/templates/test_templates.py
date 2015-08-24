@@ -8,7 +8,7 @@ class TestTemplate(unittest.TestCase):
         from tests.sample_project.sample import app
 
     def test_template_lookup(self):
-        '''Templates can be looked up in the filesystem'''
+        '''Look up a template in the filesystem'''
         from pybald import context
         template = context.render._get_template('sample')
         # we've got a compiled template

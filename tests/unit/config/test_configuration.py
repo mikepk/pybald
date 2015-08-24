@@ -8,7 +8,7 @@ class TestConfig(unittest.TestCase):
         pass
 
     def test_default_config(self):
-        "When no config is passed, a default configuration is used"
+        "Start without a config, a default configuration is used"
         context = pybald.configure()
         eq_(context.config.debug, True)
         eq_(context.config.env_name, 'Default')

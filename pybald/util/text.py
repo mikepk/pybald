@@ -1,9 +1,12 @@
 import re
 import unicodedata
-import sys
-import os
-import time
-import signal
+
+try:
+    type(unicode)
+except NameError:
+    def unicode(txt, errors=None):
+        return txt.decode('utf-8')
+
 # first pass, anything before a CAPLower gets separated. i.e. CAP_Lower
 #  123Lower -> 123_Lower
 first_pass = re.compile(r'(.)([A-Z][a-z]+)')
@@ -70,7 +73,7 @@ def strip_accents(text):
     but for places where unicode can't be used (or ASCII only) francais looks
     better than fran-ais or fran?ais.
     '''
-    if isinstance(text, str):
+    if isinstance(text, bytes):
         return unicode(text, errors='ignore')
     return ''.join((c for c in unicodedata.normalize('NFD', text) if
                                               unicodedata.category(c) != 'Mn'))

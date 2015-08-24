@@ -14,7 +14,7 @@ class TestErrors(unittest.TestCase):
         from tests.sample_project.sample import app
 
     def test_stack_trace(self):
-        "When in debug mode, Exceptions generate stack traces"
+        "When in debug mode, throw an Exception and generate a stack trace"
         from pybald.context import config
         from tests.sample_project.sample import app
         try:
@@ -25,7 +25,7 @@ class TestErrors(unittest.TestCase):
         assert STACK_TRACE.match(str(resp))
 
     def test_non_stack_trace(self):
-        "When *NOT* in debug mode, Exceptions return generic errors"
+        "When *NOT* in debug mode, throw an Exception and return a generic error"
         from pybald.context import config
         config.debug = False
         from tests.sample_project.sample import app
@@ -39,7 +39,7 @@ class TestErrors(unittest.TestCase):
 
 
     def test_404(self):
-        "404's are returned properly"
+        "Return a 404 response"
         # from pybald import context
         from tests.sample_project.sample import app
         try:
