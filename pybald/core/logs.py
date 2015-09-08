@@ -65,7 +65,8 @@ def set_sql_logger(level=logging.INFO, log_class=logging.StreamHandler):
 # enable logging
 def default_debug_log(level=logging.DEBUG, log_class=logging.StreamHandler):
     set_root_logger(level, log_class)
-    set_sql_logger(level, log_class)
+    # the the sql logger to INFO since DEBUG is to chatty
+    set_sql_logger(logging.INFO, log_class)
 
 
 def enable_sql_log():
