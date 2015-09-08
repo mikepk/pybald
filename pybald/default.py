@@ -16,7 +16,8 @@ page_options = {},
 # =================
 global_table_args = {},
 schema_reflection = False,
-database_engine_uri = 'sqlite:///:memory:',
+database_engine_uri = '',
+#sqlite:///:memory:',
 database_engine_args = {},
 # Asset Pipeline
 # =================

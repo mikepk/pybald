@@ -9,3 +9,4 @@ template_helpers = ['from pybald.core import assets']
 BUNDLE_SOURCE_PATHS = ['tests/sample_project/front_end', 'tests/sample_project/sass']
 # BUNDLE_ASSETS = True
 path = ""
+database_engine_uri = 'sqlite:///:memory:'

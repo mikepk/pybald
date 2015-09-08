@@ -72,7 +72,8 @@ def csrf_protected(action_func):
 
             except CSRFValidationFailure:
                 # gentle mode, redirect to GET version of the page
-                return self._redirect_to(req.path_qs)
+                # return self._redirect_to(req.path_qs)
+                raise
 
         # always stash a new token
         new_token = str(uuid.uuid4()).replace("-", "")
@@ -83,7 +84,6 @@ def csrf_protected(action_func):
 
         return action_func(self, req)
     return replacement
-
 
 
 # a no-op placeholder
@@ -231,30 +231,30 @@ def action(method):
 content_cache_prefix = hex(random.randrange(0, 2 ** 32 - 1))
 
 
-# memcache for actions
-def action_cached(prefix=content_cache_prefix, keys=None, time=0):
-    '''
-    Wrap actions and return pre-generated responses when appropriate.
-    '''
-    if keys is None:
-        keys = []
+# # memcache for actions
+# def action_cached(prefix=content_cache_prefix, keys=None, time=0):
+#     '''
+#     Wrap actions and return pre-generated responses when appropriate.
+#     '''
+#     if keys is None:
+#         keys = []
 
-    # def cached_wrapper(my_action_method):
-    #     @wraps(my_action_method)
-    #     def replacement(self, environ, start_response):
-    #         # bind newly wrapped methods to self
-    #         self._pre = caching_pre(keys,
-    #                                 my_action_method.__name__,
-    #                                 prefix=prefix)(self._pre
-    #                                     ).__get__(self, self.__class__)
-    #         self._post = caching_post(time)(self._post
-    #                                     ).__get__(self, self.__class__)
-    #         return my_action_method(self, environ, start_response)
-    #     # don't enable caching if requested
-    #     if project.DISABLE_STATIC_CONTENT_CACHE:
-    #         return my_action_method
-    #     return replacement
-    # return cached_wrapper
+#     # def cached_wrapper(my_action_method):
+#     #     @wraps(my_action_method)
+#     #     def replacement(self, environ, start_response):
+#     #         # bind newly wrapped methods to self
+#     #         self._pre = caching_pre(keys,
+#     #                                 my_action_method.__name__,
+#     #                                 prefix=prefix)(self._pre
+#     #                                     ).__get__(self, self.__class__)
+#     #         self._post = caching_post(time)(self._post
+#     #                                     ).__get__(self, self.__class__)
+#     #         return my_action_method(self, environ, start_response)
+#     #     # don't enable caching if requested
+#     #     if project.DISABLE_STATIC_CONTENT_CACHE:
+#     #         return my_action_method
+#     #     return replacement
+#     # return cached_wrapper
 
 class RegistryMount(type):
     '''

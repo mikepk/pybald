@@ -64,9 +64,16 @@ from pybald.core.templates import TemplateEngine
 from pybald.db.db_engine import create_session, create_engine, create_dump_engine
 from pybald.util.command_line import start
 
+class MockEngine(object):
+    def __getattr__(self, key):
+        raise RuntimeError("Pybald is not configured")
+
 render = TemplateEngine()
 dump_engine = create_dump_engine()
-engine = create_engine()
+try:
+    engine = create_engine()
+except Exception:
+    engine = MockEngine()
 db = create_session(engine=engine)
 
 def register(key, value):
@@ -89,6 +96,9 @@ def configure(name=None, config_file=None, config_object=None):
     except AttributeError:
         root_path = os.getcwd()
 
+    if root_path not in sys.path:
+        sys.path.insert(1, root_path)
+
     if config_object:
         # create a named tuple that's the combo of default plus input dict
         keys = set(default_config.keys()) | set(config_object.keys())
@@ -98,7 +108,7 @@ def configure(name=None, config_file=None, config_object=None):
         try:
             config = build_config(root_path=root_path, filename=config_file)
         except IOError:
-            log.exception("Config Error:\nFile Error or File not found\n{0}".format(filename))
+            log.exception("Config Error:\nFile Error or File not found\n{0}".format(config_file))
             sys.exit(1)
     else:
         try:
@@ -123,6 +133,7 @@ def configure(name=None, config_file=None, config_object=None):
     new_context.__dict__['config'] = config
     new_context.__dict__['name'] = name
     new_context.__dict__['__file__'] = None
+    # new_context.__dict__['__path__'] = None
     # now execute the app context with this config
     context._push(new_context)
     exec(compile(context_template, '<string>', 'exec'), new_context.__dict__)

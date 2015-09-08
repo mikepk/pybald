@@ -73,7 +73,7 @@ class AssetUrl(dict):
             try:
                 protocol = request_config().protocol
             except AttributeError:
-                # are we not in a request? Default to http
+                # are we not in a request? Use a default protocol
                 protocol = context.config.DEFAULT_PROTOCOL
             # use the round robin hosts to speed download when not https
             if protocol != "https" and context.config.STATIC_HOSTS:
