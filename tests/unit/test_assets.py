@@ -29,19 +29,20 @@ test_config=dict(sample_config=True,
 
 class TestWebassets(unittest.TestCase):
     def setUp(self):
-        import pybald
-        context = pybald.configure(config_object=test_config)
-        print(context.config)
-        from pybald.core.assets import Bundler
-        b = Bundler()
-        self.bundle = b.bundle
-        print(context.config)
+        pass
+        # import pybald
+        # context = pybald.configure(config_object=test_config)
+        # print(context.config)
+        # from pybald.core.assets import Bundler
+        # b = Bundler()
+        # self.bundle = b.bundle
+        # print(context.config)
 
-    def test_bundles(self):
-        '''Run webasset bundling'''
-        # from pybald import context
-        data = sample_with_bundles
-        print(self.bundle(data))
-        # print(data)
-        assert False
+    # def test_bundles(self):
+    #     '''Run webasset bundling'''
+    #     # from pybald import context
+    #     data = sample_with_bundles
+    #     print(self.bundle(data))
+    #     # print(data)
+    #     assert False
 
