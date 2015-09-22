@@ -35,7 +35,7 @@ class FieldSet(FAFieldSet):
         return HTMLLiteral(output_data)
 
 
-class BaseForm(FAFieldSet):
+class BaseForm(FieldSet):
     def __init__(self, *pargs, **kargs):
 
         template = kargs.pop('template', 'fieldset')
@@ -53,10 +53,6 @@ class BaseForm(FAFieldSet):
         # FieldSet.__init__(self,instance or self.__class__, data=data or None)
         # set the template_id to the name of the model
         self.template_id = os.path.join('forms', template)
-
-    def render(self, *pargs, **kargs):
-        output_data = super(BaseForm, self).render(*pargs, **kargs)
-        return HTMLLiteral(output_data)
 
 
 class MultiFieldSet(list):

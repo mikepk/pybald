@@ -51,6 +51,7 @@ class DefaultApp(dict):
 
 # unconfigured application stack context
 context = AppContext()
+# register the context as a module
 sys.modules['pybald.context'] = context
 # push the default placeholder app onto the context stack
 # the default allows for temporary storage of elements required

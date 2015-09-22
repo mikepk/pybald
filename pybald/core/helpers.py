@@ -14,6 +14,7 @@ from datetime import datetime
 from routes import url_for
 from mako import filters
 from six.moves.urllib.parse import urlparse, ParseResult
+import re
 from routes import request_config
 from pybald import context
 import logging
@@ -187,12 +188,17 @@ def plural(list_object):
     else:
         return ""
 
+FRACTIONAL_SECOND = re.compile(r'\.\d+$')
 
 def humanize(date_string):
-    format = "%Y-%m-%d %H:%M:%S"
+    '''Convert a date string into a 'humanized' relative string (like 1 day ago)'''
+    date_format = "%Y-%m-%d %H:%M:%S"
+    # strip decimal second precision
+    date_string = FRACTIONAL_SECOND.sub('', date_string)
     try:
-        date = datetime.strptime(date_string, format)
+        date = datetime.strptime(date_string, date_format)
     except:
+        # if the date string format doesn't match, just return it
         return date_string
     now = datetime.now()
     delta = now - date
