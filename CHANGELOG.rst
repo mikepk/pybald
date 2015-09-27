@@ -9,10 +9,12 @@ Release 0.4.0 (???)
 * New application context that lives globally is the config passing mechanism.
 
         from pybald import context
+* Replace FormAlchemy with WTForms as the primary mechanism for form processing and validation
 * Utilize controller and model registry.
 * Global context is on a threadlocal stacked proxy to allow multiple pybald applications in one interpreter.
 * Database session is now attached to the app context.
 * Shared application resources (caches etc..) are now registered with the context
+
 
 Release 0.3.2 (March 25, 2015)
 ------------------------------

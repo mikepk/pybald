@@ -31,7 +31,7 @@ def build_config(root_path='.', filename='project.py'):
     return config_module
 
 
-class MockEngine(object):
+class Unconfigured(object):
     def __getattr__(self, key):
         raise RuntimeError("Pybald is not configured")
 
@@ -39,7 +39,8 @@ class MockEngine(object):
 class DefaultApp(dict):
     def __init__(self, *pargs, **kargs):
         self.register('config', {})
-        self.register('engine', MockEngine())
+        self.register('engine', Unconfigured())
+        self.register('metadata', Unconfigured())
         self.register('controller_registry', [])
         self.register('model_registry', [])
         self.default = True
@@ -62,7 +63,7 @@ context._push(DefaultApp())
 # the template engine and database session are built at config time
 context_template = '''
 from pybald.core.templates import TemplateEngine
-from pybald.db.db_engine import create_session, create_engine, create_dump_engine
+from pybald.db.db_engine import create_session, create_engine, create_metadata, create_dump_engine
 from pybald.util.command_line import start
 
 class MockEngine(object):
@@ -76,6 +77,7 @@ try:
 except Exception:
     engine = MockEngine()
 db = create_session(engine=engine)
+# metadata = create_metadata(engine=engine)
 
 def register(key, value):
     globals()[key] = value
@@ -123,7 +125,9 @@ def configure(name=None, config_file=None, config_object=None):
     new_context = imp.new_module("context")
     # new_app._MODULE_SOURCE_CODE = app_template
     # new_app.__file__ = "<string>"
-    if hasattr(context._proxied(), 'default'):
+    if context._proxied() and hasattr(context._proxied(), 'default'):
+        # if we're at the root, consume any placeholder values
+        # placeholder = context._proxied()
         placeholder = context._pop()
         new_context.__dict__.update(placeholder)
     else:
