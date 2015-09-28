@@ -1,2 +1,0 @@
-pybald==0.2.4
-simple-db-migrate==1.4.2

@@ -1,7 +1,9 @@
 from sqlalchemy.exc import SQLAlchemyError
 from pybald.db import models
 import sys
-
+from pybald import context
+import logging
+log = logging.getLogger(__name__)
 
 class EndPybaldMiddleware(object):
     '''Utilitiy middleware to force remove current session at the end of
@@ -14,7 +16,7 @@ class EndPybaldMiddleware(object):
             return self.application(environ, start_response)
         finally:
             # always, always, ALWAYS close the session regardless
-            models.session.remove()
+            context.db.remove()
 
 
 class DbMiddleware(object):
@@ -36,14 +38,14 @@ class DbMiddleware(object):
         try:
             resp = self.application(environ, start_response)
             # commit any outstanding sql
-            models.session.commit()
+            context.db.commit()
         # on any SQLAlchemy Errors, rollback the transaction
         except SQLAlchemyError:
             # This pattern can cause memory leaks, so hopefully db errors
             # will be scrubbed from the code so this won't be hit
+            log.exception("SQLAlchemy Error")
             excpt, detail, tb = sys.exc_info()
-            models.session.rollback()
-
+            context.db.rollback()
             # reraise the original details
             # can't use raw 'raise' because SA + eventlet
             # nukes sys_info
@@ -52,9 +54,6 @@ class DbMiddleware(object):
             return resp
         finally:
             # always, always, ALWAYS close the session regardless
-            # This remove() call has been moved higher in the WSGI stack
-            # so that other things needing db sessions can still access the
-            # db (like error reporting)
-            # models.session.remove()
+            context.db.remove()
             del tb
 

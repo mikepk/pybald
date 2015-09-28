@@ -3,19 +3,24 @@
 
 import os
 
-import project
 from formalchemy import templates, config
-from formalchemy import FieldSet as FAFieldSet, Field as FAField, Grid as FAGrid, validators
+from formalchemy import (FieldSet as FAFieldSet,
+                         Field as FAField,
+                         Grid as FAGrid,
+                         validators)
 
-from pybald.core.templates import engine
+from pybald.context import render
 from pybald.core.helpers import HTMLLiteral
 
-import pybald.db.models
+from pybald import context
+from pybald.db import models
+
 import inspect
+
 
 # set the Pybald Mako engine to be the main
 # form template engine
-config.engine = engine.form_render
+config.engine = render.form_render
 
 
 class Field(FAField):
@@ -39,9 +44,9 @@ class BaseForm(FAFieldSet):
         # primarily for loading the relations in models, otherwise
         # session has to be explicitly assigned (I think, can't find
         # docs to the contrary)
-        if (pargs and isinstance(pargs[0], pybald.db.models.ModelMeta) and not
+        if (pargs and isinstance(pargs[0], models.ModelMeta) and not
             'session' in kargs):
-            kargs['session'] = pybald.db.models.session
+            kargs['session'] = context.db
 
         # Init the standard FieldSet
         super(BaseForm, self).__init__(*pargs, **kargs)

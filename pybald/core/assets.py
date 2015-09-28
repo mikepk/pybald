@@ -9,7 +9,7 @@ from pybald.core import page
 from pybald.asset_filters.jsx import JsxFilter
 from webassets.filter import register_filter
 
-import project
+from pybald import context
 import os
 from urlparse import urlparse
 
@@ -23,7 +23,7 @@ except ImportError:
     hashfunc = hash
 
 import logging
-console = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 # python 3
 try:
@@ -31,22 +31,22 @@ try:
 except NameError:
     unicode = str
 
-public_path = os.path.join(project.path or '', "public")
+public_path = os.path.join(context.config.path or '', "public")
 
 # set the bundle input and output paths
-if project.BUNDLE_OUTPUT_PATH:
-    bundle_output_path = project.BUNDLE_OUTPUT_PATH
+if context.config.BUNDLE_OUTPUT_PATH:
+    bundle_output_path = context.config.BUNDLE_OUTPUT_PATH
 else:
     bundle_output_path = ''
 
-if project.BUNDLE_SOURCE_PATHS:
-    bundle_input_paths = [os.path.join(project.path or '', path.lstrip('/'))
-                            for path in project.BUNDLE_SOURCE_PATHS]
+if context.config.BUNDLE_SOURCE_PATHS:
+    bundle_input_paths = [os.path.join(context.config.path or '', path.lstrip('/'))
+                            for path in context.config.BUNDLE_SOURCE_PATHS]
 else:
     bundle_input_paths = [public_path]
 
-cache_path = os.path.join(project.path or '', 'tmp', '.webassets-cache')
-manifest_file = os.path.join(project.path or '', 'tmp', '.webassets-manifest')
+cache_path = os.path.join(context.config.path or '', 'tmp', '.webassets-cache')
+manifest_file = os.path.join(context.config.path or '', 'tmp', '.webassets-manifest')
 
 # auto create cache path if not present
 if not os.path.exists(cache_path):
@@ -56,13 +56,13 @@ if not os.path.exists(cache_path):
 # running the XML parser.
 env = Environment(public_path,
                   url='',
-                  debug=(not project.BUNDLE_ASSETS),
-                  auto_build=bool(project.BUNDLE_AUTO_BUILD),
+                  debug=(not context.config.BUNDLE_ASSETS),
+                  auto_build=bool(context.config.BUNDLE_AUTO_BUILD),
                   load_path=bundle_input_paths,
                   cache=cache_path,
                   manifest="".join(["json:", manifest_file]),
                   # Take any bundle filter options and apply them to the config
-                  **(project.BUNDLE_FILTER_OPTIONS or {}))
+                  **(context.config.BUNDLE_FILTER_OPTIONS or {}))
 
 def _parse_bundle(elem, parent_bundle=None):
     '''Recursively generate webassets bundles by walking the xml/html tree'''
@@ -119,7 +119,7 @@ class memoize_bundles(object):
         self.cached = {}
 
     def __call__(self, input_text):
-        if project.debug:
+        if context.config.debug:
             return self.method(input_text)
         key = hashfunc(input_text)
         try:
@@ -148,9 +148,8 @@ def bundle(input_text):
 
             # every asset type has a default 'link type'
             link_func = getattr(page, 'add_{0}'.format(asset_type))
-            # construct the asset urls
-            # try:
-            assets = [link_func(url) for url in bundle.urls(env=env)]
+            with bundle.bind(env):
+                assets = [link_func(url) for url in bundle.urls()]
             output_buffer.extend(assets)
             # add any text nodes that got glommed onto
             # the node

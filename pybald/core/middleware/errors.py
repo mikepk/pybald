@@ -2,10 +2,9 @@
 # encoding: utf-8
 
 from webob import Response, exc
-from pybald.core.templates import render as template_engine
 import urllib
 import logging
-console = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class ErrorMiddleware:
@@ -47,7 +46,7 @@ class ErrorMiddleware:
         except exc.HTTPException, err:
             # if the middleware is configured with an error controller
             # use that to display the errors
-            console.debug("HTTP Exception thrown {0}".format(err))
+            log.debug("HTTP Exception Thrown {0}".format(err.__class__))
             if self.error_controller:
                 handler = self.error_controller(status_code=err.code)
 
@@ -56,13 +55,13 @@ class ErrorMiddleware:
                     # otherwise re-raise the exception
                     return handler(environ, start_response)
                 except Exception:
-                    console.exception("Exception thrown during error_controller handling")
+                    log.exception("Exception thrown during error_controller handling")
                     raise
             else:
                 # HTTPExceptions are also WSGI apps and can be called as such
                 return err(environ, start_response)
         except Exception, err:
-            console.exception("General Exception thrown")
+            log.exception("General Exception thrown")
             if self.error_controller:
                 handler = self.error_controller(message=str(err))
             else:
@@ -71,13 +70,3 @@ class ErrorMiddleware:
             return handler(environ, start_response)
 
 
-def pybald_error_template():
-    '''
-    This method is a shim between the old view error template function and the
-    new template rendering methods. It should not be used and is present only
-    to maintain backward compatibility.
-
-    This is targeted for deprecation.
-    '''
-    console.warn("pybald_error_template is deprecated in pybald 0.2.0")
-    return template_engine._get_template('stack_trace')

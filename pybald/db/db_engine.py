@@ -1,24 +1,43 @@
 import sqlalchemy as sa
-import project
 import sys
+from pybald import context
+import re
 
-engine_args = project.database_engine_args
+from sqlalchemy.orm import (
+    scoped_session,
+    sessionmaker
+    )
 
-if project.green:
-    from SAGreen import green_connection, GreenThreadQueuePool
-    engine_args["creator"] = green_connection()
-    engine_args["poolclass"] = GreenThreadQueuePool
+import logging
+log = logging.getLogger(__name__)
+
+def create_engine():
+    return sa.create_engine(context.config.database_engine_uri,
+                                  **context.config.database_engine_args)
 
 
-def dump(sql, *multiparams, **params):
-    print str(sql.compile(dialect=dump_engine.dialect) )
+def create_dump_engine():
+    '''Create a sql engine that just prints SQL using the current dialect to
+    STDOUT instead of executing it.
 
-dump_engine = sa.create_engine('mysql://', strategy='mock', executor=dump)
+    This is useful especially to see what the DDL statements are for various dialects
+    '''
+    def dump(sql, *multiparams, **params):
+        sys.stdout.write( str(sql.compile(dialect=dump_engine.dialect) ).strip() +"\n")
 
-try:
-    engine = sa.create_engine(project.database_engine_uri, **engine_args)
-except AttributeError:
-    sys.stderr.write("**WARNING**\nSQLALchemy/pybald is using a mock"
-                     " db connection.\n")
-    engine = dump_engine
+    def dialect():
+        match = re.search(r'^([^\:]*\:\/\/)', context.config.database_engine_uri)
+        if match:
+            return match.group(1)
+        else:
+            return "sqlite://"
+    dump_engine = sa.create_engine(dialect(), strategy='mock', executor=dump)
+    return dump_engine
 
+
+def create_session(engine=None, session_args=None):
+    # build session
+    if session_args is None:
+        session_args = {}
+    session = scoped_session(sessionmaker(bind=engine, **session_args))
+    return session

@@ -9,12 +9,11 @@ from routes import Mapper, request_config, URLGenerator
 from mako import exceptions
 from pybald.util import camel_to_underscore
 import logging
-console = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class Router(object):
     # class method match patterns
-    has_underscore = re.compile(r'^\_')
     controller_pattern = re.compile(r'(\w+)_controller')
 
     # add controllers=None to the call sig and use that for controller
@@ -50,41 +49,13 @@ class Router(object):
         self.map = Mapper(explicit=False)
         routes(self.map)
         # debug print the whole URL map
-        console.debug(str(self.map))
-        if controllers is None:
-            self.load_old_style()
-        else:
-            self.load(controllers)
-
-    def load_old_style(self):
-        '''Compatibility method for old-style pybald install.'''
-        console.warn("!"*80+'''
-!! Old style Router init is deprecated.
-!!
-!! New style pybald Router objects are constructed by passing in the controller
-!! module or controller registry.
-!! You will want to update your wsgi/myapp.py file.
-!! app = Router(controllers=CONTROLLER_REGISTRY)
-'''+"!"*80)
-        import project
-        # load the controllers from the project defined path
-        # change this to passed in value to the Router. That way it can
-        # be project specific
-        # Load the project specified in the project file
-        my_project = __import__(project.package_name, globals(), locals(),
-                                                                    ['app'], -1)
-        # add the project package name to the global symbol table
-        # to avoid any double imports
-        globals()[project.package_name] = my_project
-        # import all controllers
-        __import__('{project}.app'.format(project=project.package_name),
-                              globals(), locals(), ['controllers'], -1)
-        self.load(my_project.app.controllers)
+        log.debug(str(self.map))
+        self.load(controllers)
 
     def load(self, controllers):
         '''
-        Handles walking the registry (or old-style controller module) and
-        builds the lookup table for controller classes to match against.
+        Walks the controller registry and builds the lookup table for
+        controller classes to match against.
 
         Does some text munging to change the camel-case class names into
         underscore-separated url like names. (HomeController to home)
@@ -97,20 +68,11 @@ class Router(object):
         The _controller suffix is removed from the module name for the url
         route mapping table (so controller="home" matches home_controller).
 
-        against and the routes regex is initialized with a list of controller
-        names.
-
         Called only once at the start of a pybald application.
         '''
 
         controller_names = []
-        # switch between old-style package container and registry model
-        # both should work here
-        if hasattr(controllers, '__all__'):
-            controller_iterator = ((name, getattr(controllers, name)) for
-                                   name in controllers.__all__)
-        else:
-            controller_iterator = ((controller.__name__, controller) for
+        controller_iterator = ((controller.__name__, controller) for
                                    controller in controllers)
         for name, controller in controller_iterator:
             controller_name = camel_to_underscore(name)
@@ -130,7 +92,7 @@ class Router(object):
         self.map.create_regs(controller_names)
 
     def __repr__(self):
-        return "<Pybald Router Object>"
+        return "<Router Object>"
 
     def get_handler(self, urlvars):
         '''Method that returns the callable code mapped to this current
@@ -139,13 +101,12 @@ class Router(object):
         This method can be overriden to change the behavior of mapping.
         '''
         controller_name, action_name = urlvars["controller"], urlvars["action"]
-
         #methods starting with underscore can't be used as actions
-        if self.has_underscore.match(action_name):
+        if action_name.startswith("_"):
             raise exc.HTTPNotFound("Invalid Action")
 
         for key, value in urlvars.items():
-            console.debug(u'''{0}: {1}'''.format(key, value))
+            log.debug(u'''{0}: {1}'''.format(key, value))
 
         try:
             # create controller instance from controllers dictionary
@@ -157,7 +118,7 @@ class Router(object):
         except (KeyError, AttributeError):
             raise exc.HTTPNotFound("Missing Controller or Action")
 
-        return controller, handler
+        return handler
 
     def __call__(self, environ, start_response):
         '''
@@ -189,14 +150,14 @@ class Router(object):
             override_method = req.POST.pop('_method', None)
             if override_method is not None:
                 environ['REQUEST_METHOD'] = override_method.upper()
-                console.debug("Changing request method to {0}".format(
+                log.debug("Changing request method to {0}".format(
                                                         environ["REQUEST_METHOD"]))
 
         results = self.map.routematch(environ=environ)
         if results:
-            match, route = results[0], results[1]
+            urlvars, route = results
         else:
-            match = route = None
+            urlvars, route = {}, None
 
         url = URLGenerator(self.map, environ)
         config = request_config()
@@ -204,16 +165,16 @@ class Router(object):
         # Your mapper object
         config.mapper = self.map
         # The dict from m.match for this URL request
-        config.mapper_dict = match
+        config.mapper_dict = urlvars
         config.host = req.host
         config.protocol = req.scheme
-        # host_port
         # defines the redirect method. In this case it generates a
         # Webob Response object with the location and status headers
         # set
         config.redirect = lambda url: Response(location=url, status=302)
 
-        environ.update({'wsgiorg.routing_args': ((url), match),
+        # TODO: routing args is supposed to be pos, key dict
+        environ.update({'wsgiorg.routing_args': ((url), urlvars),
                         'routes.route': route,
                         'routes.url': url,
                         'pybald.router': self})
@@ -224,30 +185,20 @@ class Router(object):
         environ.setdefault('pybald.extension', {})["url_for"] = url
 
         # debug print messages
-        console.debug('{0:=^79}'.format(' {0} '.format(req.path_qs)))
-        console.debug('Method: {0}'.format(req.method))
-
-        # use routes to match the url to a path
-        # urlvars will contain controller + other non query string
-        # URL data. Middleware above this can override and set urlvars
-        # and the router will use those values.
-        # TODO: allow individual variable overrides?
-        urlvars = environ.get('urlvars', match) or {}
+        log.debug('{0:=^79}'.format(' {0} '.format(req.path_qs)))
+        log.debug('Method: {0}'.format(req.method))
 
         # lifted from Routes middleware, handles 'redirect'
         # routes (map.redirect)
         if route and route.redirect:
             route_name = '_redirect_{0}'.format(id(route))
-            location = url(route_name, **match)
+            location = url(route_name, **urlvars)
             return Response(location=location,
                             status=route.redirect_status
                             )(environ, start_response)
 
-        req.urlvars = urlvars
-        environ['urlvars'] = urlvars
-
         if urlvars:
-            controller, handler = self.get_handler(urlvars)
+            handler = self.get_handler(urlvars)
         # No URL vars means nothing matched in the mapper function
         else:
             raise exc.HTTPNotFound("No URL match")

@@ -117,305 +117,39 @@ from sqlalchemy.ext.hybrid import (
 
 from sqlalchemy import func
 
-import json
-import pickle
-import zlib
-from pybald.db import engine, dump_engine
+# from pybald.db import engine, dump_engine
 from pybald.util import camel_to_underscore, pluralize
 
-import project
+from pybald import context
 # from project import mc
 
-# from sqlalchemy.orm.interfaces import SessionExtension
-from sqlalchemy.ext.mutable import Mutable
+from .ext import (ASCII, JSONEncodedDict, ZipPickler, MutationDict)
 
 from sqlalchemy import __version__ as sa_ver
 
-sa_maj_ver, sa_min_ver, sa_rev_ver = sa_ver.split(".")
+sa_maj_ver, sa_min_ver, sa_rev_ver = [int(n) for n in sa_ver.split(".")]
 
-if int(sa_min_ver) >= 7:
-    from sqlalchemy.orm.attributes import flag_modified
-else:
+if sa_maj_ver < 1 and sa_min_ver < 7:
     from sqlalchemy.orm.attributes import instance_dict, NO_VALUE
 
     def flag_modified(instance, key):
         state, dict_ = instance_state(instance), instance_dict(instance)
         impl = state.manager[key].impl
         state.modified_event(dict_, impl, True, NO_VALUE)
-
-
-session_args = {}
-
-if project.green:
-    from SAGreen import eventlet_greenthread_scope
-    session_args['scopefunc'] = eventlet_greenthread_scope
-
-session = scoped_session(sessionmaker(bind=engine, **session_args))
+else:
+    from sqlalchemy.orm.attributes import flag_modified
 
 import sqlalchemy.ext.declarative
 from sqlalchemy.ext.declarative import declarative_base
-Base = declarative_base(bind=engine)
 
+# originally this had bind=engine as an argument. The engine bindinding here
+# allows the classes to be defined via schema reflection as well as allow
+# MODEL.__table__.create() type methods to work without passing in an explicit
+# engine. Thinking if there's a way to pass an attribute proxy here instead.
+Base = declarative_base(bind=context.engine)
 
-# # lifted from zzzeek's post on "Magic ORM"
-# # this only works for SA 7, due to the
-# # use of the event system.
-# # Source: http://techspot.zzzeek.org/2011/05/17/magic-a-new-orm/
-# # Copyright (I assume) Michael Bayer
-# # =====================================
-# from sqlalchemy.orm import (
-#             class_mapper, mapper, relationship,
-#             scoped_session, sessionmaker, configure_mappers
-#         )
-# from sqlalchemy.ext.declarative import declared_attr, declarative_base
-# from sqlalchemy import event
-# import re
-#
-# @event.listens_for(mapper, "mapper_configured")
-# def _setup_deferred_properties(mapper, class_):
-#     """Listen for finished mappers and apply DeferredProp
-#     configurations."""
-#
-#     for key, value in class_.__dict__.items():
-#         if isinstance(value, DeferredProp):
-#             value._config(class_, key)
-#
-# class DeferredProp(object):
-#     """A class attribute that generates a mapped attribute
-#     after mappers are configured."""
-#
-#     def _setup_reverse(self, key, rel, target_cls):
-#         """Setup bidirectional behavior between two relationships."""
-#
-#         reverse = self.kw.get('reverse')
-#         if reverse:
-#             reverse_attr = getattr(target_cls, reverse)
-#             if not isinstance(reverse_attr, DeferredProp):
-#                 reverse_attr.property._add_reverse_property(key)
-#                 rel._add_reverse_property(reverse)
-#
-# class FKRelationship(DeferredProp):
-#     """Generates a one to many or many to one relationship."""
-#
-#     def __init__(self, target, fk_col, **kw):
-#         self.target = target
-#         self.fk_col = fk_col
-#         self.kw = kw
-#
-#     def _config(self, cls, key):
-#         """Create a Column with ForeignKey as well as a relationship()."""
-#
-#         target_cls = cls._decl_class_registry[self.target]
-#
-#         pk_target, fk_target = self._get_pk_fk(cls, target_cls)
-#         pk_table = pk_target.__table__
-#         pk_col = list(pk_table.primary_key)[0]
-#
-#         if hasattr(fk_target, self.fk_col):
-#             fk_col = getattr(fk_target, self.fk_col)
-#         else:
-#             fk_col = Column(self.fk_col, pk_col.type, ForeignKey(pk_col))
-#             setattr(fk_target, self.fk_col, fk_col)
-#
-#         rel = relationship(target_cls,
-#                 primaryjoin=fk_col==pk_col,
-#                 collection_class=self.kw.get('collection_class', set)
-#             )
-#         setattr(cls, key, rel)
-#         self._setup_reverse(key, rel, target_cls)
-#
-# class one_to_many(FKRelationship):
-#     """Generates a one to many relationship."""
-#
-#     def _get_pk_fk(self, cls, target_cls):
-#         return cls, target_cls
-#
-# class many_to_one(FKRelationship):
-#     """Generates a many to one relationship."""
-#
-#     def _get_pk_fk(self, cls, target_cls):
-#         return target_cls, cls
-#
-# class many_to_many(DeferredProp):
-#     """Generates a many to many relationship."""
-#
-#     def __init__(self, target, tablename, local, remote, **kw):
-#         self.target = target
-#         self.tablename = tablename
-#         self.local = local
-#         self.remote = remote
-#         self.kw = kw
-#
-#     def _config(self, cls, key):
-#         """Create an association table between parent/target
-#         as well as a relationship()."""
-#
-#         target_cls = cls._decl_class_registry[self.target]
-#         local_pk = list(cls.__table__.primary_key)[0]
-#         target_pk = list(target_cls.__table__.primary_key)[0]
-#
-#         t = Table(
-#                 self.tablename,
-#                 cls.metadata,
-#                 Column(self.local, ForeignKey(local_pk), primary_key=True),
-#                 Column(self.remote, ForeignKey(target_pk), primary_key=True),
-#                 keep_existing=True
-#             )
-#         rel = relationship(target_cls,
-#                 secondary=t,
-#                 collection_class=self.kw.get('collection_class', set)
-#             )
-#         setattr(cls, key, rel)
-#         self._setup_reverse(key, rel, target_cls)
-#
-# # =====================================
-# # end of zzzeek's code for "Magic" ORM
-# # =====================================
-class ASCII(TypeDecorator):
-    '''
-    A database string type that only allows ASCII characters.
-
-    This is a data type check since all strings in the database could
-    be unicode.
-    '''
-    impl = VARCHAR
-
-    def process_bind_param(self, value, dialect):
-        '''
-        Run encode on a unicode string to make sure the string only
-        contains ASCII characterset characters. To avoid another conversion
-        pass, the original unicode value is passed to the underlying db.
-        '''
-        # run an encode on the value with ascii to see if it contains
-        # non ascii. Ignore the return value because we only want to throw
-        # an exception if the encode fails. The data can stay unicode for
-        # insertion into the db.
-        if value is not None:
-            value.encode('ascii')
-        return value
-
-    def process_result_value(self, value, dialect):
-        '''
-        Run encode on a unicode string coming out of the database to turn the
-        unicode string back into an encoded python bytestring.
-        '''
-        if isinstance(value, unicode):
-            value = value.encode('ascii')
-        return value
-
-
-class JSONEncodedDict(TypeDecorator):
-    '''
-    Represents a dictionary as a json-encoded string in the database.
-    '''
-    impl = VARCHAR
-
-    def process_bind_param(self, value, dialect):
-        '''
-        Turn a dictionary into a JSON encoded string on the way into
-        the database.
-        '''
-        if value is not None:
-            value = json.dumps(value)
-        return value
-
-    def process_result_value(self, value, dialect):
-        '''
-        Turn a JSON encoded string into a dictionary on the way out
-        of the database.
-        '''
-        if value is not None:
-            value = json.loads(value)
-        return value
-
-
-class ZipPickler(object):
-    '''Simple wrapper for pickle that auto compresses/decompresses values'''
-    def loads(self, string):
-        return pickle.loads(zlib.decompress(string))
-
-    def dumps(self, obj, protocol):
-        return zlib.compress(pickle.dumps(obj, protocol))
-
-
-class MutationDict(Mutable, dict):
-    '''
-    A dictionary that automatically emits change events for SQA
-    change tracking.
-
-    Lifted almost verbatim from the SQA docs.
-    '''
-    @classmethod
-    def coerce(cls, key, value):
-        "Convert plain dictionaries to MutationDict."
-        if not isinstance(value, MutationDict):
-            if isinstance(value, dict):
-                return MutationDict(value)
-            # this call will raise ValueError
-            return Mutable.coerce(key, value)
-        else:
-            return value
-
-    def update(self, *args, **kwargs):
-        '''
-        Updates the current dictionary with kargs or a passed in dict.
-        Calls the internal setitem for the update method to maintain
-        mutation tracking.
-        '''
-        for k, v in dict(*args, **kwargs).iteritems():
-            self[k] = v
-
-    def __setitem__(self, key, value):
-        "Detect dictionary set events and emit change events."
-        dict.__setitem__(self, key, value)
-        self.changed()
-
-    def __delitem__(self, key):
-        "Detect dictionary del events and emit change events."
-        dict.__delitem__(self, key)
-        self.changed()
-
-    def __getstate__(self):
-        '''Get state returns a plain dictionary for pickling purposes.'''
-        return dict(self)
-
-    def __setstate__(self, state):
-        '''
-        Set state assumes a plain dictionary and then re-constitutes a
-        Mutable dict.
-        '''
-        self.update(state)
-
-    def pop(self, *pargs, **kargs):
-        """
-        Wrap standard pop() to trigger self.changed()
-        """
-        try:
-            result = super(MutationDict, self).pop(*pargs, **kargs)
-        except Exception:
-            raise
-        else:
-            self.changed()
-            return result
-
-    def popitem(self, *pargs, **kargs):
-        """
-        Wrap standard popitem() to trigger self.changed()
-        """
-        try:
-            result = super(MutationDict, self).popitem(*pargs, **kargs)
-        except Exception:
-            raise
-        else:
-            self.changed()
-            return result
-
-
-class NotFound(NoResultFound):
-    '''Generic Not Found Error'''
-    pass
-
-
+# the surrogate_pk template that assures that surrogate primary keys
+# are allt he same and ordered with the pk first in the table
 surrogate_pk_template = Column(Integer, nullable=False, primary_key=True)
 
 
@@ -446,11 +180,11 @@ class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         # tableargs adds autoload to create schema reflection
         cls.__table_args__ = getattr(cls, "__table_args__", {})
 
-        if project.schema_reflection:
+        if context.config.schema_reflection:
             # create or update the __table_args__ attribute
             cls.__table_args__['autoload'] = True
-        if project.global_table_args:
-            cls.__table_args__.update(project.global_table_args)
+        if context.config.global_table_args:
+            cls.__table_args__.update(context.config.global_table_args)
 
         # check if the class has at least one primary key
         # if not, automatically generate one.
@@ -476,7 +210,7 @@ class RegistryMount(type):
             cls.registry.append(cls)
         except AttributeError:
             # this is processing the first class (the mount point)
-            cls.registry = []
+            cls.registry = context.model_registry
 
         return super(RegistryMount, cls).__init__(name, bases, attrs)
 
@@ -494,10 +228,6 @@ class Model(Base):
 
     def is_modified(self):
         '''Check if SQLAlchemy believes this instance is modified.'''
-        # TODO: Using this internal flag, is this a private internal
-        # behavior? Is there a better, public-api way of getting this info?
-        # alternatively is session.is_modified(self) although will this fail
-        # if the instance isn't part of the session?
         return instance_state(self).modified
 
     def clear_modified(self):
@@ -505,13 +235,14 @@ class Model(Base):
         Unconditionally clear all modified state from the attibutes on
         this instance.
         '''
-        # Uses this method: http://www.sqlalchemy.org/docs/orm/internals.html?highlight=commit_all#sqlalchemy.orm.state.InstanceState.commit_all
-        if int(sa_min_ver) > 7:
+        # context.db.expire(self)
+        # Uses this method: http://docs.sqlalchemy.org/en/rel_0_7/orm/internals.html?highlight=commit_all#sqlalchemy.orm.state.InstanceState.commit_all
+        if sa_maj_ver < 1 and sa_min_ver <= 7:
+            return instance_state(self).commit_all({})
+        else:
             # the methods became private in SA 8, need to check if
             # this is a problem
             return instance_state(self)._commit_all({})
-        else:
-            return instance_state(self).commit_all({})
 
     def is_persisted(self):
         '''
@@ -534,7 +265,7 @@ class Model(Base):
         for that use :py:meth:`~pybald.db.models.Model.commit`)
         '''
 
-        session.add(self)
+        context.db.add(self)
 
         if flush:
             self.flush()
@@ -549,7 +280,7 @@ class Model(Base):
         operation with a commit to emit the SQL to delete the item from
         the database and commit the transaction.
         '''
-        session.delete(self)
+        context.db.delete(self)
         if flush:
             self.flush()
         return self
@@ -563,7 +294,7 @@ class Model(Base):
         **not** commit the current transaction or close the current
         database session.
         '''
-        session.flush()
+        context.db.flush()
         return self
 
     def commit(self):
@@ -575,7 +306,7 @@ class Model(Base):
         and returns it to the connection pool. Any data operations after this
         will pull a new database session from the connection pool.
         '''
-        session.commit()
+        context.db.commit()
         return self
 
     @classmethod
@@ -608,9 +339,9 @@ class Model(Base):
         actual items from the database.
         '''
         if where:
-            return session.query(cls).filter_by(**where)
+            return context.db.query(cls).filter_by(**where)
         else:
-            return session.query(cls)
+            return context.db.query(cls)
 
     @classmethod
     def filter(cls, *pargs, **kargs):
@@ -620,7 +351,7 @@ class Model(Base):
 
         Returns a query object.
         '''
-        return session.query(cls).filter(*pargs, **kargs)
+        return context.db.query(cls).filter(*pargs, **kargs)
 
     @classmethod
     def query(cls):
@@ -628,7 +359,7 @@ class Model(Base):
         Convenience method to return a query based on the current object
         class.
         '''
-        return session.query(cls)
+        return context.db.query(cls)
 
     @classmethod
     def show_create_table(cls):
@@ -636,7 +367,7 @@ class Model(Base):
         Uses the simple dump_engine to print to stdout the SQL for this
         table.
         '''
-        cls.__table__.create(dump_engine)
+        cls.__table__.create(context.dump_engine)
 
 
 class NonDbModel(object):
