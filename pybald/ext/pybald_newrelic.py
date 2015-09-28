@@ -54,24 +54,19 @@ def wrapper_Pybald_Router_get_handler(wrapped, instance, args, kwargs):
     Monkeypatches the Router and allows us to dynamically wrap the return
     handler action on return.
     '''
-    #controller, action = wrapped(*args, **kwargs)
     action = wrapped(*args, **kwargs)
     action_name = action.__name__
 
-    controller_class = None
-    if action.__self__:
-        controller_class = action.__self__.__class__
-
-    if controller_class:
-        controller_classname = controller_class.__name__
-        #console.debug("Got controller class name: {}".format(controller_classname))
-    else:
-        controller_classname = ""
-        #console.debug("No controller classname found?")
+    # Get the classname of the containing instance (if applicable)
+    controller_classname = ""
+    if hasattr(action, '__self__'):
+        controller = action.__self__
+        if hasattr(controller, '__class__'):
+            controller_classname = controller.__class__.__name__
 
     name = "{0}:{1}".format(controller_classname, action_name)
+    #console.debug("Wrapped router action name: {}".format(name))
     action = handler_wrapper(name)(action)
-    #console.debug("returning action {} -> {}".format(name, action))
     return action
 
 
