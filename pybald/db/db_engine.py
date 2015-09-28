@@ -8,12 +8,17 @@ from sqlalchemy.orm import (
     sessionmaker
     )
 
+from sqlalchemy.schema import MetaData
+
 import logging
 log = logging.getLogger(__name__)
 
 def create_engine():
     return sa.create_engine(context.config.database_engine_uri,
                                   **context.config.database_engine_args)
+
+def create_metadata(engine=None):
+    return MetaData(bind=engine)
 
 
 def create_dump_engine():

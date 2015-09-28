@@ -109,11 +109,7 @@ class AppContext(Proxy):
         try:
             return self.__dict__['___stack__'][-1]
         except IndexError:
-            raise RuntimeError("No Pybald application is configured.\n"
-                "First make sure a pybald application has been created"
-                " and configured before using objects like Controllers"
-                " or Models. This is usually the result of attempting to"
-                " run a pybald application before running pybald.configure().")
+            return None
 
     def __getattr__(self, attr):
         '''For all attributes of the wrapped object, return an AttributeProxy.

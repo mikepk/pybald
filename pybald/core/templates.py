@@ -69,6 +69,10 @@ class TemplateEngine(object):
                                      filesystem_checks=fs_test,
                                      default_filters=self.default_filters)
 
+    def partial(self, template_name=None, format="html", **kargs):
+        mytemplate = self._get_template(template_name, format=format)
+        return mytemplate.render_unicode(**kargs)
+
     def form_render(self, template_name=None, format="form", **kargs):
         '''
         Render the form for a specific model using formalchemy.
@@ -78,16 +82,11 @@ class TemplateEngine(object):
         :param kargs: the data to render in the context of the form
                         template
         '''
-        data = kargs
         try:
             template_id = kargs['fieldset'].template_id
         except (KeyError, AttributeError):
             template_id = 'forms/{0}'.format(template_name)
-
-        mytemplate = self._get_template(template_id, format)
-        # We use the render_unicode to return a native unicode
-        # string for inclusion in another Mako template
-        return mytemplate.render_unicode(**data)
+        return self.partial(template_id, format, **kargs)
 
     def _get_template(self, template, format="html"):
         '''

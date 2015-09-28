@@ -147,7 +147,7 @@ from sqlalchemy.ext.declarative import declarative_base
 # allows the classes to be defined via schema reflection as well as allow
 # MODEL.__table__.create() type methods to work without passing in an explicit
 # engine. Thinking if there's a way to pass an attribute proxy here instead.
-Base = declarative_base(bind=context.engine)
+Base = declarative_base(bind=context.engine) #, metadata=context.metadata)
 
 # the surrogate_pk template that assures that surrogate primary keys
 # are allt he same and ordered with the pk first in the table
