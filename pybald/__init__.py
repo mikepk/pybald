@@ -33,18 +33,26 @@ def build_config(root_path='.', filename='project.py'):
 
 class Unconfigured(object):
     def __getattr__(self, key):
-        raise RuntimeError("Pybald is not configured")
+        raise RuntimeError("Pybald is not configured, you must run "
+            "pybald.configure() before context.{0} can be used".format(key))
 
 
 class DefaultApp(dict):
     def __init__(self, *pargs, **kargs):
         self.register('config', {})
-        self.register('engine', Unconfigured())
-        self.register('metadata', Unconfigured())
+        # self.register('models', Unconfigured())
+        # self.register('engine', Unconfigured())
         self.register('controller_registry', [])
-        self.register('model_registry', [])
+        # self.register('model_registry', [])
         self.default = True
         super(DefaultApp, self).__init__(*pargs, **kargs)
+
+    def __getattr__(self, key):
+        if key in ('models', 'engine', 'metdata'):
+            raise RuntimeError("Pybald is not configured, you must run "
+            "pybald.configure() before context.{0} can be used".format(key))
+        else:
+            return super(DefaultApp, self).__getattr__(key)
 
     def register(self, key, value):
         self[key] = value
@@ -65,19 +73,11 @@ context_template = '''
 from pybald.core.templates import TemplateEngine
 from pybald.db.db_engine import create_session, create_engine, create_metadata, create_dump_engine
 from pybald.util.command_line import start
-
-class MockEngine(object):
-    def __getattr__(self, key):
-        raise RuntimeError("Pybald is not configured")
+from pybald.core.models import ContextBoundModels
 
 render = TemplateEngine()
 dump_engine = create_dump_engine()
-try:
-    engine = create_engine()
-except Exception:
-    engine = MockEngine()
-db = create_session(engine=engine)
-# metadata = create_metadata(engine=engine)
+models = ContextBoundModels()
 
 def register(key, value):
     globals()[key] = value
@@ -132,7 +132,7 @@ def configure(name=None, config_file=None, config_object=None):
         new_context.__dict__.update(placeholder)
     else:
         new_context.__dict__['controller_registry'] = []
-        new_context.__dict__['model_registry'] = []
+        # new_context.__dict__['model_registry'] = []
     # always set the runtime config
     new_context.__dict__['path'] = root_path
     new_context.__dict__['config'] = config
@@ -144,7 +144,3 @@ def configure(name=None, config_file=None, config_object=None):
     exec(compile(context_template, '<string>', 'exec'), new_context.__dict__)
     return new_context
 
-# aliases for convenience
-# from pybald.core.controllers import Controller, action
-# from pybald.core.router import Router
-# from pybald.core.logs import default_debug_log as debug_log

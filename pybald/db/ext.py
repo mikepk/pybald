@@ -149,3 +149,5 @@ class MutationDict(Mutable, dict):
         else:
             self.changed()
             return result
+
+__all__ = ['ASCII', 'JSONEncodedDict', 'ZipPickler', 'MutationDict']
