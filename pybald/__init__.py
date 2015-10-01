@@ -71,13 +71,18 @@ context._push(DefaultApp())
 # the template engine and database session are built at config time
 context_template = '''
 from pybald.core.templates import TemplateEngine
-from pybald.db.db_engine import create_session, create_engine, create_metadata, create_dump_engine
 from pybald.util.command_line import start
 from pybald.core.models import ContextBoundModels
+from pybald.db.db_engine import create_dump_engine
 
 render = TemplateEngine()
 dump_engine = create_dump_engine()
-models = ContextBoundModels()
+if config.database_engine_uri:
+    models = ContextBoundModels()
+    db = models.db
+else:
+    models = Unconfigured()
+    db = Unconfigured()
 
 def register(key, value):
     globals()[key] = value
@@ -138,6 +143,7 @@ def configure(name=None, config_file=None, config_object=None):
     new_context.__dict__['config'] = config
     new_context.__dict__['name'] = name
     new_context.__dict__['__file__'] = None
+    new_context.__dict__['Unconfigured'] = Unconfigured
     # new_context.__dict__['__path__'] = None
     # now execute the app context with this config
     context._push(new_context)

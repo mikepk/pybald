@@ -105,6 +105,14 @@ class AppContext(Proxy):
     def _pop(self):
         return self.__dict__['___stack__'].pop()
 
+    def _reset(self):
+        '''Clear out any accumulated contexts.
+
+        This method is dangerous and useful mainly for testing.
+        '''
+        self.__dict__['___stack__'] = []
+        return None
+
     def _proxied(self):
         try:
             return self.__dict__['___stack__'][-1]

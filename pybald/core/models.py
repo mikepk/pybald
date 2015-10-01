@@ -248,11 +248,11 @@ class ContextBoundModels(object):
         else:
             self.config = context.config
         _include_sqlalchemy(self)
-        engine = self.create_engine(self.config.database_engine_uri,
+        self.engine = self.create_engine(self.config.database_engine_uri,
                                   **self.config.database_engine_args)
-        db = self.create_session(engine=engine)
-        self.Base = declarative_base(bind=engine)
-        self.Model = make_model_class(self.Base, db)
+        self.db = self.create_session(engine=self.engine)
+        self.Base = declarative_base(bind=self.engine)
+        self.Model = make_model_class(self.Base, self.db)
 
     def create_session(self, engine=None, session_args=None):
         # build session

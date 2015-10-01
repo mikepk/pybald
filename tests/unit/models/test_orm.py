@@ -3,15 +3,23 @@ import unittest
 
 class TestOrm(unittest.TestCase):
     def setUp(self):
+        from pybald import context
+        context._reset()
         import pybald
-        context = pybald.configure(config_file="tests/sample_project/project.py")
-        from tests.sample_project.sample import app
-        from pybald.db.models import Model
-        Model.metadata.create_all()
+        context = pybald.configure(config_object=dict(database_engine_uri='sqlite:///:memory:'))
+
+    def tearDown(self):
+        from pybald import context
+        context._reset()
 
     def test_model_save(self):
         "Save a model"
-        from tests.sample_project.sample import SampleModel
+        from pybald.db import models
+
+        class SampleModel(models.Model):
+            text = models.Column(models.Text)
+
+        models.Model.metadata.create_all()
         test_model = SampleModel(text="This is just the first test")
         try:
             test_model.save().commit()
@@ -20,7 +28,12 @@ class TestOrm(unittest.TestCase):
 
     def test_model_save_load(self):
         "Read back a model after saving it"
-        from tests.sample_project.sample import SampleModel
+        from pybald.db import models
+
+        class SampleModel(models.Model):
+            text = models.Column(models.Text)
+
+        models.Model.metadata.create_all()
         test_model = SampleModel(text="This is just a test")
         test_model.save().commit()
         test_model_read = SampleModel.get(id=1)

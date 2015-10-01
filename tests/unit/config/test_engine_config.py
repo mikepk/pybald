@@ -6,10 +6,10 @@ class TestEngine(unittest.TestCase):
 
     def test_unconfigured_engine(self):
         "Raise an exception when the db engine is not configured"
-        from pybald.context import engine
         try:
-            engine.execute("SELECT 1234")
-        except RuntimeError:
+            from pybald.context import models
+            models.engine.execute("SELECT 1234")
+        except RuntimeError as err:
             pass
         else:
             self.fail('Runtime exception not thrown')

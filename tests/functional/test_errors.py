@@ -1,5 +1,4 @@
 import unittest
-from mako.template import Template
 from webob import Request
 import re
 
@@ -9,13 +8,18 @@ STACK_TRACE = re.compile(r'''500 Internal Server Error\nContent-Type: text/html;
 
 class TestErrors(unittest.TestCase):
     def setUp(self):
+        from pybald import context
+        context._reset()
         import pybald
         context = pybald.configure(config_file="tests/sample_project/project.py")
         from tests.sample_project.sample import app
 
+    def tearDown(self):
+        from pybald import context
+        context._reset()
+
     def test_stack_trace(self):
         "When in debug mode, throw an Exception and generate a stack trace"
-        from pybald.context import config
         from tests.sample_project.sample import app
         try:
             resp = Request.blank('/throw_exception').get_response(app)
