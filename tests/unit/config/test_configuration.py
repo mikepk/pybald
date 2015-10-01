@@ -1,9 +1,13 @@
 import unittest
 import pybald
+from pybald import context
 
 class TestConfig(unittest.TestCase):
     def setUp(self):
         pass
+
+    def tearDown(self):
+        context._reset()
 
     def test_default_config(self):
         "Start without a config, a default configuration is used"

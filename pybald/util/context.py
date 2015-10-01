@@ -98,8 +98,11 @@ class AppContext(Proxy):
         self.__dict__['___threadlocal__'] = local()
         self.__dict__['___threadlocal__'].stack = []
         self.__dict__['___stack__'] = self.__dict__['___threadlocal__'].stack
+        self.__dict__['default'] = None
 
     def _push(self, obj):
+        if not self.__dict__['default']:
+            self.__dict__['default'] = obj
         self.__dict__['___stack__'].append(obj)
 
     def _pop(self):
@@ -110,7 +113,7 @@ class AppContext(Proxy):
 
         This method is dangerous and useful mainly for testing.
         '''
-        self.__dict__['___stack__'] = []
+        self.__dict__['___stack__'] = [self.__dict__['default']]
         return None
 
     def _proxied(self):

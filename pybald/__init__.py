@@ -132,12 +132,10 @@ def configure(name=None, config_file=None, config_object=None):
     # new_app.__file__ = "<string>"
     if context._proxied() and hasattr(context._proxied(), 'default'):
         # if we're at the root, consume any placeholder values
-        # placeholder = context._proxied()
         placeholder = context._pop()
         new_context.__dict__.update(placeholder)
     else:
         new_context.__dict__['controller_registry'] = []
-        # new_context.__dict__['model_registry'] = []
     # always set the runtime config
     new_context.__dict__['path'] = root_path
     new_context.__dict__['config'] = config
