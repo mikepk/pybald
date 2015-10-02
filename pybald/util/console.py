@@ -72,8 +72,7 @@ def start_console(app, options=None):
     from pybald.db import models
     # now the models registry is loaded and the additional_symbols
     # added so models are available in the console
-    from pybald.db.models import Model
-    symbols = dict([(model.__name__, model) for model in Model.registry])
+    symbols = dict([(model.__name__, model) for model in models.Model.registry])
     symbols['models'] = models
     symbols['db'] = pybald.context.db
     # create a pybald console around it
