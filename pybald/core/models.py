@@ -235,9 +235,18 @@ def make_model_class(Base, db):
             '''
             cls.__table__.create(context.dump_engine)
 
-    return Model
 
+    class NonDbModel(with_metaclass(RegistryMount, object)):
+        '''
+        A plain Python object that uses the RegistryMount system to register
+        non database models. Inheriting from this allows the object to be registered
+        as a Model.
+        '''
+        # __metaclass__ = RegistryMount
+        # use the same registry space for NonDbModels
+        registry = Model.registry
 
+    return Model, NonDbModel
 
 
 class ContextBoundModels(object):
@@ -252,7 +261,8 @@ class ContextBoundModels(object):
                                   **self.config.database_engine_args)
         self.db = self.create_session(engine=self.engine)
         self.Base = declarative_base(bind=self.engine)
-        self.Model = make_model_class(self.Base, self.db)
+        self.Model, self.NonDbModel = make_model_class(self.Base, self.db)
+
 
     def create_session(self, engine=None, session_args=None):
         # build session

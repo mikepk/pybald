@@ -14,6 +14,12 @@ from pybald.core.helpers import HTMLLiteral
 
 # from pybald.db import models
 
+class MockParams(dict):
+    def getlist(self, key):
+        return [self[key]]
+
+    def __repr__(self):
+        return type(self).__name__ + '(' + dict.__repr__(self) + ')'
 
 
 class Form(WTForm):
