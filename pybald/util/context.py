@@ -98,14 +98,17 @@ class AppContext(Proxy):
         self.__dict__['___threadlocal__'] = local()
         self.__dict__['___threadlocal__'].stack = []
         self.__dict__['___stack__'] = self.__dict__['___threadlocal__'].stack
-        self.__dict__['default'] = None
+        self.__dict__['_default'] = None
 
     def _push(self, obj):
-        if not self.__dict__['default']:
-            self.__dict__['default'] = obj
+        '''Push an application context onto the stack. The first one pushed
+        will be designated the default context for a reset'''
+        if not self.__dict__['_default']:
+            self.__dict__['_default'] = obj
         self.__dict__['___stack__'].append(obj)
 
     def _pop(self):
+        '''Pop an application context off of the stack and return it'''
         return self.__dict__['___stack__'].pop()
 
     def _reset(self):
@@ -113,10 +116,11 @@ class AppContext(Proxy):
 
         This method is dangerous and useful mainly for testing.
         '''
-        self.__dict__['___stack__'] = [self.__dict__['default']]
+        self.__dict__['___stack__'] = [self.__dict__['_default']]
         return None
 
     def _proxied(self):
+        '''Return the actual object proxied by this app context'''
         try:
             return self.__dict__['___stack__'][-1]
         except IndexError:

@@ -44,7 +44,7 @@ class DefaultApp(dict):
         # self.register('engine', Unconfigured())
         self.register('controller_registry', [])
         # self.register('model_registry', [])
-        self.default = True
+        self.unconfigured = True
         super(DefaultApp, self).__init__(*pargs, **kargs)
 
     def __getattr__(self, key):
@@ -128,9 +128,8 @@ def configure(name=None, config_file=None, config_object=None):
             log.warning("No config file, using default pybald configuration")
 
     new_context = imp.new_module("context")
-    # new_app._MODULE_SOURCE_CODE = app_template
-    # new_app.__file__ = "<string>"
-    if context._proxied() and hasattr(context._proxied(), 'default'):
+
+    if context._proxied() and hasattr(context._proxied(), 'unconfigured'):
         # if we're at the root, consume any placeholder values
         placeholder = context._pop()
         new_context.__dict__.update(placeholder)
