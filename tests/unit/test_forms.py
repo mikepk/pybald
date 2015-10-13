@@ -1,5 +1,6 @@
 import unittest
 import pybald
+from pybald import context
 from pybald.core.forms import validators
 from pybald.core.forms import MockParams
 expected_sample_fieldset = u'''<div>
@@ -25,11 +26,9 @@ database_engine_uri='sqlite:///:memory:')
 
 class TestForms(unittest.TestCase):
     def setUp(self):
-        import pybald
-        context = pybald.configure(config_object=test_config)
+        pybald.configure(config_object=test_config)
 
     def tearDown(self):
-        from pybald import context
         context._reset()
 
     def test_create_fieldset(self):

@@ -1,15 +1,13 @@
 import unittest
-
+import pybald
+from pybald import context
 
 class TestOrm(unittest.TestCase):
     def setUp(self):
-        from pybald import context
         context._reset()
-        import pybald
-        context = pybald.configure(config_object=dict(database_engine_uri='sqlite:///:memory:'))
+        pybald.configure(config_object=dict(database_engine_uri='sqlite:///:memory:'))
 
     def tearDown(self):
-        from pybald import context
         context._reset()
 
     def test_model_save(self):

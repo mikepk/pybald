@@ -95,30 +95,26 @@ def configure(name=None, config_file=None, config_object=None):
     Generate a dynamic context module that's pushed / popped on
     the application context stack.
     '''
-    if name is None and config_file is None and config_object is None:
-        log.warning("Warning: Using current path for the config file")
-    mod = sys.modules.get(name)
-    # if mod is not None and hasattr(mod, '__file__'):
-    try:
-        root_path = os.path.dirname(os.path.abspath(mod.__file__))
-    except AttributeError:
-        root_path = os.getcwd()
-
-    if root_path not in sys.path:
-        sys.path.insert(1, root_path)
-
     if config_object:
         # create a named tuple that's the combo of default plus input dict
         keys = set(default_config.keys()) | set(config_object.keys())
         ConfigObject = namedtuple("ConfigObject", keys)
         config = ConfigObject(**dict(list(default_config.items()) + list(config_object.items())))
+        root_path = config.path or os.getcwd()
     elif config_file:
+        # possible root path if relative filename specified
+        possible_root_path = os.getcwd()
+        root_path, filename = os.path.split(os.path.join(possible_root_path, config_file))
         try:
-            config = build_config(root_path=root_path, filename=config_file)
+            config = build_config(root_path=root_path, filename=filename)
         except IOError:
             log.exception("Config Error:\nFile Error or File not found\n{0}".format(config_file))
             sys.exit(1)
+        else:
+            root_path = config.path or root_path
     else:
+        log.warning("Warning: Using current path for the config file")
+        root_path = os.getcwd()
         try:
             config = build_config(root_path=root_path, filename='project.py')
             log.warning("Found project.py in default path, using for the config file")
@@ -126,6 +122,11 @@ def configure(name=None, config_file=None, config_object=None):
             ConfigObject = namedtuple("ConfigObject", default_config.keys())
             config = ConfigObject(**default_config)
             log.warning("No config file, using default pybald configuration")
+
+    # if the discovered root_path is not in sys.path, add it in the least ugly
+    # way possible
+    if root_path not in sys.path:
+        sys.path.insert(1, root_path)
 
     new_context = imp.new_module("context")
 

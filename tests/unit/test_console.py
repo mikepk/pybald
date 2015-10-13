@@ -1,6 +1,8 @@
 import unittest
 import pybald
+from pybald import context
 from pybald.util.console import Console
+
 
 test_config = dict(env_name="ConsoleTest",
 config_object=True,
@@ -14,11 +16,9 @@ database_engine_uri='')
 
 class TestConsole(unittest.TestCase):
     def setUp(self):
-        import pybald
-        context = pybald.configure(config_object=test_config)
+        pybald.configure(config_object=test_config)
 
     def tearDown(self):
-        from pybald import context
         context._reset()
 
     def test_create_console(self):

@@ -44,7 +44,7 @@ class TestErrors(unittest.TestCase):
 
     def test_stack_trace(self):
         "When in debug mode, throw an Exception and generate a stack trace"
-        context = pybald.configure(config_object=test_conf)
+        pybald.configure(config_object=test_conf)
         app = Router(routes=map, controllers=[SampleController])
         app = ErrorMiddleware(app)
 
@@ -59,7 +59,7 @@ class TestErrors(unittest.TestCase):
         "When *NOT* in debug mode, throw an Exception and return a generic error"
         test_w_debug_conf = test_conf.copy()
         test_w_debug_conf.update(dict(debug=False))
-        context = pybald.configure(config_object=test_w_debug_conf)
+        pybald.configure(config_object=test_w_debug_conf)
         app = Router(routes=map, controllers=[SampleController])
         app = ErrorMiddleware(app)
         try:
@@ -73,8 +73,7 @@ class TestErrors(unittest.TestCase):
 
     def test_404(self):
         "Return a 404 response"
-        # from pybald import context
-        context = pybald.configure(config_object=test_conf)
+        pybald.configure(config_object=test_conf)
         app = Router(routes=map, controllers=[SampleController])
         app = ErrorMiddleware(app)
         try:

@@ -3,12 +3,16 @@
 import unittest
 from mako.template import Template
 from pybald.util import text
+import pybald
 
 class TestTemplate(unittest.TestCase):
     def setUp(self):
-        import pybald
         context = pybald.configure(config_file="tests/sample_project/project.py")
-        from tests.sample_project.sample import app
+        # from tests.sample_project.sample import app
+
+    def tearDown(self):
+        from pybald import context
+        context._reset()
 
     def test_pluralize(self):
         '''Pluralize some words'''
