@@ -155,7 +155,8 @@ def configure(name=None, config_file=None, config_object=None):
 
     if config_object:
         # create a named tuple that's the combo of default plus input dict
-        root_path = config_object['path'] = config_object['path'] or os.getcwd()
+        root_path = config_object['path'] = config_object.get('path',
+                                                              os.getcwd())
         config = create_config_object(config_object)
         # add root path to config?
     elif config_file:
