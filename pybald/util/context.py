@@ -119,6 +119,10 @@ class AppContext(Proxy):
         self.__dict__['___stack__'] = [self.__dict__['_default']]
         return None
 
+    def _depth(self):
+        '''Return the current depth of the application context stack'''
+        return len(self.__dict__['__stack__'])
+
     def _proxied(self):
         '''Return the actual object proxied by this app context'''
         try:

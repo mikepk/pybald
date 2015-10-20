@@ -4,14 +4,15 @@ import unittest
 from mako.template import Template
 from pybald.util import text
 import pybald
+from pybald import context
+
 
 class TestTemplate(unittest.TestCase):
     def setUp(self):
-        context = pybald.configure(config_file="tests/sample_project/project.py")
+        pybald.configure(config_file="tests/sample_project/project.py")
         # from tests.sample_project.sample import app
 
     def tearDown(self):
-        from pybald import context
         context._reset()
 
     def test_pluralize(self):

@@ -8,7 +8,7 @@ class TestRegistries(unittest.TestCase):
     def setUp(self):
         config_obj = dict(env_name="TestFromObject",
                           database_engine_uri='sqlite:///:memory:')
-        context = pybald.configure(config_object=config_obj)
+        pybald.configure(config_object=config_obj)
 
     def tearDown(self):
         context._reset()

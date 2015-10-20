@@ -22,11 +22,13 @@ from pybald.db import ext
 surrogate_pk_template = sqlalchemy.Column(sqlalchemy.Integer, nullable=False,
                                           primary_key=True)
 
+
 def _include_sqlalchemy(obj):
     for module in sqlalchemy, sqlalchemy.orm, ext:
         for key in module.__all__:
             if not hasattr(obj, key):
                 setattr(obj, key, getattr(module, key))
+
 
 def make_model_class(Base, db):
     '''Create a series of classes for models that are bound to a context.'''
@@ -131,7 +133,7 @@ def make_model_class(Base, db):
             for that use :py:meth:`~pybald.db.models.Model.commit`)
             '''
 
-            db.add(self)
+            context.db.add(self)
 
             if flush:
                 self.flush()
@@ -146,7 +148,7 @@ def make_model_class(Base, db):
             operation with a commit to emit the SQL to delete the item from
             the database and commit the transaction.
             '''
-            db.delete(self)
+            context.db.delete(self)
             if flush:
                 self.flush()
             return self
@@ -160,7 +162,7 @@ def make_model_class(Base, db):
             **not** commit the current transaction or close the current
             database session.
             '''
-            db.flush()
+            context.db.flush()
             return self
 
         def commit(self):
@@ -172,7 +174,7 @@ def make_model_class(Base, db):
             and returns it to the connection pool. Any data operations after this
             will pull a new database session from the connection pool.
             '''
-            db.commit()
+            context.db.commit()
             return self
 
         @classmethod
@@ -205,9 +207,9 @@ def make_model_class(Base, db):
             actual items from the database.
             '''
             if where:
-                return db.query(cls).filter_by(**where)
+                return context.db.query(cls).filter_by(**where)
             else:
-                return db.query(cls)
+                return context.db.query(cls)
 
         @classmethod
         def filter(cls, *pargs, **kargs):
@@ -217,7 +219,7 @@ def make_model_class(Base, db):
 
             Returns a query object.
             '''
-            return db.query(cls).filter(*pargs, **kargs)
+            return context.db.query(cls).filter(*pargs, **kargs)
 
         @classmethod
         def query(cls):
@@ -225,7 +227,7 @@ def make_model_class(Base, db):
             Convenience method to return a query based on the current object
             class.
             '''
-            return db.query(cls)
+            return context.db.query(cls)
 
         @classmethod
         def show_create_table(cls):

@@ -5,7 +5,8 @@
 Pybald
 ======
 
-An MVC-like framework using many best-of-breed components (i.e. webob, sqlalchemy).
+An MVC-like framework using many best-of-breed components (i.e. webob,
+sqlalchemy).
 
 (c) 2015 Michael Kowalchik
 MIT License, see LICENSE file
@@ -22,26 +23,32 @@ log = logging.getLogger(__name__)
 __version__ = '0.4.0-dev'
 
 
-def build_config(root_path='.', filename='project.py'):
+def read_config_module(root_path='.', filename='project.py'):
+    '''Read a configuration module and append it's path to sys.path'''
+    # since the config module may have relative imports
+    # add the _config files_ path to root before executing the config
+    if root_path not in sys.path:
+        sys.path.insert(1, root_path)
     filename = os.path.join(root_path, filename)
     config_module = imp.new_module("config")
-    config_module.__dict__.update(default_config)
+    config_module.__dict__['__file__'] = filename
+    config_module.__dict__['path'] = root_path
     with open(filename) as config_file:
-        exec(compile(config_file.read(), filename, 'exec'), config_module.__dict__)
+        exec(compile(config_file.read(), filename, 'exec'),
+             config_module.__dict__)
     return config_module
 
 
 class Unconfigured(object):
     def __getattr__(self, key):
         raise RuntimeError("Pybald is not configured, you must run "
-            "pybald.configure() before context.{0} can be used".format(key))
+                           "pybald.configure() before context.{0} can"
+                           " be used".format(key))
 
 
 class DefaultApp(dict):
     def __init__(self, *pargs, **kargs):
         self.register('config', {})
-        # self.register('models', Unconfigured())
-        # self.register('engine', Unconfigured())
         self.register('controller_registry', [])
         # self.register('model_registry', [])
         self.unconfigured = True
@@ -50,7 +57,8 @@ class DefaultApp(dict):
     def __getattr__(self, key):
         if key in ('models', 'engine', 'metdata'):
             raise RuntimeError("Pybald is not configured, you must run "
-            "pybald.configure() before context.{0} can be used".format(key))
+                               "pybald.configure() before context.{0} can"
+                               " be used".format(key))
         else:
             return super(DefaultApp, self).__getattr__(key)
 
@@ -90,38 +98,96 @@ def register(key, value):
 '''
 
 
+def create_config_dict_from_module(module):
+    '''Converts a module into a dictionary filtering out common module
+    level attributes'''
+    return {key: getattr(module, key) for key in module.__dict__.keys() if
+            not key.startswith('_') and key not in ('sys', 'os')}
+
+
+def create_config_object(config_object):
+    '''Convert a config dictionary to a config object named tuple
+    and combines it with the default configuration dictionary.'''
+    keys = set(default_config.keys()) | set(config_object.keys())
+    ConfigObject = namedtuple("ConfigObject", keys)
+    return ConfigObject(**dict(list(default_config.items()) +
+                               list(config_object.items())))
+
+
+def bootstrap(bootstrap_file=None):
+    '''Execute the python file passed in. It's assumed that the bootstrap
+    python module file will execute configure() before returning although
+    not strictly necessary
+
+    This is intended for complicated projects that need to do a lot of
+    dynamic stuff before configuring the project. It's primarily a convenience
+    hook that sets the sys.path to the current working directory before
+    executing the module import.
+
+    Use of this method should be rare, ask yourself if you really need it :)
+    '''
+    # since bootstrap can be anywhere, add bootstrap to sys.path as well
+    if os.getcwd() not in sys.path:
+        sys.path.insert(1, os.getcwd())
+    possible_root_path = os.getcwd()
+    root_path, filename = os.path.split(os.path.join(possible_root_path,
+                                                     bootstrap_file))
+    if root_path not in sys.path:
+        sys.path.insert(1, root_path)
+    filename = os.path.join(root_path, filename)
+    bootstrap_module = imp.new_module("bootstrap")
+    bootstrap_module.__dict__['__file__'] = filename
+    with open(filename) as bootstrap_file:
+        exec(compile(bootstrap_file.read(), filename, 'exec'),
+             bootstrap_module.__dict__)
+    return bootstrap_module
+
+
 def configure(name=None, config_file=None, config_object=None):
     '''
     Generate a dynamic context module that's pushed / popped on
     the application context stack.
     '''
+    # always add current working directory to the path regardless
+    # was trying to avoid this but too much path munging happening
+    if os.getcwd() not in sys.path:
+        sys.path.insert(1, os.getcwd())
+
     if config_object:
         # create a named tuple that's the combo of default plus input dict
-        keys = set(default_config.keys()) | set(config_object.keys())
-        ConfigObject = namedtuple("ConfigObject", keys)
-        config = ConfigObject(**dict(list(default_config.items()) + list(config_object.items())))
-        root_path = config.path or os.getcwd()
+        root_path = config_object['path'] = config_object['path'] or os.getcwd()
+        config = create_config_object(config_object)
+        # add root path to config?
     elif config_file:
         # possible root path if relative filename specified
         possible_root_path = os.getcwd()
-        root_path, filename = os.path.split(os.path.join(possible_root_path, config_file))
+        root_path, filename = os.path.split(os.path.join(possible_root_path,
+                                                         config_file))
         try:
-            config = build_config(root_path=root_path, filename=filename)
+            config_module = read_config_module(root_path=root_path,
+                                               filename=filename)
         except IOError:
-            log.exception("Config Error:\nFile Error or File not found\n{0}".format(config_file))
+            log.exception("Config Error:\n"
+                          "File Error or File not "
+                          "found\n{0}".format(config_file))
             sys.exit(1)
-        else:
-            root_path = config.path or root_path
+        config = create_config_object(create_config_dict_from_module(config_module))
     else:
-        log.warning("Warning: Using current path for the config file")
         root_path = os.getcwd()
+        log.warning("Warning: Using current path for the config "
+                    "file {0}".format(root_path))
+        if root_path not in sys.path:
+            sys.path.insert(1, root_path)
         try:
-            config = build_config(root_path=root_path, filename='project.py')
-            log.warning("Found project.py in default path, using for the config file")
+            config_module = read_config_module(root_path=root_path,
+                                               filename='project.py')
+            log.warning("Found project.py in default path, "
+                        "using for the config file")
         except IOError:
-            ConfigObject = namedtuple("ConfigObject", default_config.keys())
-            config = ConfigObject(**default_config)
+            config = create_config_object(default_config)
             log.warning("No config file, using default pybald configuration")
+        else:
+            config = create_config_object(create_config_dict_from_module(config_module))
 
     # if the discovered root_path is not in sys.path, add it in the least ugly
     # way possible
@@ -147,4 +213,3 @@ def configure(name=None, config_file=None, config_object=None):
     context._push(new_context)
     exec(compile(context_template, '<string>', 'exec'), new_context.__dict__)
     return new_context
-
