@@ -56,7 +56,8 @@ class Console(code.InteractiveConsole):
         readline.write_history_file(histfile)
 
     def run(self):
-        # Fire up the console with the project, controllers, and models defined.
+        '''Start the console with the project, controllers,
+        and models defined in the console's namespace.'''
         self.interact('''Welcome to the pybald interactive console\n'''
                       ''' ** project: {0} **'''.format(self.project_name))
 
@@ -64,7 +65,10 @@ class Console(code.InteractiveConsole):
 def start_console(app, options=None):
     '''Start a console with a particular app.
 
-    :app: A wsgi application.
+    :param app: wsgi application passed in
+    :param options: an object or named tuple containing the options for the
+                    web server such as host and port. Generally an argparser
+                    object is passed in for command line invokation
 
     A pybald application must be configured before starting a console.
     '''
@@ -72,10 +76,17 @@ def start_console(app, options=None):
     from pybald.db import models
     # now the models registry is loaded and the additional_symbols
     # added so models are available in the console
-    symbols = dict([(model.__name__, model) for model in models.Model.registry])
-    symbols['models'] = models
-    symbols['db'] = pybald.context.db
+    # if no models are configured, return empty symbols
+    try:
+        symbols = dict([(model.__name__, model) for model in
+                        models.Model.registry])
+    except RuntimeError:
+        symbols = {}
+    else:
+        symbols['models'] = models
+        symbols['db'] = pybald.context.db
     # create a pybald console around it
-    console = Console(project_name=pybald.context.config.project_name or pybald.context.name,
-                      app=app, additional_symbols=symbols)
+    console = Console(project_name=pybald.context.config.project_name or
+                      pybald.context.name, app=app,
+                      additional_symbols=symbols)
     console.run()

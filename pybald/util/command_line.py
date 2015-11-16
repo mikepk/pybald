@@ -1,9 +1,17 @@
 import argparse
 from pybald.util.console import start_console
 from pybald.util.dev_server import start_dev_server
+
+
 def start(app):
+    '''Read the command line arguments passed in and start either the
+    console or the development server.
+
+    usage: [-h] {console,serve}
+    '''
     parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(help='sub-command help', dest="subcommand")
+    subparsers = parser.add_subparsers(help='sub-command help',
+                                       dest="subcommand")
     subparsers.required = True
     parser_console = subparsers.add_parser('console', help='console help')
     parser_console.set_defaults(run=start_console)
