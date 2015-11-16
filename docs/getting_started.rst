@@ -18,19 +18,41 @@ It's recommended that you use ``virtualenv`` to allow you to isolate experimenti
       Downloading pybald-0.2.0.tar.gz
       Running setup.py egg_info for package pybald
      [...]
-      Successfully installed pybald Routes FormAlchemy SqlAlchemy
-      WebOb Eventlet Spawning Mako python-memcached Tempita WebHelpers 
-      greenlet MarkupSafe
+    Successfully installed Mako-1.0.1 MarkupSafe-0.23 PyExecJS-1.1.0 PyReact-0.5.2 SQLAlchemy-1.0.8 WTForms-2.0.2 WebOb-1.4.1 alembic-0.7.7 cssmin-0.2.0 lxml-3.4.4 pybald pybald-routes-2.11 repoze.lru-0.6 rjsmin-1.0.10 six-1.9.0 webassets-0.10.1
       Cleaning up...
-    (pyb_test)~$ sudo cp -R pyb_test/src/pybald/pybald/project_template/ ./test_project
-    (pyb_test)~$ cd test_project
-    (pyb_test)~/test_project$ python project.py
+    (pyb_test)~$ python sample.py console
 
 
 Running your first Pybald Application
 -------------------------------------
 
-The command ``python project.py`` starts the pybald :ref:`console <console>` for this project. The console is a standard python console but also initializes your project, loads the application code, and allows you to interact with your application in various ways including simulating requests, exploring models, prototyping new functionality and other tasks.
+First copy the following code and save it as a file, say ``sample.py``. Don't choose 'pybald.py' since it will conflict with the pybald library name.
+
+.. code-block:: python
+
+    import pybald
+    from pybald import context
+    from pybald.core.controllers import Controller, action
+    from pybald.core.router import Router
+
+    # configure our pybald application
+    pybald.configure()
+
+    def map(urls):
+        urls.connect('home', r'/', controller='home')
+
+    class HomeController(Controller):
+        @action
+        def index(self, req):
+            return "Hello!"
+
+    app = Router(routes=map, controllers=[HomeController])
+
+    if __name__ == "__main__":
+        context.start(app)
+
+
+To start the application from the command line type ``python sample.py console`` which starts the pybald :ref:`console <console>` for this project. The pybald console is a standard python REPL but also initializes your project, loads the application code, and allows you to interact with your application in various ways including simulating requests, exploring models, prototyping new functionality and other tasks. It's important to note that the application is the *same* application that runs when connected to the web server.
 
 .. code-block:: pycon
 
