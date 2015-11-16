@@ -304,13 +304,9 @@ class Controller(with_metaclass(RegistryMount, object)):
     def _JSON(self, data, status=200):
         '''Return JSON object with the proper-ish headers.'''
         res = Response(body=json.dumps(data),
-            status=status,
-            # wonky Cache-Control headers to stop IE6 from caching content
-            cache_control="max-age=0,no-cache,no-store,post-check=0,pre-check=0",
-            expires="Mon, 26 Jul 1997 05:00:00 GMT",
-            content_type="application/json",
-            charset='UTF-8'
-            )
+                       status=status,
+                       content_type="application/json",
+                       charset='UTF-8')
         return res
 
 # alias for backwards copatibility
