@@ -24,7 +24,7 @@ Generally the config will be where you define things like:
 Defaults
 --------
 
-Pybald has a set of default configuration values that will always be used as the basis for a config. This allows starting a simple pybald application with very little configuration. The defaults are stored in the ``pybald.default`` module as a dictionary. This default dictionary will be combined with any user supplied values to create the final configuration.
+Pybald has a set of default configuration values that will always be used as the basis for a config. This allows starting a simple pybald application with very little configuration. The defaults are stored in the ``pybald.default`` module as a dictionary. This default dictionary will automatically be combined with any user supplied values to create the final configuration.
 
 .. code-block:: pycon
 
@@ -65,7 +65,7 @@ There's no limit to what values you can add to a config file. If you have projec
 Methods of Configuring
 ----------------------
 
-While there are several ways to configure a Pybald application, generally only one should be used at a time. Mixing config methods (keywords and file for example) is not currently supported.
+While there are several ways to configure a Pybald application, generally only one should be used at a time. Mixing config methods (keyword arguments and file for example) is not currently supported.
 
 Keyword Argument
 ~~~~~~~~~~~~~~~~
@@ -122,7 +122,7 @@ This will attempt to load a project.py file if present.
 Sample project.py
 *****************
 
-Project.py files generally look like a list of variable declarations. This doesn't mean you can't do dynamic things with the config options, in fact this is the main use case for using a python module for configuration rather than a static file format like an ini file. One common use case for this pattern is to dynamically generate the database URI for a database connection using string interpolation. Another useful trick is to have a base project.py file that includes an environment.py file with environmental (production, test, development) specific values.
+Project.py files generally look like a list of variable declarations. This doesn't mean you can't run python code or do dynamic things with the config options, in fact this is the main use case for using a python module for configuration rather than a static file format like an ini file. For example, one common use case for this pattern is to dynamically generate the database URI for a database connection using string interpolation. Another useful trick is to have a base project.py file that includes an environment.py file with environmental (production, test, development) specific values.
 
 .. code-block:: python
 
@@ -134,7 +134,6 @@ Project.py files generally look like a list of variable declarations. This doesn
     debug = True
     template_helpers = ['from pybald.core import assets']
     BUNDLE_SOURCE_PATHS = ['tests/sample_project/front_end', 'tests/sample_project/sass']
-    path = ""
     database_engine_uri = 'sqlite:///:memory:'
 
 

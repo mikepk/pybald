@@ -79,7 +79,7 @@ To start the application from the command line type ``python sample.py console``
 
     It can be generally useful to be able to explore and introspect the application from a REPL to really learn how Pybald works.
 
-    It's important also to note that the application that runs in the console is the *exactly the same* application that runs when connected to the web server. When the console runs, the application is present in the namespace as ``app``.
+    It's also important to note that the application that runs in the console is *exactly the same* as the application that runs when connected to the web server.
 
 .. code-block:: pycon
 
@@ -113,7 +113,7 @@ The console also loads a very simple testing / convenience client ``c`` that all
 
     Hello!
 
-Here we've fetched the "/" url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were matched/invoked. If any capture variables had been present, they would have been printed as well. Finally we print the response from that request which is the full web response (headers etc) and the simple text response message of "Hello". The ``resp`` object that is returned is an instance of a WebOb Response object. WebOb response objects have numerous useful attributed and methods. For example, you can get things like resp.headers, resp.status, resp.body to see some of the data available on the response.
+Here we've fetched the "/" url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were matched/invoked. If any capture variables had been present, they would have been printed as well. Finally we print the response from that request which is the full web response (headers etc) and the simple text response message of "Hello". The ``resp`` object that is returned is an instance of a WebOb Response object. WebOb response objects have numerous useful attributes and methods. For example, you can get things like ``resp.headers``, ``resp.status``, ``resp.body`` to see some of the data available on the response.
 
 .. code-block:: pycon
 
