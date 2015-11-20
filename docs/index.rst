@@ -21,7 +21,7 @@ A Small Pybald Application
     from pybald.core.router import Router
 
     # configure our pybald application
-    pybald.configure()
+    pybald.configure(default=True)
 
     def map(urls):
         urls.connect('home', r'/', controller='home')
@@ -36,9 +36,9 @@ A Small Pybald Application
     if __name__ == "__main__":
         context.start(app)
 
-This mini application illustrates four of the five core concepts present in most Pybald applications. These include: configuring an application and the pybald `context`, setting up URL routes via a mapping function, creating a controller class with a a handler using the :ref:`action decorator <actions>` and finally setting up a WSGI pipeline using the pybald Router. Each of these topics will be covered in more detail in the following documentation.
+This mini application illustrates many of the core concepts present in most Pybald applications. These include: configuring an application and the pybald `context`, setting up URL routes via a mapping function, creating a controller class with a a handler using the :ref:`action decorator <actions>` and finally setting up a WSGI pipeline using the pybald Router. Each of these topics will be covered in more detail in the following documentation.
 
-The final core concept, data persistence and models will be covered later.
+Other core concepts like templating, data persistence and models will be also be covered later.
 
 
 Contents
@@ -48,12 +48,11 @@ Contents
   :maxdepth: 2
 
   intro
-  dependencies
   getting_started
-  using
-  magic
   configuration
   routing
+  using
+  magic
   controllers
   models
   forms
@@ -67,6 +66,21 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+Dependencies
+============
+
+Python 2.6 or 2.7 are recommended. Python 3 support is coming soon.
+
+Pybald currently depends on, and will automatically install, the following libraries:
+
+* `Mako Templates <http://www.makotemplates.org/>`_
+* `Routes <http://routes.groovie.org/>`_
+* `WebOb <http://pythonpaste.org/webob/>`_
+* `SqlAlchemy <http://sqlalchemy.org/>`_
+* `WTForms <https://wtforms.readthedocs.org/en/latest/>`_
+
+These libraries are well tested and generally very well documented. When expanding beyond the simplest use cases presented in this documentation, you can dive deeper and access more functionality by exploring each library's individual docs.
 
 License
 =======

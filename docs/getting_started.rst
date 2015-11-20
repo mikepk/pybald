@@ -4,7 +4,12 @@ Quick Start
 Installing
 ------------
 
-It's recommended that you use ``virtualenv`` to allow you to isolate experimenting with pybald (and its dependencies) from the rest of your python environment. First we setup a new virtualenv, then we install pybald, finally we copy the empty project_template to a new project name.
+Using virtualenv
+~~~~~~~~~~~~~~~~
+
+While not strictly necessary, it is recommended that you use ``virtualenv`` to allow you to isolate experimenting with Pybald (and its dependencies) from the rest of your python environment.
+
+First we setup a new virtualenv, activate it, then we install pybald.
 
 .. code-block:: sh
 
@@ -20,13 +25,27 @@ It's recommended that you use ``virtualenv`` to allow you to isolate experimenti
      [...]
     Successfully installed Mako-1.0.1 MarkupSafe-0.23 PyExecJS-1.1.0 PyReact-0.5.2 SQLAlchemy-1.0.8 WTForms-2.0.2 WebOb-1.4.1 alembic-0.7.7 cssmin-0.2.0 lxml-3.4.4 pybald pybald-routes-2.11 repoze.lru-0.6 rjsmin-1.0.10 six-1.9.0 webassets-0.10.1
       Cleaning up...
-    (pyb_test)~$ python sample.py console
 
+
+Without virtualenv
+~~~~~~~~~~~~~~~~~~
+
+Just install pybald from pypi using pip.
+
+.. code-block:: sh
+
+    ~$ pip install pybald
+    Downloading/unpacking pybald
+      Downloading pybald-0.2.0.tar.gz
+      Running setup.py egg_info for package pybald
+     [...]
+    Successfully installed Mako-1.0.1 MarkupSafe-0.23 PyExecJS-1.1.0 PyReact-0.5.2 SQLAlchemy-1.0.8 WTForms-2.0.2 WebOb-1.4.1 alembic-0.7.7 cssmin-0.2.0 lxml-3.4.4 pybald pybald-routes-2.11 repoze.lru-0.6 rjsmin-1.0.10 six-1.9.0 webassets-0.10.1
+      Cleaning up...
 
 Running your first Pybald Application
 -------------------------------------
 
-First copy the following code and save it as a file, say ``sample.py``. Don't choose 'pybald.py' since it will conflict with the pybald library name.
+First copy the following code and save it as a file, say ``sample.py``. Don't choose the name 'pybald.py' since it will conflict with the pybald library name but most any other name should be fine.
 
 .. code-block:: python
 
@@ -36,7 +55,7 @@ First copy the following code and save it as a file, say ``sample.py``. Don't ch
     from pybald.core.router import Router
 
     # configure our pybald application
-    pybald.configure()
+    pybald.configure(debug=True)
 
     def map(urls):
         urls.connect('home', r'/', controller='home')
@@ -52,33 +71,61 @@ First copy the following code and save it as a file, say ``sample.py``. Don't ch
         context.start(app)
 
 
-To start the application from the command line type ``python sample.py console`` which starts the pybald :ref:`console <console>` for this project. The pybald console is a standard python REPL but also initializes your project, loads the application code, and allows you to interact with your application in various ways including simulating requests, exploring models, prototyping new functionality and other tasks. It's important to note that the application is the *same* application that runs when connected to the web server.
+To start the application from the command line type ``python sample.py console`` which starts the pybald :ref:`console <console>` for this project. The pybald console is a standard python REPL but also initializes your project, loads the application code, and allows you to interact with your application in various ways including simulating requests, exploring models, prototyping new functionality, running a debugger and other tasks. The console also has some convenience functions, like saving a per-project history to allow "up arrow", tab completion and other history searches.
+
+.. note::
+
+    If, instead, you'd like to try the application from a web browser, you can also call ``python sample.py serve`` and that will run a simple development web server that you can connect to. You can see a simple help message for command line arguments by using ``python sample.py -h`` or ``python sample.py {COMMAND} -h``.
+
+    It can be generally useful to be able to explore and introspect the application from a REPL to really learn how Pybald works.
+
+    It's important also to note that the application that runs in the console is the *exactly the same* application that runs when connected to the web server. When the console runs, the application is present in the namespace as ``app``.
 
 .. code-block:: pycon
 
-    Route name Methods Path                       
-    home               /                          
-    base               /{controller}/{action}/{id}
-                       /{controller}/{action}     
-                       /{controller}              
-                       /*(url)/                   
-    Welcome to the pybald interactive console
-     ** project: test_project **
-    >>> response = c.get("/")
-    ============= / ==============
+    $ python sample.py console
+    Route name Methods Path
+    home               /   
+    Welcome to the Pybald interactive console
+     ** project: sample.py **
+    >>>
+
+When debug logging is turned on, the routing layer of Pybald will display all of the configured url routes for the project, then a small welcome message. In this case, we've only set up a single route for '/' connected to the home controller.
+
+The console also loads a very simple testing / convenience client ``c`` that allows you to issue simulated web requests to your application using GET's and POST's.
+
+.. code-block:: pycon
+
+    $ python sample.py console
+    Route name Methods Path
+    home               /   
+    Welcome to the Pybald interactive console
+     ** project: sample.py **
+    >>> resp = c.get('/')
+    ====================================== / ======================================
     Method: GET
     action: index
     controller: home
-    >>> print response
+    >>> print resp
     200 OK
     Content-Type: text/html; charset=utf-8
-    Content-Length: 18
+    Content-Length: 6
 
-    Pybald is working.
+    Hello!
 
-When debugging is turned on, the routing layer of Pybald will display all of the configured url routes for the project, then a small welcome message. Out of the box pybald is configured with a generic set of routes that allow for quick prototyping.
+Here we've fetched the "/" url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were matched/invoked. If any capture variables had been present, they would have been printed as well. Finally we print the response from that request which is the full web response (headers etc) and the simple text response message of "Hello". The ``resp`` object that is returned is an instance of a WebOb Response object. WebOb response objects have numerous useful attributed and methods. For example, you can get things like resp.headers, resp.status, resp.body to see some of the data available on the response.
 
-The console has a testing / convenience client ``c`` that allows you to issue web-like requests to your application. Here we've fetched the "/" url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were invoked. Finally we print the response from that url which is the simple web response message that pybald is working!
+.. code-block:: pycon
+
+    >>> resp.headers
+    ResponseHeaders([('Content-Type', 'text/html; charset=utf-8'), ('Content-Length', '6')])
+    >>> resp.status
+    '200 OK'
+    >>> resp.body
+    'Hello!'
 
 Boom! You're running a pybald application.
 
+.. note::
+
+    Most of the time you won't need to know or care, but an interesting detail worth mentioning at this point, is that the ``response object`` is also a WSGI application, just like the core pybald application. This allows for some interesting flexibility in chaining and re-routing application behavior. The response object will accept ``environ, start_response`` call signature just like the Router or any other WSGI app. Many of the interfaces of Pybald use the WSGI interace allowing for a great deal of flexibility.
