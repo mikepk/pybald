@@ -58,7 +58,7 @@ class Console(code.InteractiveConsole):
     def run(self):
         '''Start the console with the project, controllers,
         and models defined in the console's namespace.'''
-        self.interact('''Welcome to the pybald interactive console\n'''
+        self.interact('''Welcome to the Pybald interactive console\n'''
                       ''' ** project: {0} **'''.format(self.project_name))
 
 

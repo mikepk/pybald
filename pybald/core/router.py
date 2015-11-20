@@ -58,7 +58,8 @@ class Router(object):
         Does some text munging to change the camel-case class names into
         underscore-separated url like names. (HomeController to home)
 
-        :param controllers: A controller registry
+        :param controllers: A controller registry, a list of all controllers
+                            that will be used with this application.
 
         All controller candidates are loaded into a hash to look up
         the matched "controller" urlvar against.
@@ -66,7 +67,7 @@ class Router(object):
         The _controller suffix is removed from the module name for the url
         route mapping table (so controller="home" matches home_controller).
 
-        Called only once at the start of a pybald application.
+        This method is called only once at the start of a pybald application.
         '''
 
         controller_names = []
