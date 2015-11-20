@@ -143,17 +143,20 @@ def bootstrap(bootstrap_file=None):
     return bootstrap_module
 
 
-def configure(name=None, config_file=None, config_object=None):
+def configure(name=None, config_file=None, config_object=None, **kargs):
     '''
     Generate a dynamic context module that's pushed / popped on
     the application context stack.
     '''
+    script_name = sys.argv[0]
     # always add current working directory to the path regardless
     # was trying to avoid this but too much path munging happening
     if os.getcwd() not in sys.path:
         sys.path.insert(1, os.getcwd())
 
     if config_object:
+        if 'project_name' not in config_object:
+            config_object['project_name'] = script_name
         # create a named tuple that's the combo of default plus input dict
         root_path = config_object['path'] = config_object.get('path',
                                                               os.getcwd())
@@ -173,6 +176,13 @@ def configure(name=None, config_file=None, config_object=None):
                           "found\n{0}".format(config_file))
             sys.exit(1)
         config = create_config_object(create_config_dict_from_module(config_module))
+    elif kargs:
+        if 'project_name' not in kargs:
+            kargs['project_name'] = script_name
+
+        root_path = kargs['path'] = kargs.get('path',
+                                              os.getcwd())
+        config = create_config_object(kargs)
     else:
         root_path = os.getcwd()
         log.warning("Warning: Using current path for the config "
@@ -194,6 +204,10 @@ def configure(name=None, config_file=None, config_object=None):
     # way possible
     if root_path not in sys.path:
         sys.path.insert(1, root_path)
+
+    if config.debug:
+        from pybald.core.logs import default_debug_log
+        default_debug_log()
 
     new_context = imp.new_module("context")
 
