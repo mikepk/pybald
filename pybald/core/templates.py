@@ -2,68 +2,76 @@
 # encoding: utf-8
 
 import os
-import unittest
-import project
+from pybald.context import config
 from mako.template import Template
 from mako.lookup import TemplateLookup
 import re
 import logging
-console = logging.getLogger(__name__)
 
-# base template helpers all pybald projects have
-template_helpers = ['from pybald.core.helpers import img, link, humanize, js_escape, as_p',
-                    'from pybald.core import page',
-                    'from pybald.core.helpers import js_escape as js',
-                    'from mako.filters import html_escape']
-
-if project.template_helpers:
-    template_helpers.extend(project.template_helpers)
-
-# set the default filters to auto-html escape all content
-default_filters = ['h', 'unicode']
-if project.template_default_filters:
-    default_filters = project.template_default_filters
+log = logging.getLogger(__name__)
 
 # templates follow name.FORMAT.template so this is a simple
 # regex check of that pattern
 TEMPLATE_PATTERN = re.compile(r'([^\.]+)\.([^\.]+)\.template$')
 
-
-class TemplateEngine:
+class TemplateEngine(object):
     '''
     The basic template engine, looks up templates and renders them.
     Uses the mako template system
     '''
 
-    def __init__(self, template_path=None, cache_path=None):
-        self.project_path = project.path
-        try:
-            default_template_path = os.path.join(os.path.dirname(
-                                                os.path.realpath(__file__)),
-                                                'default_templates')
-            project_template_path = template_path or os.path.join(
-                                                            self.project_path,
-                                                            'app/views')
-            project_cache_path = cache_path or os.path.join(self.project_path,
-                                                           'tmp/viewscache')
-        except AttributeError:
-            console.exception(("**Warning**\n"
-                             "Unable to load templates from template path\n"
-                             ))
-            default_template_path = ""
-            project_template_path = ""
-            project_cache_path = ""
+    def __init__(self, template_path=None, cache_path=None, helpers=None):
+        # base template helpers all pybald projects have
+        self.template_helpers = [
+            'from pybald.core.helpers import img,'
+                                           ' link,'
+                                           ' humanize,'
+                                           ' HTMLLiteral as literal,'
+                                           ' url_for',
+            'from pybald.core import page']
 
-        fs_test = project.template_filesystem_check or project.debug or False
+        if config.template_helpers:
+            self.template_helpers.extend(config.template_helpers)
 
-        self.lookup = TemplateLookup(directories=[project_template_path,
-                                                  default_template_path],
+        # set the default filters to auto-html escape all content
+        self.default_filters = ['h', 'unicode']
+        if config.template_default_filters:
+            self.default_filters = config.template_default_filters
+
+        self.project_path = config.path
+
+        template_paths = []
+
+        if config.template_path:
+            project_template_path = os.path.join(self.project_path,
+                                                 config.template_path)
+            template_paths.append(project_template_path)
+
+        # the pybald default templates, like forms and stack traces
+        default_template_path = os.path.join(os.path.dirname(
+                                            os.path.realpath(__file__)),
+                                            'default_templates')
+        template_paths.append(default_template_path)
+
+        #caching compiled python template modules, None disables the cache
+        if config.cache_path:
+            project_cache_path = os.path.join(self.project_path,
+                                              config.cache_path)
+        else:
+            project_cache_path = None
+
+        fs_test = config.template_filesystem_check or config.debug or False
+        self.lookup = TemplateLookup(directories=template_paths,
                                      module_directory=project_cache_path,
-                                     imports=template_helpers,
+                                     imports=self.template_helpers,
                                      input_encoding='utf-8',
                                      output_encoding='utf-8',
                                      filesystem_checks=fs_test,
-                                     default_filters=default_filters)
+                                     default_filters=self.default_filters)
+
+    def partial(self, template_name=None, format="html", **kargs):
+        mytemplate = self._get_template(template_name, format=format)
+        return mytemplate.render_unicode(**kargs)
 
     def form_render(self, template_name=None, format="form", **kargs):
         '''
@@ -74,16 +82,11 @@ class TemplateEngine:
         :param kargs: the data to render in the context of the form
                         template
         '''
-        data = kargs
         try:
             template_id = kargs['fieldset'].template_id
         except (KeyError, AttributeError):
             template_id = 'forms/{0}'.format(template_name)
-
-        mytemplate = self._get_template(template_id, format)
-        # We use the render_unicode to return a native unicode
-        # string for inclusion in another Mako template
-        return mytemplate.render_unicode(**data)
+        return self.partial(template_id, format, **kargs)
 
     def _get_template(self, template, format="html"):
         '''
@@ -107,7 +110,7 @@ class TemplateEngine:
         else:
             template_file = "/{0}.{1}.template".format(template.lower().lstrip('/'),
                                                    format.lower())
-        console.debug("Using template: {0}".format(template_file))
+        log.debug("Using template: {0}".format(template_file))
         # TODO: Add memc caching of rendered templates
         # also need to check if the internal caching is good enough
         return self.lookup.get_template(template_file)
@@ -126,43 +129,8 @@ class TemplateEngine:
 
         Calls _get_template to retrieve the template and then renders it.
         '''
-        template_data = dict(project.page_options.items() + data.items())
+        template_data = dict(list(config.page_options.items()) + list(data.items()))
         mytemplate = self._get_template(template, format)
-        console.debug("Rendering template")
+        log.debug("Rendering template")
         return mytemplate.render(**template_data)
 
-# module scope singleton, should this be changed?
-# engine = TemplateEngine()
-render = TemplateEngine()
-
-
-class CompatibilityProxy(object):
-    '''A proxy to re-write the __call__ method.'''
-
-    def __init__(self, obj):
-        """The initializer."""
-        self._obj = obj
-
-    def _get_template(self, data, format="html", template=None):
-        '''Old style get template'''
-        template_name = template or data.pop('template_id', '')
-        format = format or data.get('format', 'html')
-        return self._obj._get_template(template=template_name, format=format)
-
-    def __getattr__(self, attrib):
-        return getattr(self._obj, attrib)
-
-    def __call__(self, data, format=None, template=None):
-        template_name = template or data.pop('template_id', '')
-        format = format or data.get('format', 'html')
-        return self._obj(template=template_name, data=data, format=format)
-
-engine = CompatibilityProxy(render)
-
-
-class TemplateEngineTests(unittest.TestCase):
-    def setUp(self):
-        pass
-
-if __name__ == '__main__':
-    unittest.main()

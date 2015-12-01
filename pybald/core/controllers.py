@@ -1,19 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
-import unittest
-
+from six import with_metaclass
 from functools import wraps
-from pybald.core.templates import render as render_view, engine as old_style_render_view
-
-from webob import Request, Response
-from webob import exc
+from webob import Request, Response, exc
 import re
 from pybald.util import camel_to_underscore
 from routes import redirect_to
-import project
-import hashlib
-import base64
+from pybald import context
+
 import json
 import random
 
@@ -78,7 +72,8 @@ def csrf_protected(action_func):
 
             except CSRFValidationFailure:
                 # gentle mode, redirect to GET version of the page
-                return self._redirect_to(req.path_qs)
+                # return self._redirect_to(req.path_qs)
+                raise
 
         # always stash a new token
         new_token = str(uuid.uuid4()).replace("-", "")
@@ -89,7 +84,6 @@ def csrf_protected(action_func):
 
         return action_func(self, req)
     return replacement
-
 
 
 # a no-op placeholder
@@ -185,11 +179,11 @@ def action(method):
         # the return which has precedence over the view
         resp = (pre(req) or
                  method(self, req) or
-                 render_view(template=self.template_id,
+                 context.render(template=self.template_id,
                              data=self.__dict__ or {}))
         # if the response is currently a string
         # wrap it in a response object
-        if isinstance(resp, basestring):
+        if isinstance(resp, str) or isinstance(resp, bytes):
             resp = Response(body=resp, charset="utf-8")
         # run the controllers post code
         post(req, resp)
@@ -197,38 +191,38 @@ def action(method):
     return action_wrapper
 
 
-def caching_pre(keys, method_name, prefix=''):
-    '''Decorator for pybald _pre to return cached responses if available.'''
-    if keys is None:
-        keys = []
+# def caching_pre(keys, method_name, prefix=''):
+#     '''Decorator for pybald _pre to return cached responses if available.'''
+#     if keys is None:
+#         keys = []
 
-    def pre_wrapper(pre):
-        def replacement(self, req):
-            val = ":".join([prefix] + [str(getattr(self, k, '')) for
-                        k in keys] + [method_name])
-            self.cache_key = base64.urlsafe_b64encode(hashlib.md5(val).digest())
-            resp = project.mc.get(self.cache_key)
-            if resp:
-                return resp
-            return pre(req)
-        return replacement
-    return pre_wrapper
+#     def pre_wrapper(pre):
+#         def replacement(self, req):
+#             val = ":".join([prefix] + [str(getattr(self, k, '')) for
+#                         k in keys] + [method_name])
+#             self.cache_key = base64.urlsafe_b64encode(hashlib.md5(val).digest())
+#             resp = project.mc.get(self.cache_key)
+#             if resp:
+#                 return resp
+#             return pre(req)
+#         return replacement
+#     return pre_wrapper
 
 
-def caching_post(time=0):
-    '''Decorator for pybald _post to cache/store responses.'''
-    def post_wrapper(post):
-        def replacement(self, req, resp):
-            post(req, resp)
-            # only cache 2XX or 4XX responses
-            if (200 <= resp.status_code < 300) or (400 <= resp.status_code < 500):
-                if 'X-Cache' not in resp.headers:
-                    resp.headerlist.append(('X-Cache', 'MISS'))
-                    project.mc.set(self.cache_key, resp, time)
-                else:
-                    resp.headers['X-Cache'] = 'HIT'
-        return replacement
-    return post_wrapper
+# def caching_post(time=0):
+#     '''Decorator for pybald _post to cache/store responses.'''
+#     def post_wrapper(post):
+#         def replacement(self, req, resp):
+#             post(req, resp)
+#             # only cache 2XX or 4XX responses
+#             if (200 <= resp.status_code < 300) or (400 <= resp.status_code < 500):
+#                 if 'X-Cache' not in resp.headers:
+#                     resp.headerlist.append(('X-Cache', 'MISS'))
+#                     project.mc.set(self.cache_key, resp, time)
+#                 else:
+#                     resp.headers['X-Cache'] = 'HIT'
+#         return replacement
+#     return post_wrapper
 
 # regenerate a content_cache_prefix on every reload so that content will
 # be force loaded after any full application restart
@@ -237,31 +231,30 @@ def caching_post(time=0):
 content_cache_prefix = hex(random.randrange(0, 2 ** 32 - 1))
 
 
-# memcache for actions
-def action_cached(prefix=content_cache_prefix, keys=None, time=0):
-    '''
-    Wrap actions and return pre-generated responses when appropriate.
-    '''
-    if keys is None:
-        keys = []
+# # memcache for actions
+# def action_cached(prefix=content_cache_prefix, keys=None, time=0):
+#     '''
+#     Wrap actions and return pre-generated responses when appropriate.
+#     '''
+#     if keys is None:
+#         keys = []
 
-    def cached_wrapper(my_action_method):
-        @wraps(my_action_method)
-        def replacement(self, environ, start_response):
-            # bind newly wrapped methods to self
-            self._pre = caching_pre(keys,
-                                    my_action_method.__name__,
-                                    prefix=prefix)(self._pre
-                                        ).__get__(self, self.__class__)
-            self._post = caching_post(time)(self._post
-                                        ).__get__(self, self.__class__)
-            return my_action_method(self, environ, start_response)
-        # don't enable caching if requested
-        if project.DISABLE_STATIC_CONTENT_CACHE:
-            return my_action_method
-        return replacement
-    return cached_wrapper
-
+#     # def cached_wrapper(my_action_method):
+#     #     @wraps(my_action_method)
+#     #     def replacement(self, environ, start_response):
+#     #         # bind newly wrapped methods to self
+#     #         self._pre = caching_pre(keys,
+#     #                                 my_action_method.__name__,
+#     #                                 prefix=prefix)(self._pre
+#     #                                     ).__get__(self, self.__class__)
+#     #         self._post = caching_post(time)(self._post
+#     #                                     ).__get__(self, self.__class__)
+#     #         return my_action_method(self, environ, start_response)
+#     #     # don't enable caching if requested
+#     #     if project.DISABLE_STATIC_CONTENT_CACHE:
+#     #         return my_action_method
+#     #     return replacement
+#     # return cached_wrapper
 
 class RegistryMount(type):
     '''
@@ -274,14 +267,17 @@ class RegistryMount(type):
             cls.registry.append(cls)
         except AttributeError:
             # this is processing the first class (the mount point)
-            cls.registry = []
+            cls.registry = context.controller_registry
 
         return super(RegistryMount, cls).__init__(name, bases, attrs)
 
 
-class Controller(object):
-    '''Base controller that includes the view and a default index method.'''
-    __metaclass__ = RegistryMount
+class Controller(with_metaclass(RegistryMount, object)):
+    '''Base Controller that provides a registry mount
+
+    The registry keeps track of all countrollers defined in the project. The
+    Controller class also has some minor convenience methods attached.
+    '''
 
     def __init__(self, *pargs, **kargs):
         for key, value in kargs.items():
@@ -308,35 +304,10 @@ class Controller(object):
     def _JSON(self, data, status=200):
         '''Return JSON object with the proper-ish headers.'''
         res = Response(body=json.dumps(data),
-            status=status,
-            # wonky Cache-Control headers to stop IE6 from caching content
-            cache_control="max-age=0,no-cache,no-store,post-check=0,pre-check=0",
-            expires="Mon, 26 Jul 1997 05:00:00 GMT",
-            content_type="application/json",
-            charset='UTF-8'
-            )
+                       status=status,
+                       content_type="application/json",
+                       charset='UTF-8')
         return res
-
-    def _view(self, data=None):
-        '''
-        This method is a shim between the old view rendering code and the new
-        template rendering methods. It should not be used and is present only
-        to maintain backward compatibility.
-
-        This is targeted for deprecation.
-        '''
-        return old_style_render_view(data or self.__dict__ or {})
-
-    _render_view = render_view
 
 # alias for backwards copatibility
 BaseController = Controller
-
-
-class BaseControllerTests(unittest.TestCase):
-    def setUp(self):
-        pass
-
-
-if __name__ == '__main__':
-    unittest.main()

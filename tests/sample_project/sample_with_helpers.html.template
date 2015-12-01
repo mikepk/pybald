@@ -1,0 +1,12 @@
+page javascript:
+    ${page.add_js('/test.js')}
+    ${page.add_css('/sample.css')}
+humanized dates:
+    ${humanize(an_hour_ago)}
+    ${humanize(a_day_ago)}
+link, img helpers:
+    ${link('A test link').to('home')}
+    ${img('/sample.jpg')}
+test default filters:
+    ${literal('<h2>This is a literal html h2</h2>')}
+    ${'<h2>This h2 tag should be escaped</h2>'}

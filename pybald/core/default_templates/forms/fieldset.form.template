@@ -1,29 +1,20 @@
-% for error in fieldset.errors.get(None, []):
-<div class="fieldset_error">
-  ${error}
-</div>
-% endfor
-% for field in fieldset.render_fields.itervalues():
-  % if field.requires_label:
+## % for error in fieldset.errors.get(None, []):
+## <div class="fieldset_error">
+##   ${error}
+## </div>
+## % endfor
+% for field in fieldset:
+##  % if field.requires_label:
 %if field.errors:
 <div class="input_errors">
 %else:
 <div>
 %endif
-% if not 'no_label' in field.metadata:
-  <label class="${field.is_required() and 'field_req' or 'field_opt'}" for="${field.renderer.name}">${field.label_text or fieldset.prettify(field.key)|h}</label>
-%endif
+${field.label()}
 % for error in field.errors:
 <span class="field_error">${error}</span>
 % endfor
-  % if 'instructions' in field.metadata:
-  <p class="instructions">${field.metadata['instructions']}</p>
-  % endif
-  ${field.render()|n}
-
+  ${field}
 </div>
-  % else:
-${field.render()|n}
-  % endif
 % endfor
 

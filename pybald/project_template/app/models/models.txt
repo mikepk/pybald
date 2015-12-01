@@ -1,5 +1,0 @@
-Example:
-
-from pybald.db import models
-class Author(models.Model):
-    name = models.Column(models.Unicode(40), unique=True)

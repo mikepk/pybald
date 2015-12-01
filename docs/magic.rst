@@ -30,6 +30,7 @@ Again taking cues from Ruby on Rails, the initial project is configured with a d
 In the above example ``/post_comment`` would become available as a project route and the router would instantiate a PostCommentController object to handle the request.
 
 
+.. _actions:
 
 The @action decorator
 ---------------------

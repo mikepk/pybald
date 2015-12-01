@@ -13,15 +13,34 @@
 from datetime import datetime
 from routes import url_for
 from mako import filters
-from urlparse import urlparse, ParseResult
+from six.moves.urllib.parse import urlparse, ParseResult
+import re
 from routes import request_config
-import project
+from pybald import context
+import logging
+log = logging.getLogger(__name__)
+
 try:
     import pyhash
     hashfunc = pyhash.super_fast_hash()
 except ImportError:
+    log.warn("-"*80 + '''
+    Warning
+    -------
+    Using python built-in hash() for asset URL generation. This is system
+    implementation specific and may result in different hosts mapping static
+    assets to different static hosts. That may cause inefficient use of browser
+    caches. Optionally you can install pyhash to install additional fast,
+    non-cryptographic, hashes that are not system dependent.
+
+    pip install pyhash
+'''+"-"*80)
     hashfunc = hash
 
+try:
+    type(unicode)
+except NameError:
+    unicode = str
 
 # parse result keys
 class AssetUrl(dict):
@@ -44,21 +63,25 @@ class AssetUrl(dict):
         host = self.get('netloc', None)
         # Don't CDN urls with hosts we're not re-writing
         if host:
-            if (project.STATIC_SOURCES is None or
-                                           host not in project.STATIC_SOURCES):
+            if (context.config.STATIC_SOURCES is None or
+                                           host not in context.config.STATIC_SOURCES):
                 return self.raw_url
-        if (project.USE_CDN and (project.CDN_HOST or project.STATIC_HOSTS)):
+        if (context.config.USE_CDN and (context.config.CDN_HOST or context.config.STATIC_HOSTS)):
             # get the protocol for the current request
             # this requires the custom HTTP header X-Forwarded-Proto
             # set if running behind a proxy (or if SSL is terminated
             # upstream)
-            protocol = request_config().protocol
+            try:
+                protocol = request_config().protocol
+            except AttributeError:
+                # are we not in a request? Use a default protocol
+                protocol = context.config.DEFAULT_PROTOCOL
             # use the round robin hosts to speed download when not https
-            if protocol != "https" and project.STATIC_HOSTS:
-                self['netloc'] = project.STATIC_HOSTS[hashfunc(self.raw_url) %
-                                                      len(project.STATIC_HOSTS)]
+            if protocol != "https" and context.config.STATIC_HOSTS:
+                self['netloc'] = context.config.STATIC_HOSTS[hashfunc(self.raw_url) %
+                                                      len(context.config.STATIC_HOSTS)]
             else:
-                self['netloc'] = project.CDN_HOST
+                self['netloc'] = context.config.CDN_HOST
             # adjust the scheme of any link with a net location
             # to match the current request so we don't have mixed link
             # protocols
@@ -165,12 +188,17 @@ def plural(list_object):
     else:
         return ""
 
+FRACTIONAL_SECOND = re.compile(r'\.\d+$')
 
 def humanize(date_string):
-    format = "%Y-%m-%d %H:%M:%S"
+    '''Convert a date string into a 'humanized' relative string (like 1 day ago)'''
+    date_format = "%Y-%m-%d %H:%M:%S"
+    # strip decimal second precision
+    date_string = FRACTIONAL_SECOND.sub('', date_string)
     try:
-        date = datetime.strptime(date_string, format)
+        date = datetime.strptime(date_string, date_format)
     except:
+        # if the date string format doesn't match, just return it
         return date_string
     now = datetime.now()
     delta = now - date

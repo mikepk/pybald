@@ -1,9 +1,12 @@
 import re
 import unicodedata
-import sys
-import os
-import time
-import signal
+
+try:
+    type(unicode)
+except NameError:
+    def unicode(txt, errors=None):
+        return txt.decode('utf-8')
+
 # first pass, anything before a CAPLower gets separated. i.e. CAP_Lower
 #  123Lower -> 123_Lower
 first_pass = re.compile(r'(.)([A-Z][a-z]+)')
@@ -42,11 +45,12 @@ plural_patterns = [(re.compile(pattern), re.compile(search), replace
                          ('$', '$', 's'))]
 
 
-def _build_plural_rule((pattern, search, replace)):
+def _build_plural_rule(input_pattern):
+    pattern, search, replace = input_pattern
     return lambda word: pattern.search(word) and search.sub(replace, word)
 
 
-plural_rules = map(_build_plural_rule, plural_patterns)
+plural_rules = list(map(_build_plural_rule, plural_patterns))
 
 
 def pluralize(text):
@@ -69,7 +73,7 @@ def strip_accents(text):
     but for places where unicode can't be used (or ASCII only) francais looks
     better than fran-ais or fran?ais.
     '''
-    if isinstance(text, str):
+    if isinstance(text, bytes):
         return unicode(text, errors='ignore')
     return ''.join((c for c in unicodedata.normalize('NFD', text) if
                                               unicodedata.category(c) != 'Mn'))
