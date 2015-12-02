@@ -71,7 +71,7 @@ class ErrorMiddleware(object):
             # use that to display the errors
             log.debug("HTTP Exception Thrown {0}".format(err.__class__))
             if self.error_controller:
-                handler = self.error_controller(status_code=err.code, exception=err)
+                handler = self.error_controller(err, status_code=err.code)
 
                 try:
                     # try executing error_handler code
@@ -86,7 +86,7 @@ class ErrorMiddleware(object):
         except Exception as err:
             log.exception("General Exception thrown")
             if self.error_controller:
-                handler = self.error_controller(message=str(err))
+                handler = self.error_controller(err, message=str(err))
             else:
                 # create a generic HTTP server Error webob exception
                 handler = exc.HTTPServerError('General Fault')
