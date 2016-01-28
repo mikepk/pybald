@@ -1,7 +1,7 @@
 Pybald Changelog
 ================
 
-Release 0.4.0 (???)
+Release 0.4.0 (January 28, 2016)
 --------------------
 
 * **Warning** - this release is not compatible with previous pybald releases.
