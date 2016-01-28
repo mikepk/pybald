@@ -6,3 +6,5 @@ dist/
 *.egg
 docs/_build/
 .coverage
+.DS_Store
+.travis.yml
