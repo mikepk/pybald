@@ -3,7 +3,7 @@ Configuration
 
 All pybald applications must be configured early in the lifecycle of the application (generally before any controllers or models are defined). To configure an application, import the pybald module and run the ``configure`` function.
 
-.. code-block:: python
+.. sourcecode:: python
 
     import pybald
 
@@ -26,7 +26,7 @@ Defaults
 
 Pybald has a set of default configuration values that will always be used as the basis for a config. This allows starting a simple pybald application with very little configuration. The defaults are stored in the ``pybald.default`` module as a dictionary. This default dictionary will automatically be combined with any user supplied values to create the final configuration.
 
-.. code-block:: pycon
+.. sourcecode:: pycon
 
     >>> from pybald.default import default_config
     >>> from pprint import pprint
@@ -72,7 +72,7 @@ Keyword Argument
 
 For the simplest projects, keyword arguments passed to the configure function can be used. This was the way ``debug=True`` was set on the configuration for the sample application.
 
-.. code-block:: python
+.. sourcecode:: python
 
     import pybald
 
@@ -87,7 +87,7 @@ Config Dictionary
 
 You can also configure a pybald application by building a dictionary of options and passing it to the configure function with the ``config_object`` keyword argument.
 
-.. code-block:: python
+.. sourcecode:: python
 
     import pybald
 
@@ -100,7 +100,7 @@ Config File (Module)
 
 You can also configure a Pybald application by using a configuration file. Pybald configuration files are simple python modules. You can create a python module in the main project path that contains the variables you wish to use for your configuration. Traditionally this file is named ``project.py`` and lives in the root path of your project but it can be named anything. You can specify a python module and path to use as the config file by using the ``config_file`` keyword argument.
 
-.. code-block:: python
+.. sourcecode:: python
 
     import pybald
 
@@ -109,7 +109,7 @@ You can also configure a Pybald application by using a configuration file. Pybal
 
 If no config options or keywords are passed to the ``configure`` function, pybald will attempt to load a config file named ``project.py`` from the project path. If no file with that name is present, then the default configuration will be used.
 
-.. code-block:: python
+.. sourcecode:: python
 
     import pybald
 
@@ -124,7 +124,7 @@ Sample project.py
 
 Project.py files generally look like a list of variable declarations. This doesn't mean you can't run python code or do dynamic things with the config options, in fact this is the main use case for using a python module for configuration rather than a static file format like an ini file. For example, one common use case for this pattern is to dynamically generate the database URI for a database connection using string interpolation. Another useful trick is to have a base project.py file that includes an environment.py file with environmental (production, test, development) specific values.
 
-.. code-block:: python
+.. sourcecode:: python
 
     sample_config = True
     env_name = "SampleTestProjectEnvironment"
@@ -140,11 +140,7 @@ Project.py files generally look like a list of variable declarations. This doesn
 The Pybald context
 ------------------
 
-Regardless of the method used, once a Pybald application is configured a *context* is created. The configure function call creates the context and an immutable ``ConfigObject`` and attaches it to the context. The ConfigObject is the combination of the default configuration values and any user supplied values.
-
-A Pybald ``context`` represents the configuration and any globally accessible state for the application. Once an application is configured, importing the context from pybald will give you access to this shared context. This allows you to have access to the configuration from multiple python modules without having to explicitly pass references to the context.
-
-.. note::
+.. sidebar:: About Contexts
 
     Under the covers, the Pybald context is a *Stacked Object Proxy* using a python threadlocal. This means that anywhere a reference to ``context`` is found, that reference is actually a proxy to the underlying context. When the context is changed, it is changed for all references.
 
@@ -152,9 +148,13 @@ A Pybald ``context`` represents the configuration and any globally accessible st
 
     This is a more advanced use case, but it does have one important ramification if you're using the simple case, you should make sure that ``pybald.configure()`` is only called **once** for any application. *Every* call to configure will create an entirely new application context and push it onto the context stack. This may lead to strange behaviors or bugs if not careful.
 
+Regardless of the method used, once a Pybald application is configured a *context* is created. The configure function call creates the context and an immutable ``ConfigObject`` and attaches it to the context. The ConfigObject is the combination of the default configuration values and any user supplied values.
+
+A Pybald ``context`` represents the configuration and any globally accessible state for the application. Once an application is configured, importing the context from pybald will give you access to this shared context. This allows you to have access to the configuration from multiple python modules without having to explicitly pass references to the context.
+
 Importing ``context`` from pybald gives you access to the current application's configuration and any shared resource (like caching or database connections).
 
-.. code-block:: pycon
+.. sourcecode:: pycon
 
     >>> from pybald import context
     >>> context.config
@@ -194,7 +194,7 @@ Database configuration is done via SQLAlchemy which uses a URI following `RFC-17
 Here is a sample ``project.py`` with a block to define a simple sqllite database as the database URI. Additionally it contains comments to show some other common URI patterns. These patterns are presented to show how one might create a mysql or postgres connection.
 
 
-.. code-block:: python
+.. sourcecode:: python
 
   # sqlalchemy engine string examples:
   # mysql -         "mysql://{user}:{password}@{host}/{database}"
