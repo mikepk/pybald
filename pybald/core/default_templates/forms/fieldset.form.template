@@ -1,20 +1,9 @@
-## % for error in fieldset.errors.get(None, []):
-## <div class="fieldset_error">
-##   ${error}
-## </div>
-## % endfor
 % for field in fieldset:
-##  % if field.requires_label:
-%if field.errors:
-<div class="input_errors">
-%else:
-<div>
-%endif
+<div${literal(" class=\"input_errors\"") if field.errors else ""}>
 ${field.label()}
 % for error in field.errors:
 <span class="field_error">${error}</span>
 % endfor
-  ${field}
+    ${field}
 </div>
 % endfor
-
