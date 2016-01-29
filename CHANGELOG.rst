@@ -2,7 +2,7 @@ Pybald Changelog
 ================
 
 Release 0.4.0 (January 28, 2016)
---------------------
+--------------------------------
 
 * **Warning** - this release is not compatible with previous pybald releases.
 * Major configuration changes, deprecate the use of importing 'project.py' directly.
@@ -17,7 +17,7 @@ Release 0.4.0 (January 28, 2016)
 * Database session is now attached to the app context.
 * Shared application resources (caches etc..) are now registered with the context
 * ErrorMiddleware now has a more consistent interface with error controllers,
-  passing the raw exception as a *parg, followed by context-specific **kargs
+  passing the raw exception as a \*parg, followed by context-specific \*\*kargs
 
 Release 0.3.2 (March 25, 2015)
 ------------------------------
@@ -44,7 +44,7 @@ Release 0.2.8 (June 26, 2014)
 * Update the webasset-based asset bundler to take input and output paths from
   the project config file. The new arguments are BUNDLE_SOURCE_PATHS and
   BUNDLE_OUTPUT_PATH. So in the project.py file you might have a config
-  that looks like:
+  that looks like::
 
         BUNDLE_SOURCE_PATHS = ['alternate_source_path', 'public']
         BUNDLE_OUTPUT_PATH = '/some_path/public_files/'

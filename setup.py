@@ -45,7 +45,7 @@ except IOError:
 setup(name='pybald',
       version=version,
       description='A lightweight python web framework',
-      long_description=README + '\n\n' + CHANGES,
+      long_description=README + '\n\n' + CHANGES + '\n\n',
       license='MIT',
       keywords='web framework',
       author='Michael Kowalchik',
