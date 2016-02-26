@@ -6,12 +6,13 @@ from webob import Response, exc
 import logging
 log = logging.getLogger(__name__)
 
+
 def create_default_error_controller():
     from pybald.core.controllers import Controller, action
     from pybald.context import render, config
     class DefaultErrorController(Controller):
         '''Minimum helpful error controller'''
-        def __init__(self, status_code=500, message=None, exception=None):
+        def __init__(self, exception=None, status_code=500, message=None):
             self.status_code = status_code
             self.message = message
             self.exception = exception
@@ -31,6 +32,7 @@ def create_default_error_controller():
                 else:
                     return req.get_response(exc.HTTPServerError('General Fault'))
     return DefaultErrorController
+
 
 class ErrorMiddleware(object):
     '''

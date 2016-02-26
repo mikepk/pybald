@@ -38,5 +38,6 @@ default_config = dict(
     email_errors=False,
     env_name="Default",
     host_name='localhost',
-    path=''
+    path='',
+    STATIC_SOURCES=None
 )
