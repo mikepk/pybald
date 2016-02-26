@@ -1,6 +1,12 @@
 Pybald Changelog
 ================
 
+Release 0.4.1 (February 26, 2016)
+--------------------------------
+
+* Fix a bug with the default error controller. Now the raw exception can be passed
+in and the order of the arguments was changed but not updated in the default.
+
 Release 0.4.0 (January 28, 2016)
 --------------------------------
 
