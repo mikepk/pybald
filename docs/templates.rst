@@ -6,6 +6,10 @@ The pybald web framework uses Mako templates by default for rendering content.
 Setting up templates
 --------------------
 
+.. sidebar:: Why ``app/views``?
+
+    While pybald is generally designed to be quick to start and play with, it also tries to help you be ready for when your project grows. Pybald encourages a particular application path structure to help you stay organized longer term. In general application code is encouraged to be put in ``app/`` with the subfolders of ``app/models``, ``app/views`` and ``app/controllers``. Pybald is also designed to be flexible, so we're ignoring that structure for our simple example.
+
 Pybald uses mako template files. By default, the ``template_path`` is defined as ``app/views``. We're going to override the default path that pybald normally looks for template files for our simple example app. Let's update our small example pybald app to include the ``template_path`` configuration directive and set it to the root path of the project. Where we call ``pybald.configure`` we'll add ``template_path="."``.
 
 
@@ -114,5 +118,21 @@ Now we can run our application and initiate a simulated web request as before, o
     </html>
 
 
-You'll notice that in this example we've just used ``"home"`` for the argument to rendering the template. This is one of the conveinience behaviors of pybald, the default file extension for html templates is ``.html.template`` so you don't have to explicitly use the full filename.
+You'll notice that in this example we've just used ``"home"`` for the argument to ``context.render``. This is one of the conveinience behaviors of pybald, the default file extension for html templates is ``.html.template`` so you don't have to explicitly use the full filename.
 
+Using data in templates
+-----------------------
+
+Now lets do something interesting with the template. Templates allow us to bind data to them and use them to create variables and execute template logic.
+
+First lets update the template to create a placeholder, a variable.
+
+..code-block:: html
+
+    <html>
+    <head></head>
+    <body>
+    <h1>Hello world!</h1>
+    <h2>Greetings to ${name}</h2>
+    </body>
+    </html>
