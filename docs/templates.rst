@@ -6,7 +6,7 @@ The pybald web framework uses Mako templates by default for rendering content.
 Setting up templates
 --------------------
 
-Pybald is configured to use mako template files. By default, the ``template_path`` is defined as ``app/views``. We're going to override the default path that pybald normally looks for template files for our simple example app. Let's update our small example pybald app to include the ``template_path`` configuration directive and set it to the root path of the project.
+Pybald uses mako template files. By default, the ``template_path`` is defined as ``app/views``. We're going to override the default path that pybald normally looks for template files for our simple example app. Let's update our small example pybald app to include the ``template_path`` configuration directive and set it to the root path of the project. Where we call ``pybald.configure`` we'll add ``template_path="."``.
 
 
 .. code-block:: python
@@ -54,4 +54,65 @@ Now let's render this template. Let's go ahead and start up our console again us
 We've just rendered a simple template to a string.
 
 The reason we use the context is because the template system needs to have a certain amount of configuration to run correctly and the context represents the current configuration. For example, the template system needs to know where to look for the template files and what template filters to apply (described later).
+
+Using the template in a request
+-------------------------------
+
+We've just rendered a template, but we got a string value back, how do we use the results in our web requests? The answer is simple: we just return that string from one of our *actions*.
+
+We can update our sample application to return the rendered template.
+
+.. code-block:: python
+
+    import pybald
+    from pybald import context
+    from pybald.core.controllers import Controller, action
+    from pybald.core.router import Router
+
+    # configure our pybald application
+    pybald.configure(debug=True, template_path=".")
+
+    def map(urls):
+        urls.connect('home', r'/', controller='home')
+
+    class HomeController(Controller):
+        @action
+        def index(self, req):
+            return context.render("home")
+
+    # this is the WSGI pipeline
+    app = Router(routes=map, controllers=Controller.registry)
+
+    if __name__ == "__main__":
+        context.start(app)
+
+Now we can run our application and initiate a simulated web request as before, only this time we'll return the results of a template render.
+
+.. code-block:: pycon
+
+    Route name Methods Path
+    home               /   
+    Welcome to the Pybald interactive console
+     ** project: sample.py **
+    >>> resp = c.get("/")
+    ====================================== / ======================================
+    Method: GET
+    action: index
+    controller: home
+    Using template: /home.html.template
+    Rendering template
+    >>> print resp
+    200 OK
+    Content-Type: text/html; charset=utf-8
+    Content-Length: 65
+
+    <html>
+    <head></head>
+    <body>
+    <h1>Hello world!</h1>
+    </body>
+    </html>
+
+
+You'll notice that in this example we've just used ``"home"`` for the argument to rendering the template. This is one of the conveinience behaviors of pybald, the default file extension for html templates is ``.html.template`` so you don't have to explicitly use the full filename.
 
