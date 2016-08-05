@@ -28,7 +28,7 @@ All modules are expected to also follow the PEP8 style guide and be named in the
 Structure of a Pybald Application
 ---------------------------------
 
-A Pybald application is configured, at least partially, by the directory structure of the *project*. Unless overridden, the default pybald router behavior will look for python module files in certain paths and will import them which "activates" them for use.
+A Pybald application is configured, at least partially, by the directory structure of the *project*. While a Pybald application can consist of a single file, as a project grows it's useful to organize the code into a specific directory structure. The following is the recommended structure for larger projects.
 
 ``./app``
   This is the primary application directory containing the controllers, views and models
@@ -45,10 +45,10 @@ A Pybald application is configured, at least partially, by the directory structu
 ``./public``
   Static content like images, css and javascript
 ``./project.py``
-  Configuration file for the project.
+  *optional* - configuration file for the project.
 ``./environment.py``
-  Local, environment-specific, configuration overrides (e.g. Production, Development, Test)
-``./startup``
+  *optional* - local, environment-specific, configuration overrides (e.g. Production, Development, Test)
+``./config``
   Web server configuration, startup scripts.
 ``./utilities``
   Project utility scripts.
@@ -56,10 +56,6 @@ A Pybald application is configured, at least partially, by the directory structu
   Temporary files
     ``./viewscache``
       *temporary* The template engine's file cache for views
-``./wsgi``
-  The directory containing the primary WSGI application
-    ``./myapp.py``
-      The WSGI app.
 
 
 Most of your application code will be in the ``app`` directory which should contain at least these three directories ``controllers``, ``views``, and ``models``.
@@ -76,7 +72,7 @@ A Pybald application consists of the following parts:
 
 * Static content: images, css, javascript
 
-The heart of a Pybald application is the *WSGI pipeline*. The pipeline is defined in the file ``./wsgi/myapp.py``. The WSGI pipeline is your application as well as how your webserver of choice will communicate with your application. `myapp.py` can be used to connect to any WSGI compliant webserver (Apache, nginx, uWSGI, etc...), or it can be run directly which invokes a built-in testing server from the command line.
+The heart of a Pybald application is the *WSGI pipeline*. The pipeline is defined in the main application file which is usually the name of the project + '.py' (i.e. ``./sample_app.py``). The WSGI pipeline is your application as well as how your webserver of choice will communicate with your application. The exposed ``app`` can be used to connect to any WSGI compliant webserver (Apache, nginx, uWSGI, etc...).
 
 .. code-block:: python
 
@@ -101,7 +97,7 @@ Invoking the development web server from the command line should look similar to
 
 .. code-block:: sh
 
-    ~/test_project$ python wsgi/myapp.py
+    ~/test_project$ python sample_app.py serve
     Route name Methods Path                       
     home               /                          
     base               /{controller}/{action}/{id}
