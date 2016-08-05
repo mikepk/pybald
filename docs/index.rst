@@ -53,6 +53,7 @@ Contents
   routing
   using
   magic
+  templates
   controllers
   models
   forms
