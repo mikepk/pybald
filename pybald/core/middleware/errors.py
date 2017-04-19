@@ -69,9 +69,9 @@ class ErrorMiddleware(object):
             return self.application(environ, start_response)
         # handle HTTP errors
         except exc.HTTPException as err:
+            log.debug(u"{0} Thrown: {1}".format(err.__class__.__name__, err))
             # if the middleware is configured with an error controller
             # use that to display the errors
-            log.debug("HTTP Exception Thrown {0}".format(err.__class__))
             if self.error_controller:
                 handler = self.error_controller(err, status_code=err.code)
 
