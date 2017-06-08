@@ -125,9 +125,9 @@ Using data in templates
 
 Now lets do something interesting with the template. Templates allow us to bind data to them and use them to create variables and execute template logic.
 
-First lets update the template to create a placeholder, a variable.
+First lets update the template to create a placeholder, a variable. The syntax to add an expression in Mako is ``${}`` so below we've added a variable ``${name}`` to the template.
 
-..code-block:: html
+.. code-block:: html
 
     <html>
     <head></head>
@@ -136,3 +136,6 @@ First lets update the template to create a placeholder, a variable.
     <h2>Greetings to ${name}</h2>
     </body>
     </html>
+
+If we attempt to render this template, we'll get a surprise.
+

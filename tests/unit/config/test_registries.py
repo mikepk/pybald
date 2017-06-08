@@ -25,3 +25,6 @@ class TestRegistries(unittest.TestCase):
             pass
         assert AnotherSampleModel in models.Model.registry
 
+
+if __name__ == '__main__':
+    unittest.main()

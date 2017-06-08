@@ -54,13 +54,13 @@ class DefaultApp(dict):
         self.unconfigured = True
         super(DefaultApp, self).__init__(*pargs, **kargs)
 
-    def __getattr__(self, key):
-        if key in ('models', 'engine', 'metdata'):
-            raise RuntimeError("Pybald is not configured, you must run "
-                               "pybald.configure() before context.{0} can"
-                               " be used".format(key))
-        else:
-            return super(DefaultApp, self).__getattr__(key)
+    # def __getattr__(self, key):
+    #     if key in ('models', 'engine', 'metdata'):
+    #         raise RuntimeError("Pybald is not configured, you must run "
+    #                            "pybald.configure() before context.{0} can"
+    #                            " be used".format(key))
+    #     else:
+    #         return super(DefaultApp, self).__getattr__(key)
 
     def register(self, key, value):
         self[key] = value

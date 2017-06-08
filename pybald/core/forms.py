@@ -2,6 +2,8 @@
 # encoding: utf-8
 
 from wtforms import Form as WTForm
+from wtforms import validators
+
 from wtforms import (StringField, TextAreaField, SelectField,
                      BooleanField, DateField, DateTimeField, FloatField,
                      IntegerField, FileField, RadioField, SelectMultipleField,

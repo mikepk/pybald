@@ -3,12 +3,7 @@ import pybald
 from pybald import context
 from pybald.core.forms import validators
 from pybald.core.forms import MockParams
-expected_sample_fieldset = u'''<div>
-<label for="text">Text</label>
-  <input id="text" name="text" type="text" value="">
-</div>
-
-'''
+expected_sample_fieldset = u'<div>\n<label for="text">Text</label>\n    <input id="text" name="text" type="text" value="">\n</div>\n'
 
 test_config = dict(env_name="FormTest",
 config_object=True,
@@ -43,7 +38,8 @@ class TestForms(unittest.TestCase):
             text = forms.StringField()
 
         fs = TestForm()
-        assert fs.render().__html__() == expected_sample_fieldset
+        print(repr(fs.render().__html__()))
+        self.assertEqual(fs.render().__html__(), expected_sample_fieldset)
 
     def test_bind_data_to_form_and_save(self):
         '''Create a new model from a form'''
