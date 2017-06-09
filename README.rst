@@ -7,7 +7,7 @@ Pybald began life as an ultra-bare-bones framework but has evolved over time  ad
   * `Routes <http://routes.groovie.org/>`_ for dispatching and URL parsing
   * `Mako <http://www.makotemplates.org/>`_ as the template engine.
   * `SqlAlchemy <http://sqlalchemy.org/>`_ for data persistence and object mapping
-  * `FormAlchemy <http://formalchemy.org/>`_ for automated form generation and validation
+  * `WTForms <http://wtforms.readthedocs.io/en/latest/>`_ for automated form generation and validation
   * A more complex WSGI decorator
   * Some deploy infrastructure such as Apache and Nginx configuration templates
   * Session Management, Simple Logging, and template helper functions
