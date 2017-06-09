@@ -5,14 +5,15 @@ from pybald.util.console import Console
 
 
 test_config = dict(env_name="ConsoleTest",
-config_object=True,
-sample_config=True,
-cache_path=None,
-project_name="Console Testing",
-debug=True,
-template_helpers=['from pybald.core import assets'],
-path="",
-database_engine_uri='')
+                   config_object=True,
+                   sample_config=True,
+                   cache_path=None,
+                   project_name="Console Testing",
+                   debug=True,
+                   template_helpers=['from pybald.core import assets'],
+                   path="",
+                   database_engine_uri='')
+
 
 class TestConsole(unittest.TestCase):
     def setUp(self):

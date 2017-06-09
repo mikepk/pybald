@@ -88,6 +88,7 @@ class AppAttributeProxy(Proxy):
         else:
             return getattr(self._proxied(), attr)
 
+
 class AppContext(Proxy):
     '''A convenience proxy that represents the current active configured
     application.

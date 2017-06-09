@@ -4,6 +4,7 @@ from six.moves.urllib.parse import urlencode
 from pybald.core.router import Router
 from webob import Request, exc
 
+
 class TestRouter(unittest.TestCase):
     def setUp(self):
         pybald.configure(config_object={'debug': False})
@@ -69,10 +70,8 @@ class TestRouter(unittest.TestCase):
     def test_no_controller_in_registry(self):
         '''Match controller variable but miss on registry'''
         r = Request.blank('/test4')
-        try:
+        with self.assertRaises(exc.HTTPNotFound) as context:
             r.get_response(self.app)
-        except exc.HTTPNotFound:
-            pass
 
     def test_method_override(self):
         '''Send a `delete` _method data POST, the method is overridden'''

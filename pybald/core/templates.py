@@ -61,13 +61,30 @@ class TemplateEngine(object):
             project_cache_path = None
 
         fs_test = config.template_filesystem_check or config.debug or False
+        self.template_args = dict(imports=self.template_helpers,
+                                  input_encoding='utf-8',
+                                  output_encoding='utf-8',
+                                  default_filters=self.default_filters)
         self.lookup = TemplateLookup(directories=template_paths,
                                      module_directory=project_cache_path,
-                                     imports=self.template_helpers,
-                                     input_encoding='utf-8',
-                                     output_encoding='utf-8',
                                      filesystem_checks=fs_test,
-                                     default_filters=self.default_filters)
+                                     **self.template_args)
+
+    def raw_template(self, template_text, data={}, *pargs, **kargs):
+        '''Take a template as a string, compile it and use the default
+        arguments to render the result and return the encoded string.
+
+        :param template_text: The raw string form of a template, useful for
+                              small snippets and testing
+        :param data: the data to render
+        :param kargs: Additional arguments to pass to the Template when
+                      making the template object
+        '''
+        template_data = dict(list(config.page_options.items()) + list(data.items()))
+        myargs = self.template_args.copy()
+        myargs.update(kargs)
+        mytemplate = Template(template_text, **myargs)
+        return mytemplate.render(**template_data)
 
     def partial(self, template_name=None, format="html", **kargs):
         mytemplate = self._get_template(template_name, format=format)

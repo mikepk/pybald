@@ -30,9 +30,5 @@ class TestConfig(unittest.TestCase):
 
     def test_missing_file(self):
         "Exit if specified config file is missing"
-        try:
+        with self.assertRaises(SystemExit) as context:
             pybald.configure(config_file="tests/sample_project/not_there.py")
-        except SystemExit:
-            pass
-        else:
-            self.fail('Did not exit')
