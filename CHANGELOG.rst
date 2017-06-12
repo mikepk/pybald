@@ -7,6 +7,8 @@ Release 0.5.0 (??????)
 * This remove the webasset pipeline from core pybald. The webasset pipeline was only used in a few projects and added complexity and numerous requirements to pybald.
 * The webasset pipeline will be re-designed and released as a supporting pybald package instead of included in the core.
 * This release also bumps the supporting library versions: Mako, SqlAlchemy, WTForms
+* Remove requirement for forked routes library, required behaviors have been included in the main routes project
+* Improve tests and test coverage
 
 Release 0.4.1 (February 26, 2016)
 --------------------------------
