@@ -1,11 +1,10 @@
 from __future__ import print_function
-# import os
-# import subprocess
 
 from webassets.filter import Filter
 from webassets.exceptions import FilterError
 
 from react import jsx
+
 
 class JsxFilter(Filter):
     name = 'jsx'
