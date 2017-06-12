@@ -12,11 +12,9 @@ sample_config=True,
 cache_path=None,
 # project_name="Sample Project",
 debug=True,
-template_helpers=['from pybald.core import assets'],
 # BUNDLE_SOURCE_PATHS=['tests/sample_project/front_end', 'tests/sample_project/sass'],
 path="",
 database_engine_uri='sqlite:///:memory:')
-
 
 
 class TestForms(unittest.TestCase):
@@ -103,5 +101,3 @@ class TestForms(unittest.TestCase):
         fs = TestForm(formdata=MockParams({'text': 'this is totally a test'}))
         if fs.validate():
             self.fail("The form validated when it shouldn't have")
-        else:
-            pass

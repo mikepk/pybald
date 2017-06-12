@@ -132,7 +132,6 @@ Project.py files generally look like a list of variable declarations. This doesn
     cache_path = None
     project_name = "Sample Project"
     debug = True
-    template_helpers = ['from pybald.core import assets']
     BUNDLE_SOURCE_PATHS = ['tests/sample_project/front_end', 'tests/sample_project/sass']
     database_engine_uri = 'sqlite:///:memory:'
 

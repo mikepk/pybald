@@ -10,7 +10,6 @@ test_config = dict(env_name="ConsoleTest",
                    cache_path=None,
                    project_name="Console Testing",
                    debug=True,
-                   template_helpers=['from pybald.core import assets'],
                    path="",
                    database_engine_uri='')
 
