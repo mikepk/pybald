@@ -42,6 +42,7 @@ try:
 except NameError:
     unicode = str
 
+
 # parse result keys
 class AssetUrl(dict):
     '''
@@ -102,9 +103,17 @@ class HTMLLiteral(unicode):
         return self.value
 
 
-def as_p(input_str):
-    lines = input_str.splitlines()
-    return unicode("".join([u"<p>{0}</p>".format(line) for line in lines]))
+class as_p(object):
+    def __init__(self, input_str):
+        self.str_value = input_str
+
+    def __str__(self):
+        return self.__html__()
+
+    def __html__(self):
+        '''Return the image in string form.'''
+        lines = self.str_value.splitlines()
+        return u"".join([u"<p>{0}</p>".format(line) for line in lines])
 
 
 class tag(object):
@@ -190,6 +199,7 @@ def plural(list_object):
 
 FRACTIONAL_SECOND = re.compile(r'\.\d+$')
 
+
 def humanize(date_string):
     '''Convert a date string into a 'humanized' relative string (like 1 day ago)'''
     date_format = "%Y-%m-%d %H:%M:%S"
@@ -214,7 +224,7 @@ def humanize(date_string):
         weeks = delta.days / 7
         if weeks == 1:
             plural = ''
-        return "%s week%s ago" % (str(weeks), plural)
+        return "%s week%s ago" % (str(int(weeks)), plural)
     elif delta.days >= 1:
         if delta.days == 1:
             plural = ''
@@ -235,22 +245,22 @@ def humanize(date_string):
 
 # From django.utils.html: Javascript escape characters
 _base_js_escapes = (
-    ('\\', '\\u005C'),
-    ('\'', '\\u0027'),
-    ('"', '\\u0022'),
-    ('>', '\\u003E'),
-    ('<', '\\u003C'),
-    ('&', '\\u0026'),
-    ('=', '\\u003D'),
-    ('-', '\\u002D'),
-    (';', '\\u003B'),
-    ('\u2028', '\\u2028'),
-    ('\u2029', '\\u2029')
+    (b'\\', b'\\u005C'),
+    (b'\'', b'\\u0027'),
+    (b'"', b'\\u0022'),
+    (b'>', b'\\u003E'),
+    (b'<', b'\\u003C'),
+    (b'&', b'\\u0026'),
+    (b'=', b'\\u003D'),
+    (b'-', b'\\u002D'),
+    (b';', b'\\u003B'),
+    (b'\u2028', b'\\u2028'),
+    (b'\u2029', b'\\u2029')
 )
 
 # From django.utils.html: Escape every ASCII character with a value less than 32.
 _js_escapes = (_base_js_escapes +
-               tuple([('%c' % z, '\\u%04X' % z) for z in range(32)]))
+               tuple([(b'%c' % z, b'\\u%04X' % z) for z in range(32)]))
 
 
 def js_escape(value):

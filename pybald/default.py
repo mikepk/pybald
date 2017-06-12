@@ -20,6 +20,7 @@ default_config = dict(
     # Asset Pipeline
     # =================
     USE_CDN=False,
+    DEFAULT_PROTOCOL="http",
     # Email
     # =================
     smtp_config={},
