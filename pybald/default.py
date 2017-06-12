@@ -20,13 +20,6 @@ default_config = dict(
     # Asset Pipeline
     # =================
     USE_CDN=False,
-    BUNDLE_ASSETS=False,
-    BUNDLE_AUTO_BUILD=True,
-    # these are relative to the project path
-    BUNDLE_SOURCE_PATHS=['/front_end', '/sass'],
-    # these are relative to the static file path (/public)
-    BUNDLE_OUTPUT_PATH='/min',
-    BUNDLE_FILTER_OPTIONS=[],
     # Email
     # =================
     smtp_config={},

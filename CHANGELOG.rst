@@ -1,6 +1,13 @@
 Pybald Changelog
 ================
 
+Release 0.5.0 (??????)
+--------------------------------
+* **Warning** - this release may not be compatible with previous pybald releases.
+* This remove the webasset pipeline from core pybald. The webasset pipeline was only used in a few projects and added complexity and numerous requirements to pybald.
+* The webasset pipeline will be re-designed and released as a supporting pybald package instead of included in the core.
+* This release also bumps the supporting library versions: Mako, SqlAlchemy, WTForms
+
 Release 0.4.1 (February 26, 2016)
 --------------------------------
 
