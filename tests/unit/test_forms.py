@@ -12,7 +12,6 @@ sample_config=True,
 cache_path=None,
 # project_name="Sample Project",
 debug=True,
-# BUNDLE_SOURCE_PATHS=['tests/sample_project/front_end', 'tests/sample_project/sass'],
 path="",
 database_engine_uri='sqlite:///:memory:')
 

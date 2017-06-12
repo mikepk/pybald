@@ -3,7 +3,11 @@ values that will be injected into templates. The basic rationale is that there
 are often values that you want non-technical people to control (phone numbers,
 marketing claims, addresses) and similar values. Using constants allows these
 individuals to use friendlier ini format but still have the values available
-for page templates.'''
+for page templates.
+'''
+# TODO: The constants helper object should probably do something 'safe' when
+# constants are deleted, maybe issuing a warning. Just a saftey net to avoid
+# breaking templates if sections or values are accidently deleted.
 try:
     from ConfigParser import ConfigParser as configparser
 except ImportError:
