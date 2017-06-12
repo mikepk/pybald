@@ -7,7 +7,7 @@ import pybald
 from pybald import context
 
 
-class TestTemplate(unittest.TestCase):
+class TestTextUtils(unittest.TestCase):
     def setUp(self):
         pybald.configure(config_file="tests/sample_project/project.py")
         # from tests.sample_project.sample import app
