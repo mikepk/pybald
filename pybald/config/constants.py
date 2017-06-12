@@ -10,9 +10,13 @@ from collections import namedtuple
 # tuples to surface the data. Inside the template the section/data of the
 # constants ini is dereferenced using constants.SECTION.KEY
 
-def read(filename='constants.ini'):
+
+def read(filename='constants.ini', constants_file=None):
     config = configparser()
-    config.read(filename)
+    if constants_file:
+        config.readfp(constants_file)
+    else:
+        config.read(filename)
     constants = namedtuple("Constant", config.sections())._make([
         namedtuple('Field', dict(config.items(section)).keys()
             )._make(dict(config.items(section)).values())
