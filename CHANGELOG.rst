@@ -3,9 +3,10 @@ Pybald Changelog
 
 Release 0.5.0 (??????)
 --------------------------------
-* **Warning** - this release may not be compatible with previous pybald releases *if* you were making use of the asset pipeline (bundles, bundle filters, JSX compilation)
-* This remove the webasset pipeline from core pybald. The webasset pipeline was only used in a few projects and added complexity and numerous requirements to pybald.
+* **Warning** - this release may not be compatible with previous pybald releases *if* you were making use of the asset pipeline (bundles, bundle filters, JSX compilation), utilizing the celery loader or the newrelic adapter
+* This removes the webasset pipeline from core pybald. The webasset pipeline was only used in a few projects and added complexity and numerous requirements to pybald.
 * The webasset pipeline will be re-designed and released as a supporting pybald package instead of included in the core.
+* The newrelic adapter and celery support code will also be re-designed and released as supporting pybald packages instead of included in the core.
 * This release also bumps the supporting library versions: Mako, SqlAlchemy, WTForms
 * Remove requirement for forked routes library, required behaviors have been included in the main routes project
 * Improve tests and test coverage
