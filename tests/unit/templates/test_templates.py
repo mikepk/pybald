@@ -9,7 +9,7 @@ from pybald.core.router import Router
 helpers = (
 ('page_js', '''${page.add_js('/test.js')}''', b'''<script src="/test.js?v=None"></script>''', {}),
 ('page_css', '''${page.add_css('/sample.css')}''', b'''<link type="text/css" href="/sample.css?v=None" media="screen" rel="stylesheet">''', {}),
-('date_humanize_moment_ago', '''${humanize(moment_ago)}''', b'just a moment ago', {'moment_ago': (datetime.now() - timedelta(seconds=59)).strftime("%Y-%m-%d %H:%M:%S")}),
+('date_humanize_moment_ago', '''${humanize(moment_ago)}''', b'just a moment ago', {'moment_ago': (datetime.now() - timedelta(seconds=55)).strftime("%Y-%m-%d %H:%M:%S")}),
 ('date_humanize_hour', '''${humanize(an_hour_ago)}''', b'1 hour ago', {'an_hour_ago': (datetime.now() - timedelta(minutes=65)).strftime("%Y-%m-%d %H:%M:%S")}),
 ('date_humanize_minutes', '''${humanize(minutes_ago)}''', b'15 minutes ago', {'minutes_ago': (datetime.now() - timedelta(minutes=15)).strftime("%Y-%m-%d %H:%M:%S")}),
 ('date_humanize_one_minute', '''${humanize(minute_ago)}''', b'1 minute ago', {'minute_ago': (datetime.now() - timedelta(seconds=68)).strftime("%Y-%m-%d %H:%M:%S")}),
