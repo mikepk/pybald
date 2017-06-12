@@ -23,7 +23,7 @@ class TestTemplate(unittest.TestCase):
                      ('test', 'tests'),
                      ('party', 'parties')]
         for singular, expected_plural in test_data:
-            assert text.pluralize(singular) == expected_plural
+            self.assertEqual(text.pluralize(singular), expected_plural)
 
     def test_ordinal_suffixes(self):
         '''Get the ordinal suffix for some numbers'''
@@ -34,8 +34,7 @@ class TestTemplate(unittest.TestCase):
                      (33, 'rd'),
                      (-52, 'nd')]
         for number, expected_suffix in test_data:
-            print(text.ordinal_suffix(number))
-            assert text.ordinal_suffix(number) == expected_suffix
+            self.assertEqual(text.ordinal_suffix(number), expected_suffix)
 
     def test_camel_to_underscore(self):
         '''Convert camelcase to undesrscore separated'''
@@ -45,8 +44,7 @@ class TestTemplate(unittest.TestCase):
                      ('Justacap', 'justacap'),
                      ('PybaldIsTHEGreatest', 'pybald_is_the_greatest')]
         for camel, expected_underscore in test_data:
-            print(text.camel_to_underscore(camel))
-            assert text.camel_to_underscore(camel) == expected_underscore
+            self.assertEqual(text.camel_to_underscore(camel), expected_underscore)
 
     def test_underscore_to_camel(self):
         '''Convert underscore separated to camel case'''
@@ -56,8 +54,7 @@ class TestTemplate(unittest.TestCase):
                      ('Justacap', 'justacap'),
                      ('PybaldIsTheGreatest', 'pybald_is_the_greatest')]
         for expected_camel, underscore in test_data:
-            print(text.underscore_to_camel(underscore))
-            assert text.underscore_to_camel(underscore) == expected_camel
+            self.assertEqual(text.underscore_to_camel(underscore), expected_camel)
 
     def test_accent_stripping(self):
         '''Strip diacriticals and accents from words'''
@@ -68,5 +65,4 @@ class TestTemplate(unittest.TestCase):
                      (u'resumé', u'resume')]
 
         for accented, unaccented in test_data:
-            print(text.strip_accents(accented))
-            assert text.strip_accents(accented) == unaccented
+            self.assertEqual(text.strip_accents(accented), unaccented)

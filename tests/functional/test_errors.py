@@ -1,6 +1,5 @@
 import unittest
 from webob import Request
-import re
 import pybald
 from pybald import context
 from pybald.core.router import Router
@@ -16,9 +15,6 @@ general_fault_response = '500 Internal Server Error\n\nThe server has either err
 
 
 def map(urls):
-    urls.connect('home', r'/', controller='sample')
-    urls.connect('variable_test', r'/variable_test/{variable}', controller='sample',
-                 action='variable_test')
     # errors
     urls.connect('throw_exception', r'/throw_exception', controller='sample',
                  action='throw_exception')

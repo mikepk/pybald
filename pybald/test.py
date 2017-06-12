@@ -7,6 +7,7 @@ from six.moves.urllib.parse import urlencode
 
 import re
 
+
 class Client(object):
     '''Web testing client for pybald'''
     def __init__(self, app):
