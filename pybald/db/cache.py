@@ -1,7 +1,7 @@
 from sqlalchemy.orm.attributes import instance_state
 
 import logging
-console = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 def child_relationships(obj):
@@ -66,26 +66,26 @@ class Cache(object):
     def check_needs_update(self, session, *pargs, **kargs):
         '''Check for objects in the SQLAlchemy session that are tagged as cached
         and are modified and then tag them for cache update on post commit.'''
-        # console.debug("CHECKING FOR CACHED OBJECTS...")
+        # log.debug("CHECKING FOR CACHED OBJECTS...")
         for obj in cached_objects(session):
-            # console.debug("FOUND OBJECT IN SESSION MARKED AS CACHED, OBJECT: {0}".format(type(obj)))
+            # log.debug("FOUND OBJECT IN SESSION MARKED AS CACHED, OBJECT: {0}".format(type(obj)))
             if obj.__needs_update__:
                 continue
             related = set([cr for cr in child_relationships(obj)])
             new_related_objects = (related - obj.__related__)
             if new_related_objects:
-                # console.debug("NEW CHILD OBJECTS LOADED IN SESSION: {0}".format(new_related_objects))
+                # log.debug("NEW CHILD OBJECTS LOADED IN SESSION: {0}".format(new_related_objects))
                 obj.__needs_update__ = True
                 continue
             changed = set(self.session.dirty | self.session.deleted)
             if not new_related_objects and not changed:
                 continue
             if obj in changed:
-                # console.debug("OBJECT IS DIRTY MARKING FOR UPDATE, OBJECT: {0}".format(type(obj)))
+                # log.debug("OBJECT IS DIRTY MARKING FOR UPDATE, OBJECT: {0}".format(type(obj)))
                 obj.__needs_update__ = True
                 continue
             if (changed & related):
-                # console.debug("THERE ARE DIRTY CHILDREN: {0}".format(dirty_children))
+                # log.debug("THERE ARE DIRTY CHILDREN: {0}".format(dirty_children))
                 obj.__needs_update__ = True
                 continue
 
@@ -94,6 +94,6 @@ class Cache(object):
         for obj in cached_objects_with_updates(session):
             # record needs update to false before inserting into the cache
             obj.__needs_update__ = False
-            console.debug("UPDATING MEMCACHE")
+            log.debug("UPDATING MEMCACHE")
             self.mc.set(obj.cache_key, obj)
 

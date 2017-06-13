@@ -8,7 +8,15 @@ from sqlalchemy.ext.mutable import Mutable
 from sqlalchemy.types import (
     TypeDecorator,
     VARCHAR,
+    PickleType
     )
+
+# py3 compatibility
+try:
+    unicode
+except NameError:
+    unicode = str
+from six import iteritems
 
 
 class ASCII(TypeDecorator):
@@ -78,6 +86,11 @@ class ZipPickler(object):
         return zlib.compress(pickle.dumps(obj, protocol))
 
 
+class ZipPickleType(PickleType):
+    def __init__(self, *pargs, **kargs):
+        super(ZipPickleType, self).__init__(pickler=ZipPickler(), *pargs, **kargs)
+
+
 class MutationDict(Mutable, dict):
     '''
     A dictionary that automatically emits change events for SQA
@@ -102,7 +115,7 @@ class MutationDict(Mutable, dict):
         Calls the internal setitem for the update method to maintain
         mutation tracking.
         '''
-        for k, v in dict(*args, **kwargs).iteritems():
+        for k, v in iteritems(dict(*args, **kwargs)):
             self[k] = v
 
     def __setitem__(self, key, value):
@@ -130,24 +143,16 @@ class MutationDict(Mutable, dict):
         """
         Wrap standard pop() to trigger self.changed()
         """
-        try:
-            result = super(MutationDict, self).pop(*pargs, **kargs)
-        except Exception:
-            raise
-        else:
-            self.changed()
-            return result
+        result = super(MutationDict, self).pop(*pargs, **kargs)
+        self.changed()
+        return result
 
     def popitem(self, *pargs, **kargs):
         """
         Wrap standard popitem() to trigger self.changed()
         """
-        try:
-            result = super(MutationDict, self).popitem(*pargs, **kargs)
-        except Exception:
-            raise
-        else:
-            self.changed()
-            return result
+        result = super(MutationDict, self).popitem(*pargs, **kargs)
+        self.changed()
+        return result
 
-__all__ = ['ASCII', 'JSONEncodedDict', 'ZipPickler', 'MutationDict']
+__all__ = ['ASCII', 'JSONEncodedDict', 'ZipPickler', 'MutationDict', 'ZipPickleType']
