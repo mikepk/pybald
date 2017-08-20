@@ -20,10 +20,10 @@ First we setup a new virtualenv, activate it, then we install pybald.
     ~$ source ./pyb_test/bin/activate
     (pyb_test)~$ pip install pybald
     Downloading/unpacking pybald
-      Downloading pybald-0.2.0.tar.gz
+      Downloading pybald-X.X.X.tar.gz
       Running setup.py egg_info for package pybald
      [...]
-    Successfully installed Mako-1.0.1 MarkupSafe-0.23 PyExecJS-1.1.0 PyReact-0.5.2 SQLAlchemy-1.0.8 WTForms-2.0.2 WebOb-1.4.1 alembic-0.7.7 cssmin-0.2.0 lxml-3.4.4 pybald pybald-routes-2.11 repoze.lru-0.6 rjsmin-1.0.10 six-1.9.0 webassets-0.10.1
+    Successfully installed [various packages]
       Cleaning up...
 
 
@@ -36,10 +36,10 @@ Just install pybald from pypi using pip.
 
     ~$ pip install pybald
     Downloading/unpacking pybald
-      Downloading pybald-0.2.0.tar.gz
+      Downloading pybald-X.X.X.tar.gz
       Running setup.py egg_info for package pybald
      [...]
-    Successfully installed Mako-1.0.1 MarkupSafe-0.23 PyExecJS-1.1.0 PyReact-0.5.2 SQLAlchemy-1.0.8 WTForms-2.0.2 WebOb-1.4.1 alembic-0.7.7 cssmin-0.2.0 lxml-3.4.4 pybald pybald-routes-2.11 repoze.lru-0.6 rjsmin-1.0.10 six-1.9.0 webassets-0.10.1
+    Successfully installed [various packages]
       Cleaning up...
 
 Running your first Pybald Application
@@ -128,4 +128,4 @@ Boom! You're running a pybald application.
 
 .. note::
 
-    Most of the time you won't need to know or care, but an interesting detail worth mentioning at this point, is that the ``response object`` is also a WSGI application, just like the core pybald application. This allows for some interesting flexibility in chaining and re-routing application behavior. The response object will accept ``environ, start_response`` call signature just like the Router or any other WSGI app. Many of the interfaces of Pybald use the WSGI interace allowing for a great deal of flexibility.
+    Most of the time you won't need to know or care, but an interesting detail worth mentioning at this point is that the ``response object`` is also a WSGI application just like the core pybald application. This allows for some interesting flexibility in chaining and re-routing application behavior. The response object will accept ``environ, start_response`` call signature just like the Router or any other WSGI app. Many of the interfaces of Pybald use the WSGI interace allowing for a great deal of flexibility.

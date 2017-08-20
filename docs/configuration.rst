@@ -31,11 +31,8 @@ Pybald has a set of default configuration values that will always be used as the
     >>> from pybald.default import default_config
     >>> from pprint import pprint
     >>> pprint(default_config)
-    {'BUNDLE_ASSETS': False,
-     'BUNDLE_AUTO_BUILD': True,
-     'BUNDLE_FILTER_OPTIONS': [],
-     'BUNDLE_OUTPUT_PATH': '/min',
-     'BUNDLE_SOURCE_PATHS': ['/front_end', '/sass'],
+    {'DEFAULT_PROTOCOL': 'http',
+     'STATIC_SOURCES': None,
      'USE_CDN': False,
      'cache_path': 'tmp/viewscache',
      'database_engine_args': {},

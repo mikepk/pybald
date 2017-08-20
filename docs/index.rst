@@ -71,7 +71,7 @@ Indices and tables
 Dependencies
 ============
 
-Python 2.6 or 2.7 are recommended. Python 3 support is coming soon.
+Pybald works with Python 2.7 and Python 3 verions above and including 3.5.
 
 Pybald currently depends on, and will automatically install, the following libraries:
 
