@@ -1,7 +1,7 @@
 Pybald Changelog
 ================
 
-Release 0.5.0 (??????)
+Release 0.5.0 (August 19, 2017)
 --------------------------------
 * **Warning** - this release may not be compatible with previous pybald releases *if* you were making use of the asset pipeline (bundles, bundle filters, JSX compilation), utilizing the celery loader or the newrelic adapter
 * This removes the webasset pipeline from core pybald. The webasset pipeline was only used in a few projects and added complexity and numerous requirements to pybald.
