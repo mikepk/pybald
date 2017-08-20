@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Background &#8212; Pybald 0.5.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Quick Start" href="../getting_started/" />
+    <link rel="prev" title="Pybald" href="../" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+<link href="../_static/solarized-dark.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../getting_started/" title="Quick Start"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../" title="Pybald"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../">
+              <img class="logo" src="../_static/pybald.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Background</a><ul>
+<li><a class="reference internal" href="#why">Why?</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../"
+                        title="previous chapter">Pybald</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../getting_started/"
+                        title="next chapter">Quick Start</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/intro.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="background">
+<h1>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="why">
+<h2>Why?<a class="headerlink" href="#why" title="Permalink to this headline">¶</a></h2>
+<p>If I had to summarize the basic philosophy of Pybald it would be the following it is <em>for lazy hackers that know what they’re doing.</em></p>
+<p>Pybald was built initially as an exploration of what makes up a modern web framework. It was not originally intended to be “industrial strength” but as a way to experiment with various python web components and how they fit together. After being used to build some non-trivial web projects, Pybald has evolved from this early incarnation to be a fairly complete web framework with its own personality. It’s still clean and light on initial configuration but it is also relatively powerful since it makes use of many “best-of-breed” components from the Python ecosystem and uses consistent interfaes like the <a class="reference external" href="http://wsgi.readthedocs.org/en/latest/">WSGI</a> interface.</p>
+<p>The goals behind Pybald:</p>
+<ul class="simple">
+<li>Fast and easy startup - get running quickly with limited configuration and sane defaults to minimize initial required decisions</li>
+<li>Brevity and clarity - build the basics of a python web framework core without a lot of complex code. Make it easy to learn and hack.</li>
+<li>Opinionated but hackable - one set of components is “official” and installed by default but the system is not a black box</li>
+<li>More <em>batteries</em> <em>included</em> than micro frameworks like Flask, but not not as monolithic as some other frameworks. “Batteries” are more often than not taken from the Python ecosystem and incorporated rather than custom solutions</li>
+<li>Support quick prototyping, but don’t limit options as a project grows</li>
+<li>Strike a balance of <a class="reference external" href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention over configuration</a></li>
+<li>Limited, or at least transparent, “Magic” - A lot of frameworks provide behaviors that seem “magical” without making clear how that magic is accomplished. Pybald’s “magic” is limited, easily accessible, and usually explicitly invoked</li>
+<li>Keep the interfaces simple and accessible, i.e. use <a class="reference external" href="http://wsgi.readthedocs.org/en/latest/">WSGI</a> for the web interfaces and utilize WSGI middleware</li>
+<li><em>Don’t coddle me</em> - give the developer the power to execute logic in the templates, don’t hide RDBMS implementation details and SQL, give (easy) access to the internals of the framework, give developers power and flexibility and don’t impose design hygine</li>
+</ul>
+<p>What Pybald is <strong>not</strong>:</p>
+<ul class="simple">
+<li>Not Designed for maximum configurability. It’s relatively trivial to use a different template engine or url dispatcher but that’s not the goal of the project. There are other frameworks that serve that need like <a class="reference external" href="http://www.pylonsproject.org/">Pylons / Pyramid</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../getting_started/" title="Quick Start"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../" title="Pybald"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+  
+    <div class="footer">
+        &copy; Copyright 2014, Michael Kowalchik.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>

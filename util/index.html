@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Utilities &#8212; Pybald 0.5.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="prev" title="Models and ORM" href="../model/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+<link href="../_static/solarized-dark.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../model/" title="Models and ORM"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api_reference/" accesskey="U">API Reference</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../">
+              <img class="logo" src="../_static/pybald.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Utilities</a><ul>
+<li><a class="reference internal" href="#util-project-utilities"><code class="docutils literal"><span class="pre">util</span></code> - project utilities</a></li>
+<li><a class="reference internal" href="#module-pybald.util.console"><code class="docutils literal"><span class="pre">console</span></code> - Interactive REPL / web console</a></li>
+<li><a class="reference internal" href="#module-pybald.util.static_serve"><code class="docutils literal"><span class="pre">static_serve</span></code> - Simple debugging static server</a></li>
+<li><a class="reference internal" href="#module-pybald.util.text"><code class="docutils literal"><span class="pre">text</span></code> - text processing helper functions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../model/"
+                        title="previous chapter">Models and ORM</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/util.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="utilities">
+<h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="util-project-utilities">
+<h2><code class="xref py py-mod docutils literal"><span class="pre">util</span></code> - project utilities<a class="headerlink" href="#util-project-utilities" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pybald.util.console">
+<span id="console-interactive-repl-web-console"></span><h2><code class="xref py py-mod docutils literal"><span class="pre">console</span></code> - Interactive REPL / web console<a class="headerlink" href="#module-pybald.util.console" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pybald.util.console.Console">
+<em class="property">class </em><code class="descclassname">pybald.util.console.</code><code class="descname">Console</code><span class="sig-paren">(</span><em>project_name</em>, <em>package_name=None</em>, <em>app=None</em>, <em>additional_symbols=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.console.Console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pybald console including history buffer per project.</p>
+<dl class="method">
+<dt id="pybald.util.console.Console.init_history">
+<code class="descname">init_history</code><span class="sig-paren">(</span><em>histfile</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.console.Console.init_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pybald.util.console.Console.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.console.Console.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the console with the project, controllers,
+and models defined in the console’s namespace.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.util.console.Console.save_history">
+<code class="descname">save_history</code><span class="sig-paren">(</span><em>histfile</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.console.Console.save_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.console.start_console">
+<code class="descclassname">pybald.util.console.</code><code class="descname">start_console</code><span class="sig-paren">(</span><em>app</em>, <em>options=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.console.start_console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a console with a particular app.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>app</strong> – wsgi application passed in</li>
+<li><strong>options</strong> – an object or named tuple containing the options for the
+web server such as host and port. Generally an argparser
+object is passed in for command line invokation</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>A pybald application must be configured before starting a console.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pybald.util.static_serve">
+<span id="static-serve-simple-debugging-static-server"></span><h2><code class="xref py py-mod docutils literal"><span class="pre">static_serve</span></code> - Simple debugging static server<a class="headerlink" href="#module-pybald.util.static_serve" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pybald.util.static_serve.StaticServer">
+<em class="property">class </em><code class="descclassname">pybald.util.static_serve.</code><code class="descname">StaticServer</code><span class="sig-paren">(</span><em>application</em>, <em>path</em>, <em>browser_caching=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.static_serve.StaticServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <em>very</em> simple static asset server. Do not use in production, just
+for test or development use.</p>
+<p>StaticServer is a WSGI application that can be included in the WSGI
+pipeline to intercept static requests (and perform file system lookups).
+If the file lookup fails, the pipeline is allowed to continue to any
+dynamic components.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>application</strong> – is the remaining WSGI pipeline to connect to.</li>
+<li><strong>path</strong> – is directory where static files are stored</li>
+<li><strong>browser_caching</strong> – whether to send 30d expires future headers</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pybald.util.static_serve.StaticServer.send_file">
+<code class="descname">send_file</code><span class="sig-paren">(</span><em>file_path</em>, <em>size</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.static_serve.StaticServer.send_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a file from the filesystem and yield 64k chunks of the file
+as a generator / iterable.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pybald.util.text">
+<span id="text-text-processing-helper-functions"></span><h2><code class="xref py py-mod docutils literal"><span class="pre">text</span></code> - text processing helper functions<a class="headerlink" href="#module-pybald.util.text" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pybald.util.text.camel_to_underscore">
+<code class="descclassname">pybald.util.text.</code><code class="descname">camel_to_underscore</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.text.camel_to_underscore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert CamelCase text into underscore_separated text.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.text.ordinal_suffix">
+<code class="descclassname">pybald.util.text.</code><code class="descname">ordinal_suffix</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.text.ordinal_suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the ordinal suffix of an interger (1st, 2nd, 3rd).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.text.pluralize">
+<code class="descclassname">pybald.util.text.</code><code class="descname">pluralize</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.text.pluralize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a pluralized from of the input text following simple naive
+english language pluralization rules.</p>
+<p>Smart enough to turn fox into foxes and quiz into quizzes. Does not catch
+all pluralization rules, however.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.text.strip_accents">
+<code class="descclassname">pybald.util.text.</code><code class="descname">strip_accents</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.text.strip_accents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip diacriticals from characters. This will change the meaning of words
+but for places where unicode can’t be used (or ASCII only) francais looks
+better than fran-ais or fran?ais.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.util.text.underscore_to_camel">
+<code class="descclassname">pybald.util.text.</code><code class="descname">underscore_to_camel</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.text.underscore_to_camel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert underscore_separated text into CamelCase text.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../model/" title="Models and ORM"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api_reference/" >API Reference</a> &#187;</li> 
+      </ul>
+    </div>
+  
+    <div class="footer">
+        &copy; Copyright 2014, Michael Kowalchik.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Templates &#8212; Pybald 0.5.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Controllers" href="../controllers/" />
+    <link rel="prev" title="Magic" href="../magic/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+<link href="../_static/solarized-dark.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../controllers/" title="Controllers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../magic/" title="Magic"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../">
+              <img class="logo" src="../_static/pybald.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Templates</a><ul>
+<li><a class="reference internal" href="#setting-up-templates">Setting up templates</a></li>
+<li><a class="reference internal" href="#your-first-template">Your first template</a></li>
+<li><a class="reference internal" href="#using-the-template-in-a-request">Using the template in a request</a></li>
+<li><a class="reference internal" href="#using-data-in-templates">Using data in templates</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../magic/"
+                        title="previous chapter">Magic</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../controllers/"
+                        title="next chapter">Controllers</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/templates.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="templates">
+<h1>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h1>
+<p>The pybald web framework uses Mako templates by default for rendering content.</p>
+<div class="section" id="setting-up-templates">
+<h2>Setting up templates<a class="headerlink" href="#setting-up-templates" title="Permalink to this headline">¶</a></h2>
+<div class="sidebar">
+<p class="first sidebar-title">Why <code class="docutils literal"><span class="pre">app/views</span></code>?</p>
+<p class="last">While pybald is generally designed to be quick to start and play with, it also tries to help you be ready for when your project grows. Pybald encourages a particular application path structure to help you stay organized longer term. In general application code is encouraged to be put in <code class="docutils literal"><span class="pre">app/</span></code> with the subfolders of <code class="docutils literal"><span class="pre">app/models</span></code>, <code class="docutils literal"><span class="pre">app/views</span></code> and <code class="docutils literal"><span class="pre">app/controllers</span></code>. Pybald is also designed to be flexible, so we’re ignoring that structure for our simple example.</p>
+</div>
+<p>Pybald uses mako template files. By default, the <code class="docutils literal"><span class="pre">template_path</span></code> is defined as <code class="docutils literal"><span class="pre">app/views</span></code>. We’re going to override the default path that pybald normally looks for template files for our simple example app. Let’s update our small example pybald app to include the <code class="docutils literal"><span class="pre">template_path</span></code> configuration directive and set it to the root path of the project. Where we call <code class="docutils literal"><span class="pre">pybald.configure</span></code> we’ll add <code class="docutils literal"><span class="pre">template_path=&quot;.&quot;</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># configure our pybald application</span>
+<span class="n">pybald</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">template_path</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once we’ve done this, pybald will know to look for template files in the same path as the root application.</p>
+</div>
+<div class="section" id="your-first-template">
+<h2>Your first template<a class="headerlink" href="#your-first-template" title="Permalink to this headline">¶</a></h2>
+<p>Lets create a template file and call it <code class="docutils literal"><span class="pre">home.html.template</span></code>. This will be an html template to generate content for our application. In this file, lets add the following content and save the file. This isn’t terribly exciting for now, but we’ll show more of the power of templates later.</p>
+<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello world!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Now let’s render this template. Let’s go ahead and start up our console again using <code class="docutils literal"><span class="pre">python</span> <span class="pre">sample.py</span> <span class="pre">console</span></code>. We’ll import the pybald <em>context</em> and then use the <code class="docutils literal"><span class="pre">render</span></code> function in the current context.</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go">Route name Methods Path</span>
+<span class="go">home               /</span>
+<span class="go">Welcome to the Pybald interactive console</span>
+<span class="go"> ** project: sample.py **</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pybald</span> <span class="kn">import</span> <span class="n">context</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">content</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s2">&quot;home.html.template&quot;</span><span class="p">)</span>
+<span class="go">Using template: home.html.template</span>
+<span class="go">Rendering template</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">content</span>
+<span class="go">&lt;html&gt;</span>
+<span class="go">&lt;head&gt;&lt;/head&gt;</span>
+<span class="go">&lt;body&gt;</span>
+<span class="go">&lt;h1&gt;Hello world!&lt;/h1&gt;</span>
+<span class="go">&lt;/body&gt;</span>
+<span class="go">&lt;/html&gt;</span>
+</pre></div>
+</div>
+<p>We’ve just rendered a simple template to a string.</p>
+<p>The reason we use the context is because the template system needs to have a certain amount of configuration to run correctly and the context represents the current configuration. For example, the template system needs to know where to look for the template files and what template filters to apply (described later).</p>
+</div>
+<div class="section" id="using-the-template-in-a-request">
+<h2>Using the template in a request<a class="headerlink" href="#using-the-template-in-a-request" title="Permalink to this headline">¶</a></h2>
+<p>We’ve just rendered a template, but we got a string value back, how do we use the results in our web requests? The answer is simple: we just return that string from one of our <em>actions</em>.</p>
+<p>We can update our sample application to return the rendered template.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
+<span class="kn">from</span> <span class="nn">pybald</span> <span class="kn">import</span> <span class="n">context</span>
+<span class="kn">from</span> <span class="nn">pybald.core.controllers</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">action</span>
+<span class="kn">from</span> <span class="nn">pybald.core.router</span> <span class="kn">import</span> <span class="n">Router</span>
+
+<span class="c1"># configure our pybald application</span>
+<span class="n">pybald</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">template_path</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="n">urls</span><span class="p">):</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">HomeController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+    <span class="nd">@action</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
+
+<span class="c1"># this is the WSGI pipeline</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">routes</span><span class="o">=</span><span class="nb">map</span><span class="p">,</span> <span class="n">controllers</span><span class="o">=</span><span class="n">Controller</span><span class="o">.</span><span class="n">registry</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we can run our application and initiate a simulated web request as before, only this time we’ll return the results of a template render.</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go">Route name Methods Path</span>
+<span class="go">home               /</span>
+<span class="go">Welcome to the Pybald interactive console</span>
+<span class="go"> ** project: sample.py **</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="go">====================================== / ======================================</span>
+<span class="go">Method: GET</span>
+<span class="go">action: index</span>
+<span class="go">controller: home</span>
+<span class="go">Using template: /home.html.template</span>
+<span class="go">Rendering template</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">resp</span>
+<span class="go">200 OK</span>
+<span class="go">Content-Type: text/html; charset=utf-8</span>
+<span class="go">Content-Length: 65</span>
+
+<span class="go">&lt;html&gt;</span>
+<span class="go">&lt;head&gt;&lt;/head&gt;</span>
+<span class="go">&lt;body&gt;</span>
+<span class="go">&lt;h1&gt;Hello world!&lt;/h1&gt;</span>
+<span class="go">&lt;/body&gt;</span>
+<span class="go">&lt;/html&gt;</span>
+</pre></div>
+</div>
+<p>You’ll notice that in this example we’ve just used <code class="docutils literal"><span class="pre">&quot;home&quot;</span></code> for the argument to <code class="docutils literal"><span class="pre">context.render</span></code>. This is one of the conveinience behaviors of pybald, the default file extension for html templates is <code class="docutils literal"><span class="pre">.html.template</span></code> so you don’t have to explicitly use the full filename.</p>
+</div>
+<div class="section" id="using-data-in-templates">
+<h2>Using data in templates<a class="headerlink" href="#using-data-in-templates" title="Permalink to this headline">¶</a></h2>
+<p>Now lets do something interesting with the template. Templates allow us to bind data to them and use them to create variables and execute template logic.</p>
+<p>First lets update the template to create a placeholder, a variable. The syntax to add an expression in Mako is <code class="docutils literal"><span class="pre">${}</span></code> so below we’ve added a variable <code class="docutils literal"><span class="pre">${name}</span></code> to the template.</p>
+<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello world!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Greetings to ${name}<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>If we attempt to render this template, we’ll get a surprise.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../controllers/" title="Controllers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../magic/" title="Magic"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+  
+    <div class="footer">
+        &copy; Copyright 2014, Michael Kowalchik.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>

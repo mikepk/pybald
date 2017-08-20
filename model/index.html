@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Models and ORM &#8212; Pybald 0.5.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Utilities" href="../util/" />
+    <link rel="prev" title="Middleware" href="../middleware/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+<link href="../_static/solarized-dark.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../util/" title="Utilities"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../middleware/" title="Middleware"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api_reference/" accesskey="U">API Reference</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../">
+              <img class="logo" src="../_static/pybald.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../middleware/"
+                        title="previous chapter">Middleware</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../util/"
+                        title="next chapter">Utilities</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/model.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="models-and-orm">
+<h1>Models and ORM<a class="headerlink" href="#models-and-orm" title="Permalink to this headline">¶</a></h1>
+<p>Pybald models are a fairly thin wrapper around the <a class="reference external" href="http://sqlalchemy.org/">SqlAlchemy</a> ORM.</p>
+<span class="target" id="module-pybald.core.models"></span><dl class="class">
+<dt id="pybald.core.models.ContextBoundModels">
+<em class="property">class </em><code class="descclassname">pybald.core.models.</code><code class="descname">ContextBoundModels</code><span class="sig-paren">(</span><em>config=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.models.ContextBoundModels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a ‘bound’ set of model definitions to a particular context</p>
+<dl class="method">
+<dt id="pybald.core.models.ContextBoundModels.create_session">
+<code class="descname">create_session</code><span class="sig-paren">(</span><em>engine=None</em>, <em>session_args=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.models.ContextBoundModels.create_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pybald.core.models.make_model_class">
+<code class="descclassname">pybald.core.models.</code><code class="descname">make_model_class</code><span class="sig-paren">(</span><em>Base</em>, <em>db</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.models.make_model_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a series of classes for models that are bound to a context.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../util/" title="Utilities"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../middleware/" title="Middleware"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api_reference/" >API Reference</a> &#187;</li> 
+      </ul>
+    </div>
+  
+    <div class="footer">
+        &copy; Copyright 2014, Michael Kowalchik.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>

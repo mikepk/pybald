@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Middleware &#8212; Pybald 0.5.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Models and ORM" href="../model/" />
+    <link rel="prev" title="Pybald Core" href="../core/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+<link href="../_static/solarized-dark.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../model/" title="Models and ORM"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../core/" title="Pybald Core"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api_reference/" accesskey="U">API Reference</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../">
+              <img class="logo" src="../_static/pybald.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../core/"
+                        title="previous chapter">Pybald Core</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../model/"
+                        title="next chapter">Models and ORM</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/middleware.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pybald.core.middleware.sessions">
+<span id="middleware"></span><h1>Middleware<a class="headerlink" href="#module-pybald.core.middleware.sessions" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pybald.core.middleware.sessions.SessionManager">
+<em class="property">class </em><code class="descclassname">pybald.core.middleware.sessions.</code><code class="descname">SessionManager</code><span class="sig-paren">(</span><em>application=None</em>, <em>days=14</em>, <em>session_class=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.middleware.sessions.SessionManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Code to handle anonymous and user sessions, implemented as WSGI middleware.</p>
+</dd></dl>
+
+<span class="target" id="module-pybald.core.middleware.users"></span><dl class="class">
+<dt id="pybald.core.middleware.users.UserManager">
+<em class="property">class </em><code class="descclassname">pybald.core.middleware.users.</code><code class="descname">UserManager</code><span class="sig-paren">(</span><em>application=None</em>, <em>user_class=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.middleware.users.UserManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Code to manage users, implemented as WSGI middleware.</p>
+<p>This middleware will set REMOTE_USER as well as the pybald context object 
+within the WSGI environ. This allows any other WSGI or pybald aware code
+to inspect the environ for the current authenticated user.</p>
+</dd></dl>
+
+<span class="target" id="module-pybald.core.middleware.db_middleware"></span><dl class="class">
+<dt id="pybald.core.middleware.db_middleware.DbMiddleware">
+<em class="property">class </em><code class="descclassname">pybald.core.middleware.db_middleware.</code><code class="descname">DbMiddleware</code><span class="sig-paren">(</span><em>application=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.middleware.db_middleware.DbMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd><p>The database middleware provides three behaviors, committing
+transactions at the end of the request, rolling back database transactions
+if errors occur and forcibly closing the session
+at the end of the web request to avoid dangling connections.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pybald.core.middleware.db_middleware.EndPybaldMiddleware">
+<em class="property">class </em><code class="descclassname">pybald.core.middleware.db_middleware.</code><code class="descname">EndPybaldMiddleware</code><span class="sig-paren">(</span><em>application</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.middleware.db_middleware.EndPybaldMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utilitiy middleware to force remove current session at the end of
+the request.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../model/" title="Models and ORM"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../core/" title="Pybald Core"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api_reference/" >API Reference</a> &#187;</li> 
+      </ul>
+    </div>
+  
+    <div class="footer">
+        &copy; Copyright 2014, Michael Kowalchik.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>

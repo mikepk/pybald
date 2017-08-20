@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Pybald Core &#8212; Pybald 0.5.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Middleware" href="../middleware/" />
+    <link rel="prev" title="API Reference" href="../api_reference/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+<link href="../_static/solarized-dark.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../middleware/" title="Middleware"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../api_reference/" title="API Reference"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api_reference/" accesskey="U">API Reference</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../">
+              <img class="logo" src="../_static/pybald.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Pybald Core</a><ul>
+<li><a class="reference internal" href="#module-pybald.core.templates"><code class="docutils literal"><span class="pre">templates</span></code> - template/view handling</a></li>
+<li><a class="reference internal" href="#action-decorator-to-turn-methods-into-actions"><code class="docutils literal"><span class="pre">action()</span></code> - decorator to turn methods into actions</a></li>
+<li><a class="reference internal" href="#controller-simple-base-class-that-pybald-controllers-can-optionally-subclass"><code class="docutils literal"><span class="pre">Controller</span></code> - simple base class that pybald controllers can optionally subclass</a></li>
+<li><a class="reference internal" href="#module-pybald.core.router"><code class="docutils literal"><span class="pre">router</span></code> - pybald core, url dispatch, method munging, WSGI app</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../api_reference/"
+                        title="previous chapter">API Reference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../middleware/"
+                        title="next chapter">Middleware</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/core.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pybald-core">
+<h1>Pybald Core<a class="headerlink" href="#pybald-core" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pybald.core.templates">
+<span id="templates-template-view-handling"></span><h2><code class="xref py py-mod docutils literal"><span class="pre">templates</span></code> - template/view handling<a class="headerlink" href="#module-pybald.core.templates" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pybald.core.templates.TemplateEngine">
+<em class="property">class </em><code class="descclassname">pybald.core.templates.</code><code class="descname">TemplateEngine</code><span class="sig-paren">(</span><em>template_path=None</em>, <em>cache_path=None</em>, <em>helpers=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.templates.TemplateEngine" title="Permalink to this definition">¶</a></dt>
+<dd><p>The basic template engine, looks up templates and renders them.
+Uses the mako template system</p>
+<dl class="method">
+<dt id="pybald.core.templates.TemplateEngine.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>template=None</em>, <em>data={}</em>, <em>format=’html’</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.templates.TemplateEngine.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the template.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>template</strong> – The name of the template in the filesystem to retrieve
+for rendering.</li>
+<li><strong>data</strong> – A dictionary that represents the context to render inside
+the template. Keys in this dictionary will be available
+to the template.</li>
+<li><strong>format</strong> – A string specifying the format type to return (e.g. ‘html’,
+‘json’, ‘xml’)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Calls _get_template to retrieve the template and then renders it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.core.templates.TemplateEngine._get_template">
+<code class="descname">_get_template</code><span class="sig-paren">(</span><em>template</em>, <em>format=’html’</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.templates.TemplateEngine._get_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the proper template from the Mako template system.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>template</strong> – The name of the template in the filesystem to retrieve
+for rendering.</li>
+<li><strong>format</strong> – A string specifying the format for the template (html,
+json, xml, etc…), overrides the format specified in
+the data dictionary.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The _get_template method of the template engine constructs a template
+name based on the template_id and the format and retrieves it from the
+Mako template system.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.core.templates.TemplateEngine.form_render">
+<code class="descname">form_render</code><span class="sig-paren">(</span><em>template_name=None</em>, <em>format=’form’</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.templates.TemplateEngine.form_render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render the form for a specific model using formalchemy.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>template_name</strong> – The name of the template to search for and
+render for a form</li>
+<li><strong>kargs</strong> – the data to render in the context of the form
+template</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-pybald.core.controllers"></span></div>
+<div class="section" id="action-decorator-to-turn-methods-into-actions">
+<h2><a class="reference internal" href="#pybald.core.controllers.action" title="pybald.core.controllers.action"><code class="xref py py-meth docutils literal"><span class="pre">action()</span></code></a> - decorator to turn methods into actions<a class="headerlink" href="#action-decorator-to-turn-methods-into-actions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pybald.core.controllers.action">
+<code class="descclassname">pybald.core.controllers.</code><code class="descname">action</code><span class="sig-paren">(</span><em>method</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.controllers.action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorates methods that are WSGI apps to turn them into pybald-style actions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>method</strong> – A method to turn into a pybald-style action.</td>
+</tr>
+</tbody>
+</table>
+<p>This decorator is usually used to take the method of a controller instance
+and add some syntactic sugar around it to allow the method to use WebOb
+Request and Response objects. It will work with any method that
+implements the WSGI spec.</p>
+<p>It allows actions to work with WebOb request / response objects and handles
+default behaviors, such as displaying the view when nothing is returned,
+or setting up a plain text Response if a string is returned. It also
+assigns instance variables from the <code class="docutils literal"><span class="pre">pybald.extension</span></code> environ variables
+that can be set from other parts of the WSGI pipeline.</p>
+<p>This decorator is optional but recommended for making working
+with requests and responses easier.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="controller-simple-base-class-that-pybald-controllers-can-optionally-subclass">
+<h2><a class="reference internal" href="#pybald.core.controllers.Controller" title="pybald.core.controllers.Controller"><code class="xref py py-class docutils literal"><span class="pre">Controller</span></code></a> - simple base class that pybald controllers can optionally subclass<a class="headerlink" href="#controller-simple-base-class-that-pybald-controllers-can-optionally-subclass" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pybald.core.controllers.Controller">
+<em class="property">class </em><code class="descclassname">pybald.core.controllers.</code><code class="descname">Controller</code><span class="sig-paren">(</span><em>*pargs</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.controllers.Controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base Controller that provides a registry mount</p>
+<p>The registry keeps track of all countrollers defined in the project. The
+Controller class also has some minor convenience methods attached.</p>
+<dl class="method">
+<dt id="pybald.core.controllers.Controller._not_found">
+<code class="descname">_not_found</code><span class="sig-paren">(</span><em>text=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.controllers.Controller._not_found" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise the 404 http_client_error exception.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.core.controllers.Controller._redirect_to">
+<code class="descname">_redirect_to</code><span class="sig-paren">(</span><em>*pargs</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.controllers.Controller._redirect_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Redirect the controller</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.core.controllers.Controller._status">
+<code class="descname">_status</code><span class="sig-paren">(</span><em>code</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.controllers.Controller._status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise an http_client_error exception using a specific code</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pybald.core.router">
+<span id="router-pybald-core-url-dispatch-method-munging-wsgi-app"></span><h2><code class="xref py py-mod docutils literal"><span class="pre">router</span></code> - pybald core, url dispatch, method munging, WSGI app<a class="headerlink" href="#module-pybald.core.router" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pybald.core.router.Router">
+<em class="property">class </em><code class="descclassname">pybald.core.router.</code><code class="descname">Router</code><span class="sig-paren">(</span><em>application=None</em>, <em>routes=None</em>, <em>controllers=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.router.Router" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Router object, the core of the pybald framework.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>application</strong> – WSGI application/middleware that is to be
+<em>wrapped</em> by the router in the web app pipeline.</li>
+<li><strong>routes</strong> – A routing function that takes a mapper (for parsing and
+matching urls).</li>
+<li><strong>controllers</strong> – A registry of all loaded controllers. This is
+required to do routing lookups. This is also a
+security precaution since only registered
+controllers can be matched against.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pybald.core.router.Router.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>environ</em>, <em>start_response</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.router.Router.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Router instance is a WSGI app. It accepts the standard WSGI call
+signature of <code class="docutils literal"><span class="pre">environ</span></code>, <code class="docutils literal"><span class="pre">start_response</span></code>.</p>
+<p>The Router has a few jobs. First it uses the Routes package to
+compare the requested path to available url patterns that have
+been loaded and passed to the Router upon init.</p>
+<p>Router is the most <em>framework-like</em> component of Pybald. In addition to
+dispatching urls to controllers, it also allows ‘method override’
+behavior allowing other HTTP methods to be invoked such as <code class="docutils literal"><span class="pre">put</span></code> and
+<code class="docutils literal"><span class="pre">delete</span></code> from web clients that don’t support them natively.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>environ</strong> – WSGI CGI-like request environment</li>
+<li><strong>start_response</strong> – WSGI callback for starting the response and
+setting HTTP response headers</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.core.router.Router.get_handler">
+<code class="descname">get_handler</code><span class="sig-paren">(</span><em>urlvars</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.router.Router.get_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that returns the callable code mapped to this current
+request.</p>
+<p>This method can be overriden to change the behavior of mapping.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybald.core.router.Router.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>controllers</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.core.router.Router.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Walks the controller registry and builds the lookup table for
+controller classes to match against.</p>
+<p>Does some text munging to change the camel-case class names into
+underscore-separated url like names. (HomeController to home)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>controllers</strong> – A controller registry, a list of all controllers
+that will be used with this application.</td>
+</tr>
+</tbody>
+</table>
+<p>All controller candidates are loaded into a hash to look up
+the matched “controller” urlvar against.</p>
+<p>The _controller suffix is removed from the module name for the url
+route mapping table (so controller=”home” matches home_controller).</p>
+<p>This method is called only once at the start of a pybald application.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../middleware/" title="Middleware"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../api_reference/" title="API Reference"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api_reference/" >API Reference</a> &#187;</li> 
+      </ul>
+    </div>
+  
+    <div class="footer">
+        &copy; Copyright 2014, Michael Kowalchik.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>

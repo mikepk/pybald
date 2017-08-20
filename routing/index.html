@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Routing and URLs &#8212; Pybald 0.5.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Using Pybald" href="../using/" />
+    <link rel="prev" title="Configuration" href="../configuration/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+<link href="../_static/solarized-dark.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../using/" title="Using Pybald"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../configuration/" title="Configuration"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../">
+              <img class="logo" src="../_static/pybald.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Routing and URLs</a><ul>
+<li><a class="reference internal" href="#defining-routes">Defining Routes</a><ul>
+<li><a class="reference internal" href="#the-connect-method">The <code class="docutils literal"><span class="pre">connect</span></code> method</a><ul>
+<li><a class="reference internal" href="#symbolic-names">Symbolic Names</a></li>
+<li><a class="reference internal" href="#url-path">URL Path</a></li>
+<li><a class="reference internal" href="#controller-and-action-variables"><code class="docutils literal"><span class="pre">controller</span></code> and <code class="docutils literal"><span class="pre">action</span></code> Variables</a></li>
+<li><a class="reference internal" href="#conditions">Conditions</a></li>
+<li><a class="reference internal" href="#additional-keyword-arguments">Additional Keyword Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capturing-variables">Capturing Variables</a><ul>
+<li><a class="reference internal" href="#variable-requirements">Variable Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#restful-resources">RESTful Resources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../configuration/"
+                        title="previous chapter">Configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../using/"
+                        title="next chapter">Using Pybald</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/routing.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="routing-and-urls">
+<h1>Routing and URLs<a class="headerlink" href="#routing-and-urls" title="Permalink to this headline">¶</a></h1>
+<p>The Pybald router is the ‘core’ of Pybald and is a WSGI application. It is used to match web requests and URL’s with application behaviors. The router is configured by using a <em>URL mapping</em> and a list of potential controllers. The URL mapping can also be used to <em>generate</em> urls symbolically inside of the application and templates to avoid hard coding paths inside of your application.</p>
+<p>Pybald url routes are defined explicitly using a forked (and slightly modified) version of the <a class="reference external" href="http://routes.readthedocs.org/en/latest/">Routes</a> python library (Although with the next routes release it should be the ‘normal’ routes library).</p>
+<div class="section" id="defining-routes">
+<h2>Defining Routes<a class="headerlink" href="#defining-routes" title="Permalink to this headline">¶</a></h2>
+<p>URL routing is defined using functions that accept a special <em>mapping object</em>. This mapping object has methods used to connect urls to behaviors, generate RESTful mappings and define <em>submappers</em> (described later). The mapping object has a few methods, the most important of which is <code class="docutils literal"><span class="pre">connect</span></code>.</p>
+<p>Traditionally the convention is for the mapping object (the argument to the function) to be named <cite>urls</cite> and the function to be named <cite>map</cite> but this is not strictly necessary. For more complex routing structures this convention can make reading the url map easier.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="n">urls</span><span class="p">):</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once this function (or set of functions) is defined, it is passed into the Pybald Router when the router is initialized using the <code class="docutils literal"><span class="pre">routes</span></code> argument.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="n">urls</span><span class="p">):</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">routes</span><span class="o">=</span><span class="nb">map</span><span class="p">,</span> <span class="n">controllers</span><span class="o">=</span><span class="p">[</span><span class="n">HomeController</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The router handles checking each request against the map, and when the path of a request is matched, will set a series of variables that will be used in routing and configuring the particular request.</p>
+<p>Of the routing variables, the two most important are <cite>controller</cite> and <cite>action</cite>. These two variables, when set, will tell the Pybald router what code, which <em>handler</em>, will be executed when the match occurs. Handlers are generally methods on “controller” objects called “actions”. Other variables can also be set, and those variables will be passed into the request to be processed.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The controller and action variables have default values. If no controller value is resolved, the value <code class="docutils literal"><span class="pre">content</span></code> will be used and if no action variable is passed, a default value of <code class="docutils literal"><span class="pre">index</span></code> will be used.</p>
+</div>
+<div class="section" id="the-connect-method">
+<h3>The <code class="docutils literal"><span class="pre">connect</span></code> method<a class="headerlink" href="#the-connect-method" title="Permalink to this headline">¶</a></h3>
+<p>Lets assume you want to create a route for  showing blog posts. This url path might look something like <cite>/blog/posts/45</cite> to show a single blog post with an id, in this case 45. An example mapping function might look like the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="n">urls</span><span class="p">):</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;show_post&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/blog/posts/{id}&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;posts&#39;</span><span class="p">,</span>
+                 <span class="n">action</span><span class="o">=</span><span class="s1">&#39;show&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="symbolic-names">
+<h4>Symbolic Names<a class="headerlink" href="#symbolic-names" title="Permalink to this headline">¶</a></h4>
+<p>The first argument to the connect method is the symbolic name for the route. In this case the symbolic name is <code class="docutils literal"><span class="pre">show_post</span></code>. The symbolic name for the route is used primarily for generating routes in templates and other places. Using a symbolic name for routes allows you to change the actual URL patterns that are being mapped at a later point and only have to change it in one place. By using meaninful symbolic names, you sepearate the URL paths from their application meaning, especially in templates where you might specify something like <code class="docutils literal"><span class="pre">link('a</span> <span class="pre">good</span> <span class="pre">post').to('show_post')</span></code> and not have to worry about the specific path that will be generated.</p>
+</div>
+<div class="section" id="url-path">
+<h4>URL Path<a class="headerlink" href="#url-path" title="Permalink to this headline">¶</a></h4>
+<p>The second argument to the connect method is the route itself, i.e. what path you wish to match on, in this case <code class="docutils literal"><span class="pre">r'/blog/posts/{id}'</span></code>. This path has a <em>capture variable</em> that will be described later.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal"><span class="pre">r</span></code> string format prefix is not necessary but useful since it tells python to interpret the string as a <a class="reference external" href="https://docs.python.org/2/reference/lexical_analysis.html#string-literals">‘raw’ python string</a> , where it will not interpret special characters or escape sequences (like backslashes, \n will not create a newline but rather the two characters).</p>
+</div>
+</div>
+<div class="section" id="controller-and-action-variables">
+<h4><code class="docutils literal"><span class="pre">controller</span></code> and <code class="docutils literal"><span class="pre">action</span></code> Variables<a class="headerlink" href="#controller-and-action-variables" title="Permalink to this headline">¶</a></h4>
+<p>The controller and action variables are used to tell the pybald router which <em>handler</em> will be executed on a match. These can be set either by variable caprute or by setting them explicitly using keyword arguments.</p>
+<p>The <code class="docutils literal"><span class="pre">controller</span></code> variable is used to look up which controller <em>object</em> will be instantiated to handle the request. The <code class="docutils literal"><span class="pre">action</span></code> variable is used to determine which method on the controller object will be executed. If no <code class="docutils literal"><span class="pre">action</span></code> argument is resolved, a default value of <code class="docutils literal"><span class="pre">index</span></code> will be used.</p>
+<p>In the above example, controller and action are set explicitly using keyword arguments to <cite>posts</cite> and <cite>show</cite> respectively.</p>
+</div>
+<div class="section" id="conditions">
+<h4>Conditions<a class="headerlink" href="#conditions" title="Permalink to this headline">¶</a></h4>
+<p>Conditions allow the restriction of the url match to more specific criteria. Generally conditions are used to restrict the URL match to specific HTTP methods or verbs (like GET, PUT and DELETE). They can also be used to match on specific subdomains or even custom matching functions.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="n">urls</span><span class="p">):</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;show_post&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/blog/posts/{id}&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;posts&#39;</span><span class="p">,</span>
+                 <span class="n">action</span><span class="o">=</span><span class="s1">&#39;show&#39;</span><span class="p">,</span> <span class="n">conditions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">]})</span>
+</pre></div>
+</div>
+<p>Conditions are passed as a dictionary containing the condition key and data for each condition. In the above example, the <code class="docutils literal"><span class="pre">show_post</span></code> route will only match on <code class="docutils literal"><span class="pre">GET</span></code> and <code class="docutils literal"><span class="pre">HEAD</span></code> HTTP requests.</p>
+</div>
+<div class="section" id="additional-keyword-arguments">
+<h4>Additional Keyword Arguments<a class="headerlink" href="#additional-keyword-arguments" title="Permalink to this headline">¶</a></h4>
+<p>Lastly, any additional keyword variables can be set. These keyword arguments will be passed into the request.</p>
+</div>
+</div>
+<div class="section" id="capturing-variables">
+<h3>Capturing Variables<a class="headerlink" href="#capturing-variables" title="Permalink to this headline">¶</a></h3>
+<p>In many cases it is useful to have a dynamic part of a URL that can be used in processing requests. In Pybald this is accomplished by using a <em>capture variable</em>, for example the {id} portion of the above route. By using these capture variables, you can extract information from the URL. In the following example the capture variable will set a value on a variable named <cite>id</cite> in the request and set it to any value present in the url. For example, with a request like <cite>/blog/posts/45</cite> the variable <code class="docutils literal"><span class="pre">id</span></code> will be set to 45 when the request is processed.</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go">Route name Methods Path</span>
+<span class="go">home               /</span>
+<span class="go">show_post          /blog/posts/{id}</span>
+<span class="go">Welcome to the Pybald interactive console</span>
+<span class="go"> ** project: sample.py **</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/blog/posts/45&#39;</span><span class="p">)</span>
+<span class="go">=============================== /blog/posts/45 ================================</span>
+<span class="go">Method: GET</span>
+<span class="go">action: show</span>
+<span class="go">controller: posts</span>
+<span class="go">id: 45</span>
+<span class="go">200 OK</span>
+<span class="go">Content-Type: text/html; charset=utf-8</span>
+<span class="go">Content-Length: 12</span>
+
+<span class="go">The id is 45</span>
+</pre></div>
+</div>
+<div class="section" id="variable-requirements">
+<h4>Variable Requirements<a class="headerlink" href="#variable-requirements" title="Permalink to this headline">¶</a></h4>
+<p>In the above example you may have noticed that this route match could potentially match on any value present on the url after <cite>/blog/posts/</cite>. If the request was <cite>/blog/posts/frank</cite>, the route would match and id would be <cite>frank</cite>. If, in your application, all ids are interger numbers, this might not be a case you want to have trigger your application behavior.</p>
+<p>For this case you can use requirements in your variable captures. Requirements are regular expressions that can be used to limit what will be matched in the variable portion of your url route. Requirements use standard regular expressions and are added after a colon in the capture definition as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="n">urls</span><span class="p">):</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;show_post&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/blog/posts/{id:\d+}&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;posts&#39;</span><span class="p">,</span>
+                 <span class="n">action</span><span class="o">=</span><span class="s1">&#39;show&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here we’ve added the requirement that there be one or more interger values after the url slash (and only interger values) to trigger the route match. This would match <cite>/blog/posts/45</cite> but not <cite>/blog/posts/frank</cite> or even <cite>/blog/posts/45frank</cite>.</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go">Route name Methods Path</span>
+<span class="go">home               /</span>
+<span class="go">show_post          /blog/posts/{id:\d+}</span>
+<span class="go">Welcome to the Pybald interactive console</span>
+<span class="go"> ** project: sample.py **</span>
+<span class="go"> &gt;&gt;&gt; c.get(&#39;/blog/posts/frank&#39;)</span>
+<span class="go">============================== /blog/posts/frank ==============================</span>
+<span class="go">Method: GET</span>
+<span class="go">HTTP Exception Thrown &lt;class &#39;webob.exc.HTTPNotFound&#39;&gt;</span>
+<span class="go">&lt;Response at 0x7f1723c7ce10 404 Not Found&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/blog/posts/45frank&#39;</span><span class="p">)</span>
+<span class="go">============================= /blog/posts/45frank =============================</span>
+<span class="go">Method: GET</span>
+<span class="go">HTTP Exception Thrown &lt;class &#39;webob.exc.HTTPNotFound&#39;&gt;</span>
+<span class="go">&lt;Response at 0x7f1723c7cd90 404 Not Found&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/blog/posts/45&#39;</span><span class="p">)</span>
+<span class="go">=============================== /blog/posts/45 ================================</span>
+<span class="go">Method: GET</span>
+<span class="go">action: show</span>
+<span class="go">controller: posts</span>
+<span class="go">id: 45</span>
+<span class="go">&lt;Response at 0x7f1723c7ce50 200 OK&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In the preceding example, ErrorMiddleware has been added to make the listing clearer. Error handling will be covered later. Without  ErrorMiddleware, raw HTTP exceptions will be thrown on failed URL matches.</p>
+</div>
+</div>
+</div>
+<div class="section" id="restful-resources">
+<h3>RESTful Resources<a class="headerlink" href="#restful-resources" title="Permalink to this headline">¶</a></h3>
+<p>When creating CRUD applications, the routing layer of Pybald can automatically create a set of RESTful urls using the <cite>collection</cite> method on the mapper object.</p>
+<p>This method creates a set of default action names based on common conventions for creating REST applications. It’s still up to you to create action methods on your controller corresponding to the default names.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="n">urls</span><span class="p">):</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;show_post&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/blog/posts/{id:\d+}&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;posts&#39;</span><span class="p">,</span>
+                 <span class="n">action</span><span class="o">=</span><span class="s1">&#39;show&#39;</span><span class="p">)</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;posts&#39;</span><span class="p">,</span> <span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;/blog&#39;</span><span class="p">,</span>
+                    <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;posts&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The collection method will create the following routes mapping to a series of default HTTP methods and actions.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="11%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">symbolic</th>
+<th class="head">method</th>
+<th class="head">action</th>
+<th class="head">url route</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>posts</td>
+<td>GET</td>
+<td>index</td>
+<td>/blog/posts{.format}</td>
+</tr>
+<tr class="row-odd"><td>create_post</td>
+<td>POST</td>
+<td>create</td>
+<td>/blog/posts{.format}</td>
+</tr>
+<tr class="row-even"><td>new_post</td>
+<td>GET</td>
+<td>new</td>
+<td>/blog/posts/new{.format}</td>
+</tr>
+<tr class="row-odd"><td>post</td>
+<td>GET</td>
+<td>show</td>
+<td>/blog/posts/{id}{.format}</td>
+</tr>
+<tr class="row-even"><td>update_post</td>
+<td>PUT</td>
+<td>update</td>
+<td>/blog/posts/{id}{.format}</td>
+</tr>
+<tr class="row-odd"><td>delete_post</td>
+<td>DELETE</td>
+<td>delete</td>
+<td>/blog/posts/{id}{.format}</td>
+</tr>
+<tr class="row-even"><td>edit_post</td>
+<td>GET</td>
+<td>edit</td>
+<td>/blog/posts/{id}/edit{.format}</td>
+</tr>
+</tbody>
+</table>
+<p>These follow some standard REST conventions (using PUT for updates, DELETE for deletes etc) while adding <cite>new</cite> and <cite>edit</cite> actions that are generally used to map to pages that display forms for creating new resources or editing existing resources.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../using/" title="Using Pybald"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../configuration/" title="Configuration"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+  
+    <div class="footer">
+        &copy; Copyright 2014, Michael Kowalchik.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>

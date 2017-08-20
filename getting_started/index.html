@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quick Start &#8212; Pybald 0.5.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Configuration" href="../configuration/" />
+    <link rel="prev" title="Background" href="../intro/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+<link href="../_static/solarized-dark.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../configuration/" title="Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../intro/" title="Background"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../">
+              <img class="logo" src="../_static/pybald.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Quick Start</a><ul>
+<li><a class="reference internal" href="#installing">Installing</a><ul>
+<li><a class="reference internal" href="#using-virtualenv">Using virtualenv</a></li>
+<li><a class="reference internal" href="#without-virtualenv">Without virtualenv</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#running-your-first-pybald-application">Running your first Pybald Application</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../intro/"
+                        title="previous chapter">Background</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../configuration/"
+                        title="next chapter">Configuration</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/getting_started.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="using-virtualenv">
+<h3>Using virtualenv<a class="headerlink" href="#using-virtualenv" title="Permalink to this headline">¶</a></h3>
+<p>While not strictly necessary, it is recommended that you use <code class="docutils literal"><span class="pre">virtualenv</span></code> to allow you to isolate experimenting with Pybald (and its dependencies) from the rest of your python environment.</p>
+<p>First we setup a new virtualenv, activate it, then we install pybald.</p>
+<div class="highlight-sh"><div class="highlight"><pre><span></span>~$ virtualenv pyb_test
+New python executable in pyb_test/bin/python
+Installing setuptools............done.
+Installing pip...............done.
+~$ <span class="nb">source</span> ./pyb_test/bin/activate
+<span class="o">(</span>pyb_test<span class="o">)</span>~$ pip install pybald
+Downloading/unpacking pybald
+  Downloading pybald-X.X.X.tar.gz
+  Running setup.py egg_info <span class="k">for</span> package pybald
+ <span class="o">[</span>...<span class="o">]</span>
+Successfully installed <span class="o">[</span>various packages<span class="o">]</span>
+  Cleaning up...
+</pre></div>
+</div>
+</div>
+<div class="section" id="without-virtualenv">
+<h3>Without virtualenv<a class="headerlink" href="#without-virtualenv" title="Permalink to this headline">¶</a></h3>
+<p>Just install pybald from pypi using pip.</p>
+<div class="highlight-sh"><div class="highlight"><pre><span></span>~$ pip install pybald
+Downloading/unpacking pybald
+  Downloading pybald-X.X.X.tar.gz
+  Running setup.py egg_info <span class="k">for</span> package pybald
+ <span class="o">[</span>...<span class="o">]</span>
+Successfully installed <span class="o">[</span>various packages<span class="o">]</span>
+  Cleaning up...
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="running-your-first-pybald-application">
+<h2>Running your first Pybald Application<a class="headerlink" href="#running-your-first-pybald-application" title="Permalink to this headline">¶</a></h2>
+<p>First copy the following code and save it as a file, say <code class="docutils literal"><span class="pre">sample.py</span></code>. Don’t choose the name ‘pybald.py’ since it will conflict with the pybald library name but most any other name should be fine.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
+<span class="kn">from</span> <span class="nn">pybald</span> <span class="kn">import</span> <span class="n">context</span>
+<span class="kn">from</span> <span class="nn">pybald.core.controllers</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">action</span>
+<span class="kn">from</span> <span class="nn">pybald.core.router</span> <span class="kn">import</span> <span class="n">Router</span>
+
+<span class="c1"># configure our pybald application</span>
+<span class="n">pybald</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="n">urls</span><span class="p">):</span>
+    <span class="n">urls</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">HomeController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+    <span class="nd">@action</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Hello!&quot;</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">routes</span><span class="o">=</span><span class="nb">map</span><span class="p">,</span> <span class="n">controllers</span><span class="o">=</span><span class="p">[</span><span class="n">HomeController</span><span class="p">])</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To start the application from the command line type <code class="docutils literal"><span class="pre">python</span> <span class="pre">sample.py</span> <span class="pre">console</span></code> which starts the pybald <a class="reference internal" href="../using/#console"><span class="std std-ref">console</span></a> for this project. The pybald console is a standard python REPL but also initializes your project, loads the application code, and allows you to interact with your application in various ways including simulating requests, exploring models, prototyping new functionality, running a debugger and other tasks. The console also has some convenience functions, like saving a per-project history to allow “up arrow”, tab completion and other history searches.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If, instead, you’d like to try the application from a web browser, you can also call <code class="docutils literal"><span class="pre">python</span> <span class="pre">sample.py</span> <span class="pre">serve</span></code> and that will run a simple development web server that you can connect to. You can see a simple help message for command line arguments by using <code class="docutils literal"><span class="pre">python</span> <span class="pre">sample.py</span> <span class="pre">-h</span></code> or <code class="docutils literal"><span class="pre">python</span> <span class="pre">sample.py</span> <span class="pre">{COMMAND}</span> <span class="pre">-h</span></code>.</p>
+<p>It can be generally useful to be able to explore and introspect the application from a REPL to really learn how Pybald works.</p>
+<p class="last">It’s also important to note that the application that runs in the console is <em>exactly the same</em> as the application that runs when connected to the web server.</p>
+</div>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go">$ python sample.py console</span>
+<span class="go">Route name Methods Path</span>
+<span class="go">home               /</span>
+<span class="go">Welcome to the Pybald interactive console</span>
+<span class="go"> ** project: sample.py **</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>When debug logging is turned on, the routing layer of Pybald will display all of the configured url routes for the project, then a small welcome message. In this case, we’ve only set up a single route for ‘/’ connected to the home controller.</p>
+<p>The console also loads a very simple testing / convenience client <code class="docutils literal"><span class="pre">c</span></code> that allows you to issue simulated web requests to your application using GET’s and POST’s.</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go">$ python sample.py console</span>
+<span class="go">Route name Methods Path</span>
+<span class="go">home               /</span>
+<span class="go">Welcome to the Pybald interactive console</span>
+<span class="go"> ** project: sample.py **</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="go">====================================== / ======================================</span>
+<span class="go">Method: GET</span>
+<span class="go">action: index</span>
+<span class="go">controller: home</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">resp</span>
+<span class="go">200 OK</span>
+<span class="go">Content-Type: text/html; charset=utf-8</span>
+<span class="go">Content-Length: 6</span>
+
+<span class="go">Hello!</span>
+</pre></div>
+</div>
+<p>Here we’ve fetched the “/” url from the application and received a response. You can see some debug information is printed to the screen about what URL we fetched, what method and what controller and action were matched/invoked. If any capture variables had been present, they would have been printed as well. Finally we print the response from that request which is the full web response (headers etc) and the simple text response message of “Hello”. The <code class="docutils literal"><span class="pre">resp</span></code> object that is returned is an instance of a WebOb Response object. WebOb response objects have numerous useful attributes and methods. For example, you can get things like <code class="docutils literal"><span class="pre">resp.headers</span></code>, <code class="docutils literal"><span class="pre">resp.status</span></code>, <code class="docutils literal"><span class="pre">resp.body</span></code> to see some of the data available on the response.</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span><span class="o">.</span><span class="n">headers</span>
+<span class="go">ResponseHeaders([(&#39;Content-Type&#39;, &#39;text/html; charset=utf-8&#39;), (&#39;Content-Length&#39;, &#39;6&#39;)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span><span class="o">.</span><span class="n">status</span>
+<span class="go">&#39;200 OK&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span><span class="o">.</span><span class="n">body</span>
+<span class="go">&#39;Hello!&#39;</span>
+</pre></div>
+</div>
+<p>Boom! You’re running a pybald application.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Most of the time you won’t need to know or care, but an interesting detail worth mentioning at this point, is that the <code class="docutils literal"><span class="pre">response</span> <span class="pre">object</span></code> is also a WSGI application, just like the core pybald application. This allows for some interesting flexibility in chaining and re-routing application behavior. The response object will accept <code class="docutils literal"><span class="pre">environ,</span> <span class="pre">start_response</span></code> call signature just like the Router or any other WSGI app. Many of the interfaces of Pybald use the WSGI interace allowing for a great deal of flexibility.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../configuration/" title="Configuration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../intro/" title="Background"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+  
+    <div class="footer">
+        &copy; Copyright 2014, Michael Kowalchik.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    </div>
+  <!-- <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? 
+  "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + 
+  "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-13190724-1");
+  pageTracker._trackPageview();
+  } catch(err) {}</script> -->
+
+  </body>
+</html>
