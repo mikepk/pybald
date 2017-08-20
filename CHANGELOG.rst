@@ -12,7 +12,7 @@ Release 0.5.0 (August 19, 2017)
 * Improve tests and test coverage
 
 Release 0.4.1 (February 26, 2016)
---------------------------------
+---------------------------------
 
 * Fix a bug with the default error controller. Now the raw exception can be passed
 in and the order of the arguments was changed but not updated in the default.
