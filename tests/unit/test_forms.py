@@ -96,7 +96,6 @@ class TestForms(unittest.TestCase):
         class TestForm(forms.Form):
             text = forms.StringField('Text', [int_only])
 
-
         fs = TestForm(formdata=MockParams({'text': 'this is totally a test'}))
         if fs.validate():
             self.fail("The form validated when it shouldn't have")
