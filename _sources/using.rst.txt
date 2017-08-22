@@ -65,11 +65,9 @@ A Pybald application consists of the following parts:
 
 * A webserver
 * A *WSGI pipeline*
-
-  * A Router/Dispatcher WSGI module
-  * User defined controllers, models, and views
-  * Any additional WSGI middleware
-
+* A Router/Dispatcher WSGI module
+* User defined controllers, models, and views
+* Any additional WSGI middleware
 * Static content: images, css, javascript
 
 The heart of a Pybald application is the *WSGI pipeline*. The pipeline is defined in the main application file which is usually the name of the project + '.py' (i.e. ``./sample_app.py``). The WSGI pipeline is your application as well as how your webserver of choice will communicate with your application. The exposed ``app`` can be used to connect to any WSGI compliant webserver (Apache, nginx, uWSGI, etc...).

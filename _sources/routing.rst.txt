@@ -3,14 +3,14 @@ Routing and URLs
 
 The Pybald router is the 'core' of Pybald and is a WSGI application. It is used to match web requests and URL's with application behaviors. The router is configured by using a *URL mapping* and a list of potential controllers. The URL mapping can also be used to *generate* urls symbolically inside of the application and templates to avoid hard coding paths inside of your application.
 
-Pybald url routes are defined explicitly using a forked (and slightly modified) version of the `Routes <http://routes.readthedocs.org/en/latest/>`_ python library (Although with the next routes release it should be the 'normal' routes library).
+Pybald url routes are defined explicitly. The Pybald router uses the `Routes <http://routes.readthedocs.org/en/latest/>`_ python library for processing and mapping URLs. 
 
 Defining Routes
 ---------------
 
-URL routing is defined using functions that accept a special *mapping object*. This mapping object has methods used to connect urls to behaviors, generate RESTful mappings and define *submappers* (described later). The mapping object has a few methods, the most important of which is ``connect``.
+URL routing is defined using functions. These functions accept a single argument, a *mapper object*. This mapper object has methods used to connect urls to behaviors, generate RESTful mappings and define *submappers* (described later). The mapping object has a few methods, the most important of which is ``connect``.
 
-Traditionally the convention is for the mapping object (the argument to the function) to be named `urls` and the function to be named `map` but this is not strictly necessary. For more complex routing structures this convention can make reading the url map easier.
+Traditionally the convention is for the mapper object (the argument to the function) to be named `urls` and the function to be named `map` but this is not strictly necessary. For more complex routing structures this convention can make reading the url map easier.
 
 .. code-block:: python
 
