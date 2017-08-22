@@ -46,7 +46,7 @@ class TestXss(unittest.TestCase):
 
         resp = Request.blank('/test_xss_url_param?url_parameter=%3C/script%3E%3Cscript%3Ealert%28document.cookie%29%3C/script%3E').get_response(app)
         self.assertEqual(resp.body,
-                        '\n<div>&lt;/script&gt;&lt;script&gt;alert(document.cookie)&lt;/script&gt;</div>\n')
+                        b'\n<div>&lt;/script&gt;&lt;script&gt;alert(document.cookie)&lt;/script&gt;</div>\n')
 
 
 if __name__ == "__main__":
