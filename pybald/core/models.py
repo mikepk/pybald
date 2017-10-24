@@ -11,7 +11,7 @@ from sqlalchemy.orm.attributes import (
 from sqlalchemy.orm.util import (
     has_identity
 )
-from sqlalchemy.dialects import postgres as pg
+from sqlalchemy.dialects import postgresql as pg
 
 from pybald import context
 from pybald.util import camel_to_underscore, pluralize
