@@ -5,19 +5,28 @@ from pybald import context
 from datetime import datetime, timedelta
 from pybald.core.router import Router
 
+now = datetime.now()
+this_year = now.year
 
 helpers = (
 ('page_js', '''${page.add_js('/test.js')}''', b'''<script src="/test.js?v=None"></script>''', {}),
 ('page_css', '''${page.add_css('/sample.css')}''', b'''<link type="text/css" href="/sample.css?v=None" media="screen" rel="stylesheet">''', {}),
-('date_humanize_moment_ago', '''${humanize(moment_ago)}''', b'just a moment ago', {'moment_ago': (datetime.now() - timedelta(seconds=55)).strftime("%Y-%m-%d %H:%M:%S")}),
-('date_humanize_hour', '''${humanize(an_hour_ago)}''', b'1 hour ago', {'an_hour_ago': (datetime.now() - timedelta(minutes=65)).strftime("%Y-%m-%d %H:%M:%S")}),
-('date_humanize_minutes', '''${humanize(minutes_ago)}''', b'15 minutes ago', {'minutes_ago': (datetime.now() - timedelta(minutes=15)).strftime("%Y-%m-%d %H:%M:%S")}),
-('date_humanize_one_minute', '''${humanize(minute_ago)}''', b'1 minute ago', {'minute_ago': (datetime.now() - timedelta(seconds=68)).strftime("%Y-%m-%d %H:%M:%S")}),
-('date_humanize_day', '''${humanize(a_day_ago)}''', b'1 day ago', {'a_day_ago': (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")}),
-('date_humanize_future', '''${humanize(in_the_future)}''', b'in the future', {'in_the_future': (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")}),
-('date_humanize_multi_weeks', '''${humanize(multi_weeks_ago)}''', b'2 weeks ago', {'multi_weeks_ago': (datetime.now() - timedelta(days=14)).strftime("%Y-%m-%d %H:%M:%S")}),
-('date_humanize_more_than_30_days', '''${humanize(months_ago)}''', b'30 Mar', {'months_ago': (datetime.strptime('2017-05-14 15:00:27', "%Y-%m-%d %H:%M:%S") - timedelta(days=45)).strftime("%Y-%m-%d %H:%M:%S")}),
-('date_humanize_more_than_1_year', '''${humanize(years_ago)}''', b'19 Apr &#39;16', {'years_ago': (datetime.strptime('2017-05-14 15:00:27', "%Y-%m-%d %H:%M:%S") - timedelta(days=390)).strftime("%Y-%m-%d %H:%M:%S")}),
+('date_humanize_moment_ago', '''${humanize(moment_ago)}''', b'just a moment ago', {'moment_ago': (now - timedelta(seconds=55)).strftime("%Y-%m-%d %H:%M:%S")}),
+('date_humanize_hour', '''${humanize(an_hour_ago)}''', b'1 hour ago', {'an_hour_ago': (now - timedelta(minutes=65)).strftime("%Y-%m-%d %H:%M:%S")}),
+('date_humanize_minutes', '''${humanize(minutes_ago)}''', b'15 minutes ago', {'minutes_ago': (now - timedelta(minutes=15)).strftime("%Y-%m-%d %H:%M:%S")}),
+('date_humanize_one_minute', '''${humanize(minute_ago)}''', b'1 minute ago', {'minute_ago': (now - timedelta(seconds=68)).strftime("%Y-%m-%d %H:%M:%S")}),
+('date_humanize_day', '''${humanize(a_day_ago)}''', b'1 day ago', {'a_day_ago': (now - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")}),
+('date_humanize_future', '''${humanize(in_the_future)}''', b'in the future', {'in_the_future': (now + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")}),
+('date_humanize_multi_weeks', '''${humanize(multi_weeks_ago)}''', b'2 weeks ago', {'multi_weeks_ago': (now - timedelta(days=14)).strftime("%Y-%m-%d %H:%M:%S")}),
+('date_humanize_more_than_30_days', '''${humanize(months_ago)}''',
+     bytes(datetime.strftime(datetime.now() - timedelta(days=45), "%d %b").lstrip('0'), 'utf-8'),
+     {'months_ago': (now - timedelta(days=45)).strftime("%Y-%m-%d %H:%M:%S")}),
+('date_humanize_more_than_1_year', '''${humanize(years_ago)}''',
+     bytes(datetime.strftime(datetime.now() - timedelta(days=390), "%d %b &#39;%y").lstrip('0'), 'utf-8'),
+     {'years_ago': (now - timedelta(days=390)).strftime("%Y-%m-%d %H:%M:%S")}),
+
+# bytes(datetime.strftime(datetime(day=19, month=4, year=this_year), "%d %b &#39;%y"), 'utf-8'),
+#     {'years_ago': (datetime.strptime('{this_year}-05-14 15:00:27'.format(this_year=this_year), "%Y-%m-%d %H:%M:%S") - timedelta(days=390)).strftime("%Y-%m-%d %H:%M:%S")}),
 ('date_humanize_bad_input', '''${humanize(bad_format)}''', b'Jan 1st 2045', {'bad_format': 'Jan 1st 2045'}),
 ('generate_link', '''${link('A test link').to('home')}''', b'<a href="/" >A test link</a>', {}),
 ('generate_raw_link', '''${link('A test link').to_raw_url('http://pybald.com')}''', b'<a href="http://pybald.com" >A test link</a>', {}),
