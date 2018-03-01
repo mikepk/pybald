@@ -35,6 +35,8 @@ class TestStaticServer(unittest.TestCase):
         app = StaticServer(application=None, path=self.test_dir)
 
         resp = Request.blank('/pybald.png').get_response(app)
+        print(type(resp.body))
+        print(type(binary_file_data))
         self.assertEqual(resp.body, binary_file_data)
         self.assertEqual(resp.headers['Content-Type'], 'image/png')
         self.assertEqual(resp.headers['Content-Length'], '1342')
