@@ -58,5 +58,9 @@ setup(name='pybald',
           "WebOb==1.7.2", "Mako==1.0.6",
           "WTForms==2.1", "alembic==0.9.2", "six==1.10.0"
       ],
+      extras_require={
+        'docs': ['Sphinx>=1.6.2'],
+        'tests': ['pytest>=3.1.1']
+    },
 )
 
