@@ -246,22 +246,22 @@ def humanize(date_string):
 
 # From django.utils.html: Javascript escape characters
 _base_js_escapes = (
-    (b'\\', b'\\u005C'),
-    (b'\'', b'\\u0027'),
-    (b'"', b'\\u0022'),
-    (b'>', b'\\u003E'),
-    (b'<', b'\\u003C'),
-    (b'&', b'\\u0026'),
-    (b'=', b'\\u003D'),
-    (b'-', b'\\u002D'),
-    (b';', b'\\u003B'),
-    (b'\u2028', b'\\u2028'),
-    (b'\u2029', b'\\u2029')
+    ('\\', '\\u005C'),
+    ('\'', '\\u0027'),
+    ('"', '\\u0022'),
+    ('>', '\\u003E'),
+    ('<', '\\u003C'),
+    ('&', '\\u0026'),
+    ('=', '\\u003D'),
+    ('-', '\\u002D'),
+    (';', '\\u003B'),
+    ('\u2028', '\\u2028'),
+    ('\u2029', '\\u2029')
 )
 
 # From django.utils.html: Escape every ASCII character with a value less than 32.
 _js_escapes = (_base_js_escapes +
-               tuple([(b'%c' % z, b'\\u%04X' % z) for z in range(32)]))
+              tuple([(chr(ascii_val), r"\u{:04X}".format(ascii_val)) for ascii_val in range(32)]))
 
 
 def js_escape(value):

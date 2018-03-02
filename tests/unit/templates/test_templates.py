@@ -38,6 +38,20 @@ helpers = (
 ('as_p', '''${as_p(text_with_line_breaks)}''', b'<p>This is just</p><p>A test</p><p>of paragraph breaks</p>', {"text_with_line_breaks": "This is just\nA test\nof paragraph breaks"}),
 ('anchor_no_name', '''${anchor('a block')}''', b'<a name="a block" >a block</a>', {}),
 ('anchor_name', '''${anchor('a block', 'heading1')}''', b'<a name="heading1" >a block</a>', {}),
+
+('js_escape_hyphen', '''${js_escape('---- whee ----')}''', b'\\u002D\\u002D\\u002D\\u002D whee \\u002D\\u002D\\u002D\\u002D', {}),
+('js_escape_single_quote', '''${js_escape(input)}''', b'whee \u0027 zing', {'input': 'whee \' zing'}),
+('js_escape_slash', '''${js_escape(input)}''', b'whee \u005C zork', {'input': 'whee \\ zork'}),
+('js_escape_double_quote', '''${js_escape(input)}''', b'whee \u0022', {'input': 'whee "'}),
+('js_escape_right_angle', '''${js_escape(input)}''', b'whee \u003E', {'input': 'whee >'}),
+('js_escape_left_angle', '''${js_escape(input)}''', b'whee \u003C', {'input': 'whee <'}),
+('js_escape_ampersand', '''${js_escape(input)}''', b'whee \u0026', {'input': 'whee &'}),
+('js_escape_equals', '''${js_escape(input)}''', b'whee \u003D', {'input': 'whee ='}),
+('js_escape_semicolon', '''${js_escape(input)}''', b'whee \u003B', {'input': 'whee ;'}),
+('js_escape_ascii_1', '''${js_escape(input)}''', b'whee \\u0001', {'input': 'whee \x01'}),
+('js_escape_ascii_12', '''${js_escape(input)}''', b'whee \\u000C', {'input': 'whee \x0c'}),
+('js_escape_ascii_24', '''${js_escape(input)}''', b'whee \\u0018', {'input': 'whee \x18'}),
+('js_escape_ascii_31', '''${js_escape(input)}''', b'whee \\u001F', {'input': 'whee \x1f'}),
 )
 
 
