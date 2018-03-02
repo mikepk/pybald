@@ -197,6 +197,7 @@ def plural(list_object):
     else:
         return ""
 
+
 FRACTIONAL_SECOND = re.compile(r'\.\d+$')
 
 
@@ -216,10 +217,10 @@ def humanize(date_string):
     if delta.days < 0:
         return "in the future"
     elif delta.days >= 30:
-        format = "%d %b"
+        date_format = "%d %b"
         if date.year != datetime.now().year:
-            format += " '%y"
-        return str(date.strftime(format).lstrip('0'))
+            date_format += " '%y"
+        return str(date.strftime(date_format).lstrip('0'))
     elif delta.days >= 14:
         weeks = delta.days / 7
         if weeks == 1:
