@@ -19,10 +19,10 @@ helpers = (
 ('date_humanize_future', '''${humanize(in_the_future)}''', b'in the future', {'in_the_future': (now + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")}),
 ('date_humanize_multi_weeks', '''${humanize(multi_weeks_ago)}''', b'2 weeks ago', {'multi_weeks_ago': (now - timedelta(days=14)).strftime("%Y-%m-%d %H:%M:%S")}),
 ('date_humanize_more_than_30_days', '''${humanize(months_ago)}''',
-     bytes(datetime.strftime(datetime.now() - timedelta(days=45), "%d %b").lstrip('0'), 'utf-8'),
+     bytes(datetime.strftime(datetime.now() - timedelta(days=45), "%d %b").lstrip('0').encode('utf-8')),
      {'months_ago': (now - timedelta(days=45)).strftime("%Y-%m-%d %H:%M:%S")}),
 ('date_humanize_more_than_1_year', '''${humanize(years_ago)}''',
-     bytes(datetime.strftime(datetime.now() - timedelta(days=390), "%d %b &#39;%y").lstrip('0'), 'utf-8'),
+     bytes(datetime.strftime(datetime.now() - timedelta(days=390), "%d %b &#39;%y").lstrip('0').encode('utf-8')),
      {'years_ago': (now - timedelta(days=390)).strftime("%Y-%m-%d %H:%M:%S")}),
 
 # bytes(datetime.strftime(datetime(day=19, month=4, year=this_year), "%d %b &#39;%y"), 'utf-8'),
