@@ -13,7 +13,7 @@ class SessionManager(object):
             self.application = application
         else:
             # no pipeline so just generate a generic response
-            self.applicaion = Response()
+            self.application = Response()
 
     def __call__(self, environ, start_response):
         req = Request(environ)
