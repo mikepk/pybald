@@ -17,10 +17,7 @@ class UserManager(object):
 
     def __call__(self, environ, start_response):
         session = environ.get('pybald.session', None)
-        if session and session.user and session.user.can_login:
-            environ['REMOTE_USER'] = session.user
-        else:
-            environ['REMOTE_USER'] = None
+        environ['REMOTE_USER'] = session.user
 
         if environ['REMOTE_USER']:
             # Continuously validate user sessions
