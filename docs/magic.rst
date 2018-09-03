@@ -7,7 +7,7 @@ Pybald only has a few 'magical' behaviors. This documentation explains how they 
 Loading Controllers
 -------------------
 
-Pybald uses a 'controller registry' for keeping track of which classes are to be used as controllers. This registry is just a list of all controllers that have been imported / loaded in the current project. To register a class to act as a controller, you can inherit from the pybald.core.Controller class. Inheriting from this class will automatically register the class as a controller.
+Pybald uses a 'controller registry' for keeping track of which classes are to be used as controllers. This registry is just a list of all controllers that have been imported / loaded in the current project. To register a class to act as a controller, you can inherit from the pybald.core.controllers.Controller class. Inheriting from this class will automatically register the class as a controller.
 
 .. code-block:: pycon
 
