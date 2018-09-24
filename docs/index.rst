@@ -77,7 +77,7 @@ Pybald currently depends on, and will automatically install, the following libra
 
 * `Mako Templates <http://www.makotemplates.org/>`_
 * `Routes <http://routes.groovie.org/>`_
-* `WebOb <http://pythonpaste.org/webob/>`_
+* `WebOb <https://webob.org/>`_
 * `SqlAlchemy <http://sqlalchemy.org/>`_
 * `WTForms <https://wtforms.readthedocs.org/en/latest/>`_
 
