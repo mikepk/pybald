@@ -2,33 +2,22 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Using Pybald &#8212; Pybald 0.5.0 documentation</title>
-    
+    <title>Using Pybald &#8212; Pybald 0.5.1 documentation</title>
     <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.5.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
     <link rel="next" title="Magic" href="../magic/" />
     <link rel="prev" title="Routing and URLs" href="../routing/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
 <link href="../_static/solarized-dark.css" rel="stylesheet">
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,7 +33,7 @@
         <li class="right" >
           <a href="../routing/" title="Routing and URLs"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.1 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -52,7 +41,7 @@
             <p class="logo"><a href="../">
               <img class="logo" src="../_static/pybald.png" alt="Logo"/>
             </a></p>
-  <h3><a href="../">Table Of Contents</a></h3>
+  <h3><a href="../">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Using Pybald</a><ul>
 <li><a class="reference internal" href="#a-quick-note-on-naming-conventions">A Quick Note on Naming Conventions</a><ul>
@@ -82,12 +71,14 @@
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search/" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -105,13 +96,13 @@
 <p>Pybald tries to bridge the convention over configuration (CoC) approach and the explicit approach to creating a web application. For the basics of the web framework, it tends to favor the CoC approach. Pybald has a few naming conventions that are expected and may cause confusion if not understood.</p>
 <div class="section" id="naming-controllers">
 <h3>Naming Controllers<a class="headerlink" href="#naming-controllers" title="Permalink to this headline">¶</a></h3>
-<p>Controllers are implemented as Python classes and are therefore expected to follow the PEP8 naming standard and be named in the StudlyCaps format (otherwise known as CamelCase). Additionally, while not strictly required, controller names usually contain the suffix <code class="docutils literal"><span class="pre">Controller</span></code> (e.g. <code class="docutils literal"><span class="pre">UserProfileController</span></code>).</p>
-<p>When the pybald route map is generated, the controller class name is converted to underscore_separated format and ‘_controller’ is stripped if present. Following the example above, the route map would contain the identifier <code class="docutils literal"><span class="pre">user_profile</span></code> for the controller. When creating connections in the url mapping, the controller identifier would be used for the controller argument.</p>
+<p>Controllers are implemented as Python classes and are therefore expected to follow the PEP8 naming standard and be named in the StudlyCaps format (otherwise known as CamelCase). Additionally, while not strictly required, controller names usually contain the suffix <code class="docutils literal notranslate"><span class="pre">Controller</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">UserProfileController</span></code>).</p>
+<p>When the pybald route map is generated, the controller class name is converted to underscore_separated format and ‘_controller’ is stripped if present. Following the example above, the route map would contain the identifier <code class="docutils literal notranslate"><span class="pre">user_profile</span></code> for the controller. When creating connections in the url mapping, the controller identifier would be used for the controller argument.</p>
 </div>
 <div class="section" id="naming-models">
 <h3>Naming Models<a class="headerlink" href="#naming-models" title="Permalink to this headline">¶</a></h3>
 <p>Models are also implemented as Python classes and are expected to follow the PEP8 style guide and be named in the StudlyCaps style. Model class names are usually expected to be singular nouns (User not Users).</p>
-<p>When pybald models are synchronized with a databse, by default the underlying tables are named by converting the StudlyCaps class name into an underscore_separated form and pluralized. Therefore a <code class="docutils literal"><span class="pre">UserProfile</span></code> model will (by default) create a <code class="docutils literal"><span class="pre">user_profiles</span></code> database table. Obviously an explicit table name can also be provided to any model to override this default behavior.</p>
+<p>When pybald models are synchronized with a databse, by default the underlying tables are named by converting the StudlyCaps class name into an underscore_separated form and pluralized. Therefore a <code class="docutils literal notranslate"><span class="pre">UserProfile</span></code> model will (by default) create a <code class="docutils literal notranslate"><span class="pre">user_profiles</span></code> database table. Obviously an explicit table name can also be provided to any model to override this default behavior.</p>
 </div>
 <div class="section" id="naming-modules">
 <h3>Naming Modules<a class="headerlink" href="#naming-modules" title="Permalink to this headline">¶</a></h3>
@@ -122,46 +113,46 @@
 <h2>Structure of a Pybald Application<a class="headerlink" href="#structure-of-a-pybald-application" title="Permalink to this headline">¶</a></h2>
 <p>A Pybald application is configured, at least partially, by the directory structure of the <em>project</em>. While a Pybald application can consist of a single file, as a project grows it’s useful to organize the code into a specific directory structure. The following is the recommended structure for larger projects.</p>
 <dl class="docutils">
-<dt><code class="docutils literal"><span class="pre">./app</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./app</span></code></dt>
 <dd><dl class="first last docutils">
 <dt>This is the primary application directory containing the controllers, views and models</dt>
 <dd><dl class="first last docutils">
-<dt><code class="docutils literal"><span class="pre">./app/controllers</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./app/controllers</span></code></dt>
 <dd>All controller files for the project</dd>
-<dt><code class="docutils literal"><span class="pre">./app/models</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./app/models</span></code></dt>
 <dd>Models for the project</dd>
-<dt><code class="docutils literal"><span class="pre">./app/middleware</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./app/middleware</span></code></dt>
 <dd><em>optional</em> - Any project specific WSGI middleware</dd>
-<dt><code class="docutils literal"><span class="pre">./app/views</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./app/views</span></code></dt>
 <dd>Templates for the project</dd>
-<dt><code class="docutils literal"><span class="pre">./app/urls.py</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./app/urls.py</span></code></dt>
 <dd>Url patterns to match against</dd>
 </dl>
 </dd>
 </dl>
 </dd>
-<dt><code class="docutils literal"><span class="pre">./public</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./public</span></code></dt>
 <dd>Static content like images, css and javascript</dd>
-<dt><code class="docutils literal"><span class="pre">./project.py</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./project.py</span></code></dt>
 <dd><em>optional</em> - configuration file for the project.</dd>
-<dt><code class="docutils literal"><span class="pre">./environment.py</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./environment.py</span></code></dt>
 <dd><em>optional</em> - local, environment-specific, configuration overrides (e.g. Production, Development, Test)</dd>
-<dt><code class="docutils literal"><span class="pre">./config</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./config</span></code></dt>
 <dd>Web server configuration, startup scripts.</dd>
-<dt><code class="docutils literal"><span class="pre">./utilities</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./utilities</span></code></dt>
 <dd>Project utility scripts.</dd>
-<dt><code class="docutils literal"><span class="pre">./tmp</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./tmp</span></code></dt>
 <dd><dl class="first last docutils">
 <dt>Temporary files</dt>
 <dd><dl class="first last docutils">
-<dt><code class="docutils literal"><span class="pre">./viewscache</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">./viewscache</span></code></dt>
 <dd><em>temporary</em> The template engine’s file cache for views</dd>
 </dl>
 </dd>
 </dl>
 </dd>
 </dl>
-<p>Most of your application code will be in the <code class="docutils literal"><span class="pre">app</span></code> directory which should contain at least these three directories <code class="docutils literal"><span class="pre">controllers</span></code>, <code class="docutils literal"><span class="pre">views</span></code>, and <code class="docutils literal"><span class="pre">models</span></code>.</p>
+<p>Most of your application code will be in the <code class="docutils literal notranslate"><span class="pre">app</span></code> directory which should contain at least these three directories <code class="docutils literal notranslate"><span class="pre">controllers</span></code>, <code class="docutils literal notranslate"><span class="pre">views</span></code>, and <code class="docutils literal notranslate"><span class="pre">models</span></code>.</p>
 <p>A Pybald application consists of the following parts:</p>
 <ul class="simple">
 <li>A webserver</li>
@@ -171,8 +162,8 @@
 <li>Any additional WSGI middleware</li>
 <li>Static content: images, css, javascript</li>
 </ul>
-<p>The heart of a Pybald application is the <em>WSGI pipeline</em>. The pipeline is defined in the main application file which is usually the name of the project + ‘.py’ (i.e. <code class="docutils literal"><span class="pre">./sample_app.py</span></code>). The WSGI pipeline is your application as well as how your webserver of choice will communicate with your application. The exposed <code class="docutils literal"><span class="pre">app</span></code> can be used to connect to any WSGI compliant webserver (Apache, nginx, uWSGI, etc…).</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># The main application pipeline</span>
+<p>The heart of a Pybald application is the <em>WSGI pipeline</em>. The pipeline is defined in the main application file which is usually the name of the project + ‘.py’ (i.e. <code class="docutils literal notranslate"><span class="pre">./sample_app.py</span></code>). The WSGI pipeline is your application as well as how your webserver of choice will communicate with your application. The exposed <code class="docutils literal notranslate"><span class="pre">app</span></code> can be used to connect to any WSGI compliant webserver (Apache, nginx, uWSGI, etc…).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The main application pipeline</span>
 <span class="c1"># Include all WSGI middleware here. The order of</span>
 <span class="c1"># web transaction will flow from the bottom of this list</span>
 <span class="c1"># to the top, and then back out. The pybald Router</span>
@@ -190,7 +181,7 @@
 </pre></div>
 </div>
 <p>Invoking the development web server from the command line should look similar to starting the console (in fact the same code executes). The webserver log is dumped to the console so you can monitor transactions.</p>
-<div class="highlight-sh"><div class="highlight"><pre><span></span>~/test_project$ python sample_app.py serve
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>~/test_project$ python sample_app.py serve
 Route name Methods Path
 home               /
 base               /<span class="o">{</span>controller<span class="o">}</span>/<span class="o">{</span>action<span class="o">}</span>/<span class="o">{</span>id<span class="o">}</span>
@@ -230,13 +221,13 @@ serving on <span class="m">0</span>.0.0.0:8080 view at http://127.0.0.1:8080
         <li class="right" >
           <a href="../routing/" title="Routing and URLs"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.1 documentation</a> &#187;</li> 
       </ul>
     </div>
   
     <div class="footer">
         &copy; Copyright 2014, Michael Kowalchik.
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.1.Theme by <a href="http://github.com/vkvn">vkvn</a>
     </div>
   <!-- <script type="text/javascript">
   var gaJsHost = (("https:" == document.location.protocol) ? 

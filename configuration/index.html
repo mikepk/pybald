@@ -2,33 +2,22 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Configuration &#8212; Pybald 0.5.0 documentation</title>
-    
+    <title>Configuration &#8212; Pybald 0.5.1 documentation</title>
     <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.5.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
     <link rel="next" title="Routing and URLs" href="../routing/" />
     <link rel="prev" title="Quick Start" href="../getting_started/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
 <link href="../_static/solarized-dark.css" rel="stylesheet">
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,7 +33,7 @@
         <li class="right" >
           <a href="../getting_started/" title="Quick Start"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.1 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -52,7 +41,7 @@
             <p class="logo"><a href="../">
               <img class="logo" src="../_static/pybald.png" alt="Logo"/>
             </a></p>
-  <h3><a href="../">Table Of Contents</a></h3>
+  <h3><a href="../">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Configuration</a><ul>
 <li><a class="reference internal" href="#defaults">Defaults</a></li>
@@ -91,12 +80,14 @@
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search/" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -109,14 +100,14 @@
             
   <div class="section" id="configuration">
 <h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
-<p>All pybald applications must be configured early in the lifecycle of the application (generally before any controllers or models are defined). To configure an application, import the pybald module and run the <code class="docutils literal"><span class="pre">configure</span></code> function.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
+<p>All pybald applications must be configured early in the lifecycle of the application (generally before any controllers or models are defined). To configure an application, import the pybald module and run the <code class="docutils literal notranslate"><span class="pre">configure</span></code> function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
 
 <span class="c1"># configure our pybald application</span>
 <span class="n">pybald</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>There are several ways to configure a pybald application, but they all consist of building a set of key/value pairs to define how the application will run. In the example above, <code class="docutils literal"><span class="pre">debug=True</span></code> was passed as a key/value pair turning on debug.</p>
+<p>There are several ways to configure a pybald application, but they all consist of building a set of key/value pairs to define how the application will run. In the example above, <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> was passed as a key/value pair turning on debug.</p>
 <p>Generally the config will be where you define things like:</p>
 <blockquote>
 <div><ul class="simple">
@@ -130,8 +121,8 @@
 </div></blockquote>
 <div class="section" id="defaults">
 <h2>Defaults<a class="headerlink" href="#defaults" title="Permalink to this headline">¶</a></h2>
-<p>Pybald has a set of default configuration values that will always be used as the basis for a config. This allows starting a simple pybald application with very little configuration. The defaults are stored in the <code class="docutils literal"><span class="pre">pybald.default</span></code> module as a dictionary. This default dictionary will automatically be combined with any user supplied values to create the final configuration.</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pybald.default</span> <span class="kn">import</span> <span class="n">default_config</span>
+<p>Pybald has a set of default configuration values that will always be used as the basis for a config. This allows starting a simple pybald application with very little configuration. The defaults are stored in the <code class="docutils literal notranslate"><span class="pre">pybald.default</span></code> module as a dictionary. This default dictionary will automatically be combined with any user supplied values to create the final configuration.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pybald.default</span> <span class="kn">import</span> <span class="n">default_config</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">default_config</span><span class="p">)</span>
 <span class="go">{&#39;DEFAULT_PROTOCOL&#39;: &#39;http&#39;,</span>
@@ -167,8 +158,8 @@
 <p>While there are several ways to configure a Pybald application, generally only one should be used at a time. Mixing config methods (keyword arguments and file for example) is not currently supported.</p>
 <div class="section" id="keyword-argument">
 <h3>Keyword Argument<a class="headerlink" href="#keyword-argument" title="Permalink to this headline">¶</a></h3>
-<p>For the simplest projects, keyword arguments passed to the configure function can be used. This was the way <code class="docutils literal"><span class="pre">debug=True</span></code> was set on the configuration for the sample application.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
+<p>For the simplest projects, keyword arguments passed to the configure function can be used. This was the way <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> was set on the configuration for the sample application.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
 
 <span class="c1"># configure our pybald application</span>
 <span class="n">pybald</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -178,8 +169,8 @@
 </div>
 <div class="section" id="config-dictionary">
 <h3>Config Dictionary<a class="headerlink" href="#config-dictionary" title="Permalink to this headline">¶</a></h3>
-<p>You can also configure a pybald application by building a dictionary of options and passing it to the configure function with the <code class="docutils literal"><span class="pre">config_object</span></code> keyword argument.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
+<p>You can also configure a pybald application by building a dictionary of options and passing it to the configure function with the <code class="docutils literal notranslate"><span class="pre">config_object</span></code> keyword argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
 
 <span class="c1"># configure our pybald application</span>
 <span class="n">pybald</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">config_object</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;debug&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">})</span>
@@ -188,15 +179,15 @@
 </div>
 <div class="section" id="config-file-module">
 <h3>Config File (Module)<a class="headerlink" href="#config-file-module" title="Permalink to this headline">¶</a></h3>
-<p>You can also configure a Pybald application by using a configuration file. Pybald configuration files are simple python modules. You can create a python module in the main project path that contains the variables you wish to use for your configuration. Traditionally this file is named <code class="docutils literal"><span class="pre">project.py</span></code> and lives in the root path of your project but it can be named anything. You can specify a python module and path to use as the config file by using the <code class="docutils literal"><span class="pre">config_file</span></code> keyword argument.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
+<p>You can also configure a Pybald application by using a configuration file. Pybald configuration files are simple python modules. You can create a python module in the main project path that contains the variables you wish to use for your configuration. Traditionally this file is named <code class="docutils literal notranslate"><span class="pre">project.py</span></code> and lives in the root path of your project but it can be named anything. You can specify a python module and path to use as the config file by using the <code class="docutils literal notranslate"><span class="pre">config_file</span></code> keyword argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
 
 <span class="c1"># configure our pybald application</span>
 <span class="n">pybald</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;project.py&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>If no config options or keywords are passed to the <code class="docutils literal"><span class="pre">configure</span></code> function, pybald will attempt to load a config file named <code class="docutils literal"><span class="pre">project.py</span></code> from the project path. If no file with that name is present, then the default configuration will be used.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
+<p>If no config options or keywords are passed to the <code class="docutils literal notranslate"><span class="pre">configure</span></code> function, pybald will attempt to load a config file named <code class="docutils literal notranslate"><span class="pre">project.py</span></code> from the project path. If no file with that name is present, then the default configuration will be used.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
 
 <span class="c1"># configure our pybald application, nothing specified</span>
 <span class="c1"># so attempt to load a project.py file if present</span>
@@ -207,7 +198,7 @@
 <div class="section" id="sample-project-py">
 <h4>Sample project.py<a class="headerlink" href="#sample-project-py" title="Permalink to this headline">¶</a></h4>
 <p>Project.py files generally look like a list of variable declarations. This doesn’t mean you can’t run python code or do dynamic things with the config options, in fact this is the main use case for using a python module for configuration rather than a static file format like an ini file. For example, one common use case for this pattern is to dynamically generate the database URI for a database connection using string interpolation. Another useful trick is to have a base project.py file that includes an environment.py file with environmental (production, test, development) specific values.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">sample_config</span> <span class="o">=</span> <span class="bp">True</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sample_config</span> <span class="o">=</span> <span class="bp">True</span>
 <span class="n">env_name</span> <span class="o">=</span> <span class="s2">&quot;SampleTestProjectEnvironment&quot;</span>
 <span class="n">template_path</span> <span class="o">=</span> <span class="s2">&quot;sample_project/templates&quot;</span>
 <span class="n">cache_path</span> <span class="o">=</span> <span class="bp">None</span>
@@ -224,14 +215,14 @@
 <h2>The Pybald context<a class="headerlink" href="#the-pybald-context" title="Permalink to this headline">¶</a></h2>
 <div class="sidebar">
 <p class="first sidebar-title">About Contexts</p>
-<p>Under the covers, the Pybald context is a <em>Stacked Object Proxy</em> using a python threadlocal. This means that anywhere a reference to <code class="docutils literal"><span class="pre">context</span></code> is found, that reference is actually a proxy to the underlying context. When the context is changed, it is changed for all references.</p>
+<p>Under the covers, the Pybald context is a <em>Stacked Object Proxy</em> using a python threadlocal. This means that anywhere a reference to <code class="docutils literal notranslate"><span class="pre">context</span></code> is found, that reference is actually a proxy to the underlying context. When the context is changed, it is changed for all references.</p>
 <p>Why? The reason for this is to support running multiple Pybald applications simultaneously. Each call to configure creates a new context and pushes the current context onto the context stack. When one pybald application calls a second Pybald application in the same interpreter, it must handle popping and pushing the context for the ‘child’ application onto the stack before beginning execution of the second Pybald app. This allows the different applications to share code but not configuration.</p>
-<p class="last">This is a more advanced use case, but it does have one important ramification if you’re using the simple case, you should make sure that <code class="docutils literal"><span class="pre">pybald.configure()</span></code> is only called <strong>once</strong> for any application. <em>Every</em> call to configure will create an entirely new application context and push it onto the context stack. This may lead to strange behaviors or bugs if not careful.</p>
+<p class="last">This is a more advanced use case, but it does have one important ramification if you’re using the simple case, you should make sure that <code class="docutils literal notranslate"><span class="pre">pybald.configure()</span></code> is only called <strong>once</strong> for any application. <em>Every</em> call to configure will create an entirely new application context and push it onto the context stack. This may lead to strange behaviors or bugs if not careful.</p>
 </div>
-<p>Regardless of the method used, once a Pybald application is configured a <em>context</em> is created. The configure function call creates the context and an immutable <code class="docutils literal"><span class="pre">ConfigObject</span></code> and attaches it to the context. The ConfigObject is the combination of the default configuration values and any user supplied values.</p>
-<p>A Pybald <code class="docutils literal"><span class="pre">context</span></code> represents the configuration and any globally accessible state for the application. Once an application is configured, importing the context from pybald will give you access to this shared context. This allows you to have access to the configuration from multiple python modules without having to explicitly pass references to the context.</p>
-<p>Importing <code class="docutils literal"><span class="pre">context</span></code> from pybald gives you access to the current application’s configuration and any shared resource (like caching or database connections).</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pybald</span> <span class="kn">import</span> <span class="n">context</span>
+<p>Regardless of the method used, once a Pybald application is configured a <em>context</em> is created. The configure function call creates the context and an immutable <code class="docutils literal notranslate"><span class="pre">ConfigObject</span></code> and attaches it to the context. The ConfigObject is the combination of the default configuration values and any user supplied values.</p>
+<p>A Pybald <code class="docutils literal notranslate"><span class="pre">context</span></code> represents the configuration and any globally accessible state for the application. Once an application is configured, importing the context from pybald will give you access to this shared context. This allows you to have access to the configuration from multiple python modules without having to explicitly pass references to the context.</p>
+<p>Importing <code class="docutils literal notranslate"><span class="pre">context</span></code> from pybald gives you access to the current application’s configuration and any shared resource (like caching or database connections).</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pybald</span> <span class="kn">import</span> <span class="n">context</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">context</span><span class="o">.</span><span class="n">config</span>
 <span class="go">ConfigObject(project_name=&#39;sample.py&#39;, BUNDLE_ASSETS=False, global_table_args={}, USE_CDN=False, BUNDLE_OUTPUT_PATH=&#39;/min&#39;, email_errors=False, debug=True, cache_path=&#39;tmp/viewscache&#39;, template_default_helpers=[&#39;from pybald.core.helpers import img, link, humanize, HTMLLiteral as literal, url_for&#39;, &#39;from pybald.core import page&#39;], path=&#39;/home/username/projects/sample&#39;, template_filesystem_check=True, database_engine_uri=&#39;&#39;, database_engine_args={}, template_path=&#39;app/views&#39;, BUNDLE_SOURCE_PATHS=[&#39;/front_end&#39;, &#39;/sass&#39;], BUNDLE_FILTER_OPTIONS=[], env_name=&#39;Default&#39;, page_options={}, host_name=&#39;localhost&#39;, smtp_config={}, template_helpers=[], BUNDLE_AUTO_BUILD=True, template_default_filters=[&#39;h&#39;, &#39;unicode&#39;], schema_reflection=False, static_path=&#39;public&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">context</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span>
@@ -243,30 +234,30 @@
 <h2>Common config arguments<a class="headerlink" href="#common-config-arguments" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="runtime">
 <h3>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h3>
-<p>The most common runtime configuration arguments are <code class="docutils literal"><span class="pre">project_name</span></code>, <code class="docutils literal"><span class="pre">path</span></code>, <code class="docutils literal"><span class="pre">env_name</span></code> and <code class="docutils literal"><span class="pre">debug</span></code>.</p>
+<p>The most common runtime configuration arguments are <code class="docutils literal notranslate"><span class="pre">project_name</span></code>, <code class="docutils literal notranslate"><span class="pre">path</span></code>, <code class="docutils literal notranslate"><span class="pre">env_name</span></code> and <code class="docutils literal notranslate"><span class="pre">debug</span></code>.</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">project_name</span></code> an identifier for the current project, mostly informational and is used for storing per project comand line history</li>
-<li><code class="docutils literal"><span class="pre">path</span></code> the root of the current application. This root path is used when determining any relative paths for other configuration options.</li>
-<li><code class="docutils literal"><span class="pre">env_name</span></code> a meaningful ‘environment’ name useful for identifying the current running environment. Again mostly informational but is sometimes used for triggering behaviors (i.e. only instrument when in production)</li>
-<li><code class="docutils literal"><span class="pre">debug</span></code> whether the application runs in debug mode or not. Debug mode generally has chattier log output as well as changing the way some component behave. One example is the error handler, when in debug mode, will return a nicely formatted stack trace on exceptions, wheras when not in debug mode a user facing error message is returned.</li>
+<li><code class="docutils literal notranslate"><span class="pre">project_name</span></code> an identifier for the current project, mostly informational and is used for storing per project comand line history</li>
+<li><code class="docutils literal notranslate"><span class="pre">path</span></code> the root of the current application. This root path is used when determining any relative paths for other configuration options.</li>
+<li><code class="docutils literal notranslate"><span class="pre">env_name</span></code> a meaningful ‘environment’ name useful for identifying the current running environment. Again mostly informational but is sometimes used for triggering behaviors (i.e. only instrument when in production)</li>
+<li><code class="docutils literal notranslate"><span class="pre">debug</span></code> whether the application runs in debug mode or not. Debug mode generally has chattier log output as well as changing the way some component behave. One example is the error handler, when in debug mode, will return a nicely formatted stack trace on exceptions, wheras when not in debug mode a user facing error message is returned.</li>
 </ul>
 </div>
 <div class="section" id="templates">
 <h3>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h3>
 <p>There are a few configuration options that change the way the templating system behaves. These include:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">cache_path</span></code> - where compiled (Mako) templates will be stored</li>
-<li><code class="docutils literal"><span class="pre">template_default_helpers</span></code> - python functions to import into all templates to provide functions like link generation. These functions will be available in all templates and can be used directly (see the section on templating).</li>
-<li><code class="docutils literal"><span class="pre">template_filesystem_check</span></code> - when True, the template engine will check for changes to the underlying template files on every load, otherwise the cached version will always be used.</li>
-<li><code class="docutils literal"><span class="pre">template_path</span></code> - the path where project templates will be stored. Usually this is a relative path the the project’s root path.</li>
-<li><code class="docutils literal"><span class="pre">template_default_filters</span></code> - the default filters to run on all template output. By default, the HTML escape filter <code class="docutils literal"><span class="pre">h</span></code> which escapes all output to avoide XSS type attacks and <code class="docutils literal"><span class="pre">unicode</span></code> are used to make sure all output returns as unicode. You can dynamically add any filters to ouptut in templates, but these defaults will always be applied. Note: think hard before you decide to remove the html escape filter since that’s the root of many security problems!</li>
+<li><code class="docutils literal notranslate"><span class="pre">cache_path</span></code> - where compiled (Mako) templates will be stored</li>
+<li><code class="docutils literal notranslate"><span class="pre">template_default_helpers</span></code> - python functions to import into all templates to provide functions like link generation. These functions will be available in all templates and can be used directly (see the section on templating).</li>
+<li><code class="docutils literal notranslate"><span class="pre">template_filesystem_check</span></code> - when True, the template engine will check for changes to the underlying template files on every load, otherwise the cached version will always be used.</li>
+<li><code class="docutils literal notranslate"><span class="pre">template_path</span></code> - the path where project templates will be stored. Usually this is a relative path the the project’s root path.</li>
+<li><code class="docutils literal notranslate"><span class="pre">template_default_filters</span></code> - the default filters to run on all template output. By default, the HTML escape filter <code class="docutils literal notranslate"><span class="pre">h</span></code> which escapes all output to avoide XSS type attacks and <code class="docutils literal notranslate"><span class="pre">unicode</span></code> are used to make sure all output returns as unicode. You can dynamically add any filters to ouptut in templates, but these defaults will always be applied. Note: think hard before you decide to remove the html escape filter since that’s the root of many security problems!</li>
 </ul>
 </div>
 <div class="section" id="databases">
 <h3>Databases<a class="headerlink" href="#databases" title="Permalink to this headline">¶</a></h3>
-<p>Database configuration is done via SQLAlchemy which uses a URI following <a class="reference external" href="http://rfc.net/rfc1738.html">RFC-1738</a>. The uri is in the config variable <cite>database_engine_uri</cite>. Generally pybald projects use some string interpolation to create these URLs from configuration dictionaries. This allows creating different <code class="docutils literal"><span class="pre">environments</span></code> with different config dictionaries but keep the same underlying config connection string.</p>
-<p>Here is a sample <code class="docutils literal"><span class="pre">project.py</span></code> with a block to define a simple sqllite database as the database URI. Additionally it contains comments to show some other common URI patterns. These patterns are presented to show how one might create a mysql or postgres connection.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># sqlalchemy engine string examples:</span>
+<p>Database configuration is done via SQLAlchemy which uses a URI following <a class="reference external" href="http://rfc.net/rfc1738.html">RFC-1738</a>. The uri is in the config variable <cite>database_engine_uri</cite>. Generally pybald projects use some string interpolation to create these URLs from configuration dictionaries. This allows creating different <code class="docutils literal notranslate"><span class="pre">environments</span></code> with different config dictionaries but keep the same underlying config connection string.</p>
+<p>Here is a sample <code class="docutils literal notranslate"><span class="pre">project.py</span></code> with a block to define a simple sqllite database as the database URI. Additionally it contains comments to show some other common URI patterns. These patterns are presented to show how one might create a mysql or postgres connection.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># sqlalchemy engine string examples:</span>
 <span class="c1"># mysql -         &quot;mysql://{user}:{password}@{host}/{database}&quot;</span>
 <span class="c1"># postgres - postgresql://{username}:{password}@{host}:{port}/{database}&#39;</span>
 <span class="c1"># sqllite -       &quot;sqlite:///{filename}&quot;</span>
@@ -307,13 +298,13 @@
         <li class="right" >
           <a href="../getting_started/" title="Quick Start"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.1 documentation</a> &#187;</li> 
       </ul>
     </div>
   
     <div class="footer">
         &copy; Copyright 2014, Michael Kowalchik.
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.1.Theme by <a href="http://github.com/vkvn">vkvn</a>
     </div>
   <!-- <script type="text/javascript">
   var gaJsHost = (("https:" == document.location.protocol) ? 

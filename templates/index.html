@@ -2,33 +2,22 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Templates &#8212; Pybald 0.5.0 documentation</title>
-    
+    <title>Templates &#8212; Pybald 0.5.1 documentation</title>
     <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.5.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
     <link rel="next" title="Controllers" href="../controllers/" />
     <link rel="prev" title="Magic" href="../magic/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
 <link href="../_static/solarized-dark.css" rel="stylesheet">
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,7 +33,7 @@
         <li class="right" >
           <a href="../magic/" title="Magic"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.1 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -52,7 +41,7 @@
             <p class="logo"><a href="../">
               <img class="logo" src="../_static/pybald.png" alt="Logo"/>
             </a></p>
-  <h3><a href="../">Table Of Contents</a></h3>
+  <h3><a href="../">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Templates</a><ul>
 <li><a class="reference internal" href="#setting-up-templates">Setting up templates</a></li>
@@ -78,12 +67,14 @@
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search/" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -100,11 +91,11 @@
 <div class="section" id="setting-up-templates">
 <h2>Setting up templates<a class="headerlink" href="#setting-up-templates" title="Permalink to this headline">¶</a></h2>
 <div class="sidebar">
-<p class="first sidebar-title">Why <code class="docutils literal"><span class="pre">app/views</span></code>?</p>
-<p class="last">While pybald is generally designed to be quick to start and play with, it also tries to help you be ready for when your project grows. Pybald encourages a particular application path structure to help you stay organized longer term. In general application code is encouraged to be put in <code class="docutils literal"><span class="pre">app/</span></code> with the subfolders of <code class="docutils literal"><span class="pre">app/models</span></code>, <code class="docutils literal"><span class="pre">app/views</span></code> and <code class="docutils literal"><span class="pre">app/controllers</span></code>. Pybald is also designed to be flexible, so we’re ignoring that structure for our simple example.</p>
+<p class="first sidebar-title">Why <code class="docutils literal notranslate"><span class="pre">app/views</span></code>?</p>
+<p class="last">While pybald is generally designed to be quick to start and play with, it also tries to help you be ready for when your project grows. Pybald encourages a particular application path structure to help you stay organized longer term. In general application code is encouraged to be put in <code class="docutils literal notranslate"><span class="pre">app/</span></code> with the subfolders of <code class="docutils literal notranslate"><span class="pre">app/models</span></code>, <code class="docutils literal notranslate"><span class="pre">app/views</span></code> and <code class="docutils literal notranslate"><span class="pre">app/controllers</span></code>. Pybald is also designed to be flexible, so we’re ignoring that structure for our simple example.</p>
 </div>
-<p>Pybald uses mako template files. By default, the <code class="docutils literal"><span class="pre">template_path</span></code> is defined as <code class="docutils literal"><span class="pre">app/views</span></code>. We’re going to override the default path that pybald normally looks for template files for our simple example app. Let’s update our small example pybald app to include the <code class="docutils literal"><span class="pre">template_path</span></code> configuration directive and set it to the root path of the project. Where we call <code class="docutils literal"><span class="pre">pybald.configure</span></code> we’ll add <code class="docutils literal"><span class="pre">template_path=&quot;.&quot;</span></code>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># configure our pybald application</span>
+<p>Pybald uses mako template files. By default, the <code class="docutils literal notranslate"><span class="pre">template_path</span></code> is defined as <code class="docutils literal notranslate"><span class="pre">app/views</span></code>. We’re going to override the default path that pybald normally looks for template files for our simple example app. Let’s update our small example pybald app to include the <code class="docutils literal notranslate"><span class="pre">template_path</span></code> configuration directive and set it to the root path of the project. Where we call <code class="docutils literal notranslate"><span class="pre">pybald.configure</span></code> we’ll add <code class="docutils literal notranslate"><span class="pre">template_path=&quot;.&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># configure our pybald application</span>
 <span class="n">pybald</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">template_path</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -112,8 +103,8 @@
 </div>
 <div class="section" id="your-first-template">
 <h2>Your first template<a class="headerlink" href="#your-first-template" title="Permalink to this headline">¶</a></h2>
-<p>Lets create a template file and call it <code class="docutils literal"><span class="pre">home.html.template</span></code>. This will be an html template to generate content for our application. In this file, lets add the following content and save the file. This isn’t terribly exciting for now, but we’ll show more of the power of templates later.</p>
-<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<p>Lets create a template file and call it <code class="docutils literal notranslate"><span class="pre">home.html.template</span></code>. This will be an html template to generate content for our application. In this file, lets add the following content and save the file. This isn’t terribly exciting for now, but we’ll show more of the power of templates later.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello world!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
@@ -121,8 +112,8 @@
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-<p>Now let’s render this template. Let’s go ahead and start up our console again using <code class="docutils literal"><span class="pre">python</span> <span class="pre">sample.py</span> <span class="pre">console</span></code>. We’ll import the pybald <em>context</em> and then use the <code class="docutils literal"><span class="pre">render</span></code> function in the current context.</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go">Route name Methods Path</span>
+<p>Now let’s render this template. Let’s go ahead and start up our console again using <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">sample.py</span> <span class="pre">console</span></code>. We’ll import the pybald <em>context</em> and then use the <code class="docutils literal notranslate"><span class="pre">render</span></code> function in the current context.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go">Route name Methods Path</span>
 <span class="go">home               /</span>
 <span class="go">Welcome to the Pybald interactive console</span>
 <span class="go"> ** project: sample.py **</span>
@@ -147,7 +138,7 @@
 <h2>Using the template in a request<a class="headerlink" href="#using-the-template-in-a-request" title="Permalink to this headline">¶</a></h2>
 <p>We’ve just rendered a template, but we got a string value back, how do we use the results in our web requests? The answer is simple: we just return that string from one of our <em>actions</em>.</p>
 <p>We can update our sample application to return the rendered template.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pybald</span>
 <span class="kn">from</span> <span class="nn">pybald</span> <span class="kn">import</span> <span class="n">context</span>
 <span class="kn">from</span> <span class="nn">pybald.core.controllers</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">action</span>
 <span class="kn">from</span> <span class="nn">pybald.core.router</span> <span class="kn">import</span> <span class="n">Router</span>
@@ -171,7 +162,7 @@
 </pre></div>
 </div>
 <p>Now we can run our application and initiate a simulated web request as before, only this time we’ll return the results of a template render.</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="go">Route name Methods Path</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go">Route name Methods Path</span>
 <span class="go">home               /</span>
 <span class="go">Welcome to the Pybald interactive console</span>
 <span class="go"> ** project: sample.py **</span>
@@ -195,13 +186,13 @@
 <span class="go">&lt;/html&gt;</span>
 </pre></div>
 </div>
-<p>You’ll notice that in this example we’ve just used <code class="docutils literal"><span class="pre">&quot;home&quot;</span></code> for the argument to <code class="docutils literal"><span class="pre">context.render</span></code>. This is one of the conveinience behaviors of pybald, the default file extension for html templates is <code class="docutils literal"><span class="pre">.html.template</span></code> so you don’t have to explicitly use the full filename.</p>
+<p>You’ll notice that in this example we’ve just used <code class="docutils literal notranslate"><span class="pre">&quot;home&quot;</span></code> for the argument to <code class="docutils literal notranslate"><span class="pre">context.render</span></code>. This is one of the conveinience behaviors of pybald, the default file extension for html templates is <code class="docutils literal notranslate"><span class="pre">.html.template</span></code> so you don’t have to explicitly use the full filename.</p>
 </div>
 <div class="section" id="using-data-in-templates">
 <h2>Using data in templates<a class="headerlink" href="#using-data-in-templates" title="Permalink to this headline">¶</a></h2>
 <p>Now lets do something interesting with the template. Templates allow us to bind data to them and use them to create variables and execute template logic.</p>
-<p>First lets update the template to create a placeholder, a variable. The syntax to add an expression in Mako is <code class="docutils literal"><span class="pre">${}</span></code> so below we’ve added a variable <code class="docutils literal"><span class="pre">${name}</span></code> to the template.</p>
-<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<p>First lets update the template to create a placeholder, a variable. The syntax to add an expression in Mako is <code class="docutils literal notranslate"><span class="pre">${}</span></code> so below we’ve added a variable <code class="docutils literal notranslate"><span class="pre">${name}</span></code> to the template.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello world!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
@@ -235,13 +226,13 @@
         <li class="right" >
           <a href="../magic/" title="Magic"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.1 documentation</a> &#187;</li> 
       </ul>
     </div>
   
     <div class="footer">
         &copy; Copyright 2014, Michael Kowalchik.
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.1.Theme by <a href="http://github.com/vkvn">vkvn</a>
     </div>
   <!-- <script type="text/javascript">
   var gaJsHost = (("https:" == document.location.protocol) ? 

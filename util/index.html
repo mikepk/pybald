@@ -2,32 +2,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Utilities &#8212; Pybald 0.5.0 documentation</title>
-    
+    <title>Utilities &#8212; Pybald 0.5.1 documentation</title>
     <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.5.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
     <link rel="prev" title="Models and ORM" href="../model/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
 <link href="../_static/solarized-dark.css" rel="stylesheet">
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -40,7 +29,7 @@
         <li class="right" >
           <a href="../model/" title="Models and ORM"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference/" accesskey="U">API Reference</a> &#187;</li> 
       </ul>
     </div>
@@ -49,13 +38,13 @@
             <p class="logo"><a href="../">
               <img class="logo" src="../_static/pybald.png" alt="Logo"/>
             </a></p>
-  <h3><a href="../">Table Of Contents</a></h3>
+  <h3><a href="../">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Utilities</a><ul>
-<li><a class="reference internal" href="#util-project-utilities"><code class="docutils literal"><span class="pre">util</span></code> - project utilities</a></li>
-<li><a class="reference internal" href="#module-pybald.util.console"><code class="docutils literal"><span class="pre">console</span></code> - Interactive REPL / web console</a></li>
-<li><a class="reference internal" href="#module-pybald.util.static_serve"><code class="docutils literal"><span class="pre">static_serve</span></code> - Simple debugging static server</a></li>
-<li><a class="reference internal" href="#module-pybald.util.text"><code class="docutils literal"><span class="pre">text</span></code> - text processing helper functions</a></li>
+<li><a class="reference internal" href="#util-project-utilities"><code class="docutils literal notranslate"><span class="pre">util</span></code> - project utilities</a></li>
+<li><a class="reference internal" href="#module-pybald.util.console"><code class="docutils literal notranslate"><span class="pre">console</span></code> - Interactive REPL / web console</a></li>
+<li><a class="reference internal" href="#module-pybald.util.static_serve"><code class="docutils literal notranslate"><span class="pre">static_serve</span></code> - Simple debugging static server</a></li>
+<li><a class="reference internal" href="#module-pybald.util.text"><code class="docutils literal notranslate"><span class="pre">text</span></code> - text processing helper functions</a></li>
 </ul>
 </li>
 </ul>
@@ -72,12 +61,14 @@
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search/" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -91,10 +82,10 @@
   <div class="section" id="utilities">
 <h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="util-project-utilities">
-<h2><code class="xref py py-mod docutils literal"><span class="pre">util</span></code> - project utilities<a class="headerlink" href="#util-project-utilities" title="Permalink to this headline">¶</a></h2>
+<h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">util</span></code> - project utilities<a class="headerlink" href="#util-project-utilities" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-pybald.util.console">
-<span id="console-interactive-repl-web-console"></span><h2><code class="xref py py-mod docutils literal"><span class="pre">console</span></code> - Interactive REPL / web console<a class="headerlink" href="#module-pybald.util.console" title="Permalink to this headline">¶</a></h2>
+<span id="console-interactive-repl-web-console"></span><h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">console</span></code> - Interactive REPL / web console<a class="headerlink" href="#module-pybald.util.console" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pybald.util.console.Console">
 <em class="property">class </em><code class="descclassname">pybald.util.console.</code><code class="descname">Console</code><span class="sig-paren">(</span><em>project_name</em>, <em>package_name=None</em>, <em>app=None</em>, <em>additional_symbols=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.console.Console" title="Permalink to this definition">¶</a></dt>
@@ -141,7 +132,7 @@ object is passed in for command line invokation</li>
 
 </div>
 <div class="section" id="module-pybald.util.static_serve">
-<span id="static-serve-simple-debugging-static-server"></span><h2><code class="xref py py-mod docutils literal"><span class="pre">static_serve</span></code> - Simple debugging static server<a class="headerlink" href="#module-pybald.util.static_serve" title="Permalink to this headline">¶</a></h2>
+<span id="static-serve-simple-debugging-static-server"></span><h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">static_serve</span></code> - Simple debugging static server<a class="headerlink" href="#module-pybald.util.static_serve" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pybald.util.static_serve.StaticServer">
 <em class="property">class </em><code class="descclassname">pybald.util.static_serve.</code><code class="descname">StaticServer</code><span class="sig-paren">(</span><em>application</em>, <em>path</em>, <em>browser_caching=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.static_serve.StaticServer" title="Permalink to this definition">¶</a></dt>
@@ -175,7 +166,7 @@ as a generator / iterable.</p>
 
 </div>
 <div class="section" id="module-pybald.util.text">
-<span id="text-text-processing-helper-functions"></span><h2><code class="xref py py-mod docutils literal"><span class="pre">text</span></code> - text processing helper functions<a class="headerlink" href="#module-pybald.util.text" title="Permalink to this headline">¶</a></h2>
+<span id="text-text-processing-helper-functions"></span><h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">text</span></code> - text processing helper functions<a class="headerlink" href="#module-pybald.util.text" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="pybald.util.text.camel_to_underscore">
 <code class="descclassname">pybald.util.text.</code><code class="descname">camel_to_underscore</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.text.camel_to_underscore" title="Permalink to this definition">¶</a></dt>
@@ -211,6 +202,11 @@ better than fran-ais or fran?ais.</p>
 <dd><p>Convert underscore_separated text into CamelCase text.</p>
 </dd></dl>
 
+<dl class="function">
+<dt id="pybald.util.text.unicode">
+<code class="descclassname">pybald.util.text.</code><code class="descname">unicode</code><span class="sig-paren">(</span><em>txt</em>, <em>errors=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybald.util.text.unicode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -232,14 +228,14 @@ better than fran-ais or fran?ais.</p>
         <li class="right" >
           <a href="../model/" title="Models and ORM"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference/" >API Reference</a> &#187;</li> 
       </ul>
     </div>
   
     <div class="footer">
         &copy; Copyright 2014, Michael Kowalchik.
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.1.Theme by <a href="http://github.com/vkvn">vkvn</a>
     </div>
   <!-- <script type="text/javascript">
   var gaJsHost = (("https:" == document.location.protocol) ? 

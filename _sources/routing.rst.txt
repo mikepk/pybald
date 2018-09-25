@@ -61,7 +61,7 @@ The second argument to the connect method is the route itself, i.e. what path yo
 
 ``controller`` and ``action`` Variables
 ***************************************
-The controller and action variables are used to tell the pybald router which *handler* will be executed on a match. These can be set either by variable caprute or by setting them explicitly using keyword arguments.
+The controller and action variables are used to tell the pybald router which *handler* will be executed on a match. These can be set either by variable capture or by setting them explicitly using keyword arguments.
 
 The ``controller`` variable is used to look up which controller *object* will be instantiated to handle the request. The ``action`` variable is used to determine which method on the controller object will be executed. If no ``action`` argument is resolved, a default value of ``index`` will be used.
 

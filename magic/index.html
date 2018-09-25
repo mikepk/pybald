@@ -2,33 +2,22 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Magic &#8212; Pybald 0.5.0 documentation</title>
-    
+    <title>Magic &#8212; Pybald 0.5.1 documentation</title>
     <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.5.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
     <link rel="next" title="Templates" href="../templates/" />
     <link rel="prev" title="Using Pybald" href="../using/" /><link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
 <link href="../_static/solarized-dark.css" rel="stylesheet">
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,7 +33,7 @@
         <li class="right" >
           <a href="../using/" title="Using Pybald"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.1 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -52,7 +41,7 @@
             <p class="logo"><a href="../">
               <img class="logo" src="../_static/pybald.png" alt="Logo"/>
             </a></p>
-  <h3><a href="../">Table Of Contents</a></h3>
+  <h3><a href="../">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Magic</a><ul>
 <li><a class="reference internal" href="#loading-controllers">Loading Controllers</a></li>
@@ -76,12 +65,14 @@
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search/" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -97,8 +88,8 @@
 <p>Pybald only has a few ‘magical’ behaviors. This documentation explains how they work.</p>
 <div class="section" id="loading-controllers">
 <h2>Loading Controllers<a class="headerlink" href="#loading-controllers" title="Permalink to this headline">¶</a></h2>
-<p>Pybald uses a ‘controller registry’ for keeping track of which classes are to be used as controllers. This registry is just a list of all controllers that have been imported / loaded in the current project. To register a class to act as a controller, you can inherit from the pybald.core.Controller class. Inheriting from this class will automatically register the class as a controller.</p>
-<div class="highlight-pycon"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pybald.core.controllers</span> <span class="kn">import</span> <span class="n">Controller</span>
+<p>Pybald uses a ‘controller registry’ for keeping track of which classes are to be used as controllers. This registry is just a list of all controllers that have been imported / loaded in the current project. To register a class to act as a controller, you can inherit from the pybald.core.controllers.Controller class. Inheriting from this class will automatically register the class as a controller.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pybald.core.controllers</span> <span class="kn">import</span> <span class="n">Controller</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">PostCommentController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 <span class="gp">... </span>   <span class="k">pass</span>
 <span class="gp">...</span>
@@ -106,16 +97,16 @@
 <span class="go">[&lt;class &#39;__main__.PostCommentController&#39;&gt;]</span>
 </pre></div>
 </div>
-<p>While you can organize your controller classes any way you wish, the convention is to place one controller per module with a filename that matches the name of the contained controller. So, for example, a HomeController class might be located in a file named: <code class="docutils literal"><span class="pre">./app/controllers/home_controller.py</span></code>. Additionally, for a controller to be registered, its class must be defined and/or its containing module imported. There are some convenience utilities for auto-importing entire paths which will be discussed later.</p>
+<p>While you can organize your controller classes any way you wish, the convention is to place one controller per module with a filename that matches the name of the contained controller. So, for example, a HomeController class might be located in a file named: <code class="docutils literal notranslate"><span class="pre">./app/controllers/home_controller.py</span></code>. Additionally, for a controller to be registered, its class must be defined and/or its containing module imported. There are some convenience utilities for auto-importing entire paths which will be discussed later.</p>
 <p>It’s also recommended that you follow the Python style guide (<a class="reference external" href="http://www.python.org/dev/peps/pep-0008/">PEP8</a>). Controller module (file) names are expected to be all lowercase, using underscores to separate words. Controller class names are expected to follow the CapWords convention.</p>
 <p>On startup, when the pybald Router is first instantiated, but before the web application starts, the Router is passed a controller registry to use for associating with the route map.</p>
-<p>Again taking cues from Ruby on Rails, the initial project is configured with a default route <code class="docutils literal"><span class="pre">/{controller}/{action}/{id}</span></code>. This default route means that just by defining a class, inheriting from <code class="docutils literal"><span class="pre">BaseClass</span></code>, a URL will become immediately available at the ‘lookup’ value without any further configuration or additional route creation.</p>
-<p>In the above example <code class="docutils literal"><span class="pre">/post_comment</span></code> would become available as a project route and the router would instantiate a PostCommentController object to handle the request.</p>
+<p>Again taking cues from Ruby on Rails, the initial project is configured with a default route <code class="docutils literal notranslate"><span class="pre">/{controller}/{action}/{id}</span></code>. This default route means that just by defining a class, inheriting from <code class="docutils literal notranslate"><span class="pre">BaseClass</span></code>, a URL will become immediately available at the ‘lookup’ value without any further configuration or additional route creation.</p>
+<p>In the above example <code class="docutils literal notranslate"><span class="pre">/post_comment</span></code> would become available as a project route and the router would instantiate a PostCommentController object to handle the request.</p>
 </div>
 <div class="section" id="the-action-decorator">
 <span id="actions"></span><h2>The &#64;action decorator<a class="headerlink" href="#the-action-decorator" title="Permalink to this headline">¶</a></h2>
-<p>Actions are any methods in Controllers with the exception of any methods whose name begins with an underscore. The standard pattern is to use the <code class="docutils literal"><span class="pre">&#64;action</span></code> decorator to decorate each method you intend to use as an action. The <code class="docutils literal"><span class="pre">&#64;action</span></code> decorator provides numerous convenience behaviors. A typical action will look like the following:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">HomeController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
+<p>Actions are any methods in Controllers with the exception of any methods whose name begins with an underscore. The standard pattern is to use the <code class="docutils literal notranslate"><span class="pre">&#64;action</span></code> decorator to decorate each method you intend to use as an action. The <code class="docutils literal notranslate"><span class="pre">&#64;action</span></code> decorator provides numerous convenience behaviors. A typical action will look like the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">HomeController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
   <span class="sd">&#39;&#39;&#39;A sample home controller&#39;&#39;&#39;</span>
 
   <span class="nd">@action</span>
@@ -123,9 +114,9 @@
     <span class="k">return</span> <span class="s2">&quot;hello world&quot;</span>
 </pre></div>
 </div>
-<p>From the Router, each method is called with the WSGI call signature <code class="docutils literal"><span class="pre">(environ,</span> <span class="pre">start_response)</span></code>. The action decorator uses the WSGI call to create a WebOb Request object which is passed to the method. Generally WebOb requests are easier and more convenient to deal with. The action decorator also provides three other convenience behaviors.</p>
+<p>From the Router, each method is called with the WSGI call signature <code class="docutils literal notranslate"><span class="pre">(environ,</span> <span class="pre">start_response)</span></code>. The action decorator uses the WSGI call to create a WebOb Request object which is passed to the method. Generally WebOb requests are easier and more convenient to deal with. The action decorator also provides three other convenience behaviors.</p>
 <p>The first is that it assigns to the controller instance, data that is parsed/processed per request (such as session, user, or url variables.) The second is that it processes the name of the controller/action and uses that to define a default template for this call. Lastly, the action decorator adds some intelligent behaviors for the return value of the action. If the action returns a string, the string will be wrapped in a Response object and returned. If the action returns a Response object directly, the action will return that. If the action returns nothing (or None) then an attempt will be made to render the expected template for this action.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Decorates methods that are WSGI apps to turn them into pybald-style actions.</span>
 
@@ -221,13 +212,13 @@
         <li class="right" >
           <a href="../using/" title="Using Pybald"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../">Pybald 0.5.1 documentation</a> &#187;</li> 
       </ul>
     </div>
   
     <div class="footer">
         &copy; Copyright 2014, Michael Kowalchik.
-    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme by <a href="http://github.com/vkvn">vkvn</a>
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.1.Theme by <a href="http://github.com/vkvn">vkvn</a>
     </div>
   <!-- <script type="text/javascript">
   var gaJsHost = (("https:" == document.location.protocol) ? 
