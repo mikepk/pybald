@@ -185,7 +185,7 @@ There are a few configuration options that change the way the templating system 
 Databases
 ~~~~~~~~~
 
-Database configuration is done via SQLAlchemy which uses a URI following `RFC-1738 <http://rfc.net/rfc1738.html>`_. The uri is in the config variable `database_engine_uri`. Generally pybald projects use some string interpolation to create these URLs from configuration dictionaries. This allows creating different ``environments`` with different config dictionaries but keep the same underlying config connection string.
+Database configuration is done via SQLAlchemy which uses a URI following `RFC-1738 <https://www.ietf.org/rfc/rfc1738.txt>`_. The uri is in the config variable `database_engine_uri`. Generally pybald projects use some string interpolation to create these URLs from configuration dictionaries. This allows creating different ``environments`` with different config dictionaries but keep the same underlying config connection string.
 
 Here is a sample ``project.py`` with a block to define a simple sqllite database as the database URI. Additionally it contains comments to show some other common URI patterns. These patterns are presented to show how one might create a mysql or postgres connection.
 

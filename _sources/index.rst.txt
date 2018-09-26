@@ -76,7 +76,7 @@ Pybald works with Python 2.7 and Python 3 verions above and including 3.5.
 Pybald currently depends on, and will automatically install, the following libraries:
 
 * `Mako Templates <http://www.makotemplates.org/>`_
-* `Routes <http://routes.groovie.org/>`_
+* `Routes <https://routes.readthedocs.io/en/latest/>`_
 * `WebOb <https://webob.org/>`_
 * `SqlAlchemy <http://sqlalchemy.org/>`_
 * `WTForms <https://wtforms.readthedocs.org/en/latest/>`_
@@ -89,3 +89,4 @@ License
 Pybald is distributed under the `MIT license <http://www.opensource.org/licenses/mit-license.php>`_.
 
 .. literalinclude:: ../LICENSE
+   :language: none
