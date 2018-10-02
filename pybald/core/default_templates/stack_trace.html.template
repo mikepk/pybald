@@ -51,9 +51,11 @@
 <%
     tback = RichTraceback(error=error, traceback=traceback)
     src = tback.source
+    if type(src) is bytes:
+        src = src.decode("utf-8")
     line = tback.lineno
     if src:
-        lines = src.split(b'\n')
+        lines = src.split('\n')
     else:
         lines = None
 %>
@@ -84,11 +86,11 @@ None\
 % if lines:
     <div class="sample">
     <div class="nonhighlight">
-% for index in range(max(0, line - 6),min(len(lines), line + 5)):
+% for index in range(max(0, line - 6), min(len(lines), line + 5)):
     % if index + 1 == line:
-<div class="highlight">${index + 1} ${lines[index].decode('utf-8')}</div>
+<div class="highlight">${index + 1} ${lines[index]}}</div>
     % else:
-<div class="sampleline">${index + 1} ${lines[index].decode('utf-8')}</div>
+<div class="sampleline">${index + 1} ${lines[index]}</div>
     % endif
 % endfor
     </div>
