@@ -201,7 +201,7 @@ def plural(list_object):
 FRACTIONAL_SECOND = re.compile(r'\.\d+$')
 
 
-def humanize(date_string):
+def humanize(date_string, relative_date=None):
     '''Convert a date string into a 'humanized' relative string (like 1 day ago)'''
     date_format = "%Y-%m-%d %H:%M:%S"
     # strip decimal second precision
@@ -211,14 +211,17 @@ def humanize(date_string):
     except Exception:
         # if the date string format doesn't match, just return it
         return date_string
-    now = datetime.now()
+    if relative_date is None:
+        now = datetime.now()
+    else:
+        now = relative_date
     delta = now - date
     plural = 's'
     if delta.days < 0:
         return "in the future"
     elif delta.days >= 30:
         date_format = "%d %b"
-        if date.year != datetime.now().year:
+        if date.year != now.year:
             date_format += " '%y"
         return str(date.strftime(date_format).lstrip('0'))
     elif delta.days >= 14:

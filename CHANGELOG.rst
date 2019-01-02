@@ -1,6 +1,11 @@
 Pybald Changelog
 ================
 
+Release 0.5.2 (January 2, 2019)
+--------------------------------
+* Fix bug with stacktrace template for default Error handler
+* Improve the context model binding function
+
 Release 0.5.0 (August 19, 2017)
 --------------------------------
 * **Warning** - this release may not be compatible with previous pybald releases *if* you were making use of the asset pipeline (bundles, bundle filters, JSX compilation), utilizing the celery loader or the newrelic adapter
