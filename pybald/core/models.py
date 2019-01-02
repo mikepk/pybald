@@ -31,8 +31,15 @@ def _include_sqlalchemy(obj):
                 setattr(obj, key, getattr(module, key))
 
 
-def make_model_class(Base, db):
+def make_model_class(Base, session, config=None):
     '''Create a series of classes for models that are bound to a context.'''
+    if config is None:
+        class BlankConfig(object):
+            def __getattr__(self, key):
+                return None
+
+        config = BlankConfig()
+
     class ModelMeta(sqlalchemy.ext.declarative.DeclarativeMeta):
         '''
         MetaClass that sets up some common behaviors for pybald models.
@@ -59,23 +66,29 @@ def make_model_class(Base, db):
                                         pluralize(camel_to_underscore(name)))
             # tableargs adds autoload to create schema reflection
             cls.__table_args__ = getattr(cls, "__table_args__", {})
-
-            if context.config.schema_reflection:
+            if config.schema_reflection:
                 # create or update the __table_args__ attribute
                 cls.__table_args__['autoload'] = True
-            if context.config.global_table_args:
-                cls.__table_args__.update(context.config.global_table_args)
+            if config.global_table_args:
+                cls.__table_args__.update(config.global_table_args)
 
-            # check if the class has at least one primary key
-            # if not, automatically generate one.
-            has_primary = any([False] + [value.primary_key
-                                         for value in cls.__dict__.values()
-                                         if isinstance(value, sqlalchemy.Column)])
-            if not has_primary:
-                # treat the id as a mixin w/copy
-                surrogate_pk = surrogate_pk_template.copy()
-                surrogate_pk._creation_order = surrogate_pk_template._creation_order
-                cls.id = surrogate_pk
+            auto_create_pk = getattr(cls, "__auto_create_pk__", True)
+
+            if cls.__table_args__.get('autoload', False):
+                auto_create_pk = False
+
+            # check if we're auto creating PKs and if the class has at least
+            # one primary key if not, automatically generate an integer
+            # surrogate primary key.
+            if auto_create_pk:
+                has_primary = any([False] + [value.primary_key
+                                             for value in cls.__dict__.values()
+                                             if isinstance(value, sqlalchemy.Column)])
+                if not has_primary:
+                    # treat the id as a mixin w/copy
+                    surrogate_pk = surrogate_pk_template.copy()
+                    surrogate_pk._creation_order = surrogate_pk_template._creation_order
+                    cls.id = surrogate_pk
             super(ModelMeta, cls).__init__(name, bases, ns)
 
     class RegistryMount(type):
@@ -92,7 +105,6 @@ def make_model_class(Base, db):
                 cls.registry = [] #context.model_registry
 
             return super(RegistryMount, cls).__init__(name, bases, attrs)
-
 
     class RegistryModelMeta(RegistryMount, ModelMeta):
         pass
@@ -134,7 +146,7 @@ def make_model_class(Base, db):
             for that use :py:meth:`~pybald.db.models.Model.commit`)
             '''
 
-            context.db.add(self)
+            session.add(self)
 
             if flush:
                 self.flush()
@@ -149,7 +161,7 @@ def make_model_class(Base, db):
             operation with a commit to emit the SQL to delete the item from
             the database and commit the transaction.
             '''
-            context.db.delete(self)
+            session.delete(self)
             if flush:
                 self.flush()
             return self
@@ -163,7 +175,7 @@ def make_model_class(Base, db):
             **not** commit the current transaction or close the current
             database session.
             '''
-            context.db.flush()
+            session.flush()
             return self
 
         def commit(self):
@@ -175,7 +187,7 @@ def make_model_class(Base, db):
             and returns it to the connection pool. Any data operations after this
             will pull a new database session from the connection pool.
             '''
-            context.db.commit()
+            session.commit()
             return self
 
         @classmethod
@@ -208,9 +220,9 @@ def make_model_class(Base, db):
             actual items from the database.
             '''
             if where:
-                return context.db.query(cls).filter_by(**where)
+                return session.query(cls).filter_by(**where)
             else:
-                return context.db.query(cls)
+                return session.query(cls)
 
         @classmethod
         def filter(cls, *pargs, **kargs):
@@ -220,7 +232,7 @@ def make_model_class(Base, db):
 
             Returns a query object.
             '''
-            return context.db.query(cls).filter(*pargs, **kargs)
+            return session.query(cls).filter(*pargs, **kargs)
 
         @classmethod
         def query(cls):
@@ -228,7 +240,7 @@ def make_model_class(Base, db):
             Convenience method to return a query based on the current object
             class.
             '''
-            return context.db.query(cls)
+            return session.query(cls)
 
         @classmethod
         def show_create_table(cls):
@@ -237,7 +249,6 @@ def make_model_class(Base, db):
             table.
             '''
             cls.__table__.create(context.dump_engine)
-
 
     class NonDbModel(with_metaclass(RegistryMount, object)):
         '''
@@ -261,11 +272,10 @@ class ContextBoundModels(object):
             self.config = context.config
         _include_sqlalchemy(self)
         self.engine = self.create_engine(self.config.database_engine_uri,
-                                  **self.config.database_engine_args)
+                                         **self.config.database_engine_args)
         self.db = self.create_session(engine=self.engine)
         self.Base = declarative_base(bind=self.engine)
-        self.Model, self.NonDbModel = make_model_class(self.Base, self.db)
-
+        self.Model, self.NonDbModel = make_model_class(self.Base, self.db, self.config)
 
     def create_session(self, engine=None, session_args=None):
         # build session
@@ -273,4 +283,3 @@ class ContextBoundModels(object):
             session_args = {}
         session = self.scoped_session(self.sessionmaker(bind=engine, **session_args))
         return session
-

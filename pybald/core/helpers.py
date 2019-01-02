@@ -24,7 +24,7 @@ try:
     import pyhash
     hashfunc = pyhash.super_fast_hash()
 except ImportError:
-    log.warn("-"*80 + '''
+    log.warning("-"*80 + '''
     Warning
     -------
     Using python built-in hash() for asset URL generation. This is system
@@ -208,7 +208,7 @@ def humanize(date_string):
     date_string = FRACTIONAL_SECOND.sub('', date_string)
     try:
         date = datetime.strptime(date_string, date_format)
-    except:
+    except Exception:
         # if the date string format doesn't match, just return it
         return date_string
     now = datetime.now()
@@ -243,6 +243,7 @@ def humanize(date_string):
         return "%s minute%s ago" % (str(minutes), plural)
     else:
         return "just a moment ago"
+
 
 # From django.utils.html: Javascript escape characters
 _base_js_escapes = (
