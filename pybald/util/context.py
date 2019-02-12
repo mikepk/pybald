@@ -12,7 +12,7 @@ class Proxy(object):
         return self._proxied_object
 
     def __dir__(self):
-        return sorted(dir(self.__class__) + self.__dict__.keys() + dir(self._proxied()))
+        return sorted(dir(self.__class__) + list(self.__dict__) + dir(self._proxied()))
 
     def __getattr__(self, attr):
         return getattr(self._proxied(), attr)
