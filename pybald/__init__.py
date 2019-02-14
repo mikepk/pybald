@@ -20,7 +20,7 @@ from .default import default_config
 from collections import namedtuple
 log = logging.getLogger(__name__)
 
-__version__ = '0.5.2'
+__version__ = '0.5.3'
 
 
 def read_config_module(root_path='.', filename='project.py'):
