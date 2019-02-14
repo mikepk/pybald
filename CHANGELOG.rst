@@ -1,6 +1,10 @@
 Pybald Changelog
 ================
 
+Release 0.5.3 (February 14, 2019)
+---------------------------------
+* Fix Python 3 compatibility issue in Proxy.__dir__
+
 Release 0.5.2 (January 2, 2019)
 --------------------------------
 * Fix bug with stacktrace template for default Error handler
