@@ -78,7 +78,7 @@
   - New newrelic instrumentation code to improve controller/action
     visibility
 
-# Release 0.2.8 (June 26, 2014)
+## Release 0.2.8 (June 26, 2014)
 
   - Update the webasset-based asset bundler to take input and output
     paths from the project config file. The new arguments are
