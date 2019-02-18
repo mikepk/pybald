@@ -5,21 +5,6 @@ from pybald import context
 from datetime import datetime, timedelta
 from pybald.core.router import Router
 
-# import pytest
-# # from datetime import datetime
-
-# mockdate = datetime(2018, 6, 10, 0, 0, 0)
-
-# @pytest.fixture(autouse=True)
-# def patch_datetime_now(monkeypatch):
-#     class mydatetime:
-#         @classmethod
-#         def now(cls):
-#             return mockdate
-#     monkeypatch.setattr(__name__ + '.datetime', mydatetime)
-#     monkeypatch.setattr('datetime.datetime', mydatetime)
-
-
 now = datetime(2018, 6, 15, 3, 0)
 this_year = now.year
 
