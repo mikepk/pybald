@@ -34,10 +34,10 @@ import pybald
 version = pybald.__version__
 
 here = os.path.abspath(os.path.dirname(__file__))
-with io.open(os.path.join(here, 'README.rst'), encoding='utf8') as f:
+with io.open(os.path.join(here, 'README.md'), encoding='utf8') as f:
     README = f.read()
 try:
-    with io.open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf8') as f:
+    with io.open(os.path.join(here, 'CHANGELOG.md'), encoding='utf8') as f:
         CHANGES = f.read() or ''
 except IOError:
     CHANGES = ''
@@ -46,18 +46,22 @@ setup(name='pybald',
       version=version,
       description='A lightweight python web framework',
       long_description=README + '\n\n' + CHANGES + '\n\n',
-      long_description_content_type='text/x-rst',
+      long_description_content_type='text/markdown',
       license='MIT',
       keywords='web framework',
       author='Michael Kowalchik',
       author_email='mikepk@tenzerolab.com',
-      url='http://pybald.com/',
+      url='https://github.com/mikepk/pybald',
+      project_urls={
+        "Documentation": "http://pybald.com/",
+        "Source Code": "https://github.com/mikepk/pybald",
+      },
       packages=find_packages(),
       package_data={'pybald': ['core/default_templates/*.template', 'core/default_templates/forms/*.template']},
       install_requires=[
-          "Routes==2.4.1", "SQLAlchemy==1.1.10",
-          "WebOb==1.7.2", "Mako==1.0.6",
-          "WTForms==2.1", "alembic==0.9.2", "six==1.10.0"
+          "Routes==2.4.1", "SQLAlchemy==1.2.18",
+          "WebOb==1.8.5", "Mako==1.0.7",
+          "WTForms==2.2.1", "alembic==1.0.7", "six==1.12.0"
       ],
       extras_require={
         'docs': ['Sphinx>=1.6.2'],
