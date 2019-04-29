@@ -1,5 +1,10 @@
 # Pybald Changelog
 
+## Release 0.5.6 (April 29, 2019)
+
+  - Update SQLAlchemy dependency to 1.3.3 to mitigate a 
+    security issue with SQLAlchemy verstions <= 1.3.0
+
 ## Release 0.5.4 (February 18, 2019)
 
   - Update dependencies: WTForms, alembic, SQLALchemy, WebOb
