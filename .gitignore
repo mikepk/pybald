@@ -37,3 +37,6 @@ viewscache/
 
 # Sphinx documentation
 docs/_build/
+
+# OSX file metadata
+.DS_Store
