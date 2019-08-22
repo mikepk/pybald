@@ -25,47 +25,55 @@ try:
     from setuptools import setup, find_packages
 except ImportError:
     from ez_setup import use_setuptools
+
     use_setuptools()
     from setuptools import setup, find_packages
 import io
 import os
 
 import pybald
+
 version = pybald.__version__
 
 here = os.path.abspath(os.path.dirname(__file__))
-with io.open(os.path.join(here, 'README.md'), encoding='utf8') as f:
+with io.open(os.path.join(here, "README.md"), encoding="utf8") as f:
     README = f.read()
 try:
-    with io.open(os.path.join(here, 'CHANGELOG.md'), encoding='utf8') as f:
-        CHANGES = f.read() or ''
+    with io.open(os.path.join(here, "CHANGELOG.md"), encoding="utf8") as f:
+        CHANGES = f.read() or ""
 except IOError:
-    CHANGES = ''
+    CHANGES = ""
 
-setup(name='pybald',
-      version=version,
-      description='A lightweight python web framework',
-      long_description=README + '\n\n' + CHANGES + '\n\n',
-      long_description_content_type='text/markdown',
-      license='MIT',
-      keywords='web framework',
-      author='Michael Kowalchik',
-      author_email='mikepk@tenzerolab.com',
-      url='https://github.com/mikepk/pybald',
-      project_urls={
+setup(
+    name="pybald",
+    version=version,
+    description="A lightweight python web framework",
+    long_description=README + "\n\n" + CHANGES + "\n\n",
+    long_description_content_type="text/markdown",
+    license="MIT",
+    keywords="web framework",
+    author="Michael Kowalchik",
+    author_email="mikepk@tenzerolab.com",
+    url="https://github.com/mikepk/pybald",
+    project_urls={
         "Documentation": "http://pybald.com/",
         "Source Code": "https://github.com/mikepk/pybald",
-      },
-      packages=find_packages(),
-      package_data={'pybald': ['core/default_templates/*.template', 'core/default_templates/forms/*.template']},
-      install_requires=[
-          "Routes==2.4.1", "SQLAlchemy==1.3.3",
-          "WebOb==1.8.5", "Mako==1.0.7",
-          "WTForms==2.2.1", "alembic==1.0.7", "six==1.12.0"
-      ],
-      extras_require={
-        'docs': ['Sphinx>=1.6.2'],
-        'tests': ['pytest>=3.1.1']
     },
+    packages=find_packages(),
+    package_data={
+        "pybald": [
+            "core/default_templates/*.template",
+            "core/default_templates/forms/*.template",
+        ]
+    },
+    install_requires=[
+        "SQLAlchemy==1.3.*",
+        "alembic==1.0.*",
+        "Routes==2.4.1",
+        "WebOb==1.8.5",
+        "Mako==1.0.7",
+        "WTForms==2.2.1",
+        "six==1.12.0",
+    ],
+    extras_require={"docs": ["Sphinx>=1.6.2"], "tests": ["pytest>=3.1.1"]},
 )
-
