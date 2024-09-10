@@ -1,11 +1,22 @@
 language: python
 python:
-  - "2.7"
-  - "3.5"
-  - "3.6"
-  - "3.7"
-  - "3.8"
   - "3.9"
+  - "3.10"
+  - "3.11"
+  - "3.12"
+#   - "2.7"
+#   - "3.5"
+#   - "3.6"
+#   - "3.6-dev" # 3.6 development branch
+# # Enable 3.7 without globally enabling sudo and dist: xenial for other build jobs
+# matrix:
+#   include:
+#     - python: 3.7
+#       dist: xenial
+#       sudo: true
+#  - "3.7"
+#  - "3.7-dev" # 3.7 development branch
+#  - "nightly" # currently points to 3.7-dev
 # command to install dependencies
 install: "python setup.py install"
 # command to run tests

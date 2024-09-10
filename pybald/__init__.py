@@ -11,7 +11,7 @@ sqlalchemy).
 (c) 2015 Michael Kowalchik
 MIT License, see LICENSE file
 '''
-import imp
+import types
 import sys
 import os
 from pybald.util.context import AppContext
@@ -20,7 +20,7 @@ from .default import default_config
 from collections import namedtuple
 log = logging.getLogger(__name__)
 
-__version__ = '0.5.6'
+__version__ = '0.5.8'
 
 
 def read_config_module(root_path='.', filename='project.py'):
@@ -30,7 +30,7 @@ def read_config_module(root_path='.', filename='project.py'):
     if root_path not in sys.path:
         sys.path.insert(1, root_path)
     filename = os.path.join(root_path, filename)
-    config_module = imp.new_module("config")
+    config_module = types.ModuleType("config")
     config_module.__dict__['__file__'] = filename
     config_module.__dict__['path'] = root_path
     with open(filename) as config_file:
@@ -135,7 +135,7 @@ def bootstrap(bootstrap_file=None):
     if root_path not in sys.path:
         sys.path.insert(1, root_path)
     filename = os.path.join(root_path, filename)
-    bootstrap_module = imp.new_module("bootstrap")
+    bootstrap_module = types.ModuleType("bootstrap")
     bootstrap_module.__dict__['__file__'] = filename
     with open(filename) as bootstrap_file:
         exec(compile(bootstrap_file.read(), filename, 'exec'),
@@ -209,7 +209,7 @@ def configure(name=None, config_file=None, config_object=None, **kargs):
         from pybald.core.logs import default_debug_log
         default_debug_log()
 
-    new_context = imp.new_module("context")
+    new_context = types.ModuleType("context")
 
     if context._proxied() and hasattr(context._proxied(), 'unconfigured'):
         # if we're at the root, consume any placeholder values

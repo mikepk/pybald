@@ -1,5 +1,15 @@
 # Pybald Changelog
 
+## Release 0.5.8 (Sep 10, 2024)
+
+  - Remove use of 'imp' module
+  - Update travis CI/CD to just test python 3.10 and above
+
+## Release 0.5.7 (August 23, 2019)
+
+  - Change dependencies to minimums instead of pinned
+  versions
+
 ## Release 0.5.6 (April 29, 2019)
 
   - Update SQLAlchemy dependency to 1.3.3 to mitigate a 
