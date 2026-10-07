@@ -1,9 +1,13 @@
 # Pybald Changelog
 
-## Release 0.5.8 (Sep 10, 2024)
+## Release 0.5.8 (Oct 7, 2026)
 
   - Remove use of 'imp' module
-  - Update travis CI/CD to just test python 3.10 and above
+  - Replace removed `ConfigParser.readfp` with `read_file` (Python 3.12+)
+  - Move packaging from setup.py to pyproject.toml (hatchling), managed with uv
+  - Pin SQLAlchemy to `>=1.4.52,<2` and require Python 3.10+
+  - Stop installing the `tests` package into site-packages
+  - Replace Travis CI with GitHub Actions, testing Python 3.10 through 3.14
 
 ## Release 0.5.7 (August 23, 2019)
 

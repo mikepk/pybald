@@ -30,7 +30,7 @@ def read(filename='constants.ini', constants_file=None):
     '''
     config = configparser()
     if constants_file:
-        config.readfp(constants_file)
+        config.read_file(constants_file)
     else:
         config.read(filename)
     constants = namedtuple("Constant", config.sections())._make([

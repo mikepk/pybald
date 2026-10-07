@@ -1,0 +1,54 @@
+[project]
+name = "pybald"
+dynamic = ["version"]
+description = "A lightweight python web framework"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Michael Kowalchik", email = "mikepk@tenzerolab.com" }]
+keywords = ["web framework"]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+]
+dependencies = [
+    "Routes>=2.4.1",
+    "SQLAlchemy>=1.4.52,<2",
+    "WebOb>=1.8.5",
+    "Mako>=1.0.14",
+    "WTForms>=2.2.1",
+    "alembic>=1.0.7",
+    "six>=1.12.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/mikepk/pybald"
+Documentation = "http://pybald.com/"
+"Source Code" = "https://github.com/mikepk/pybald"
+Changelog = "https://github.com/mikepk/pybald/blob/master/CHANGELOG.md"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+docs = ["Sphinx>=7"]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "pybald/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["pybald", "tests", "CHANGELOG.md", "README.md", "LICENSE"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pybald"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
