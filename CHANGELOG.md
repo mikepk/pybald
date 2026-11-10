@@ -1,5 +1,9 @@
 # Pybald Changelog
 
+## Release 0.5.9 (Nov 10, 2026)
+
+  - Update dependencies
+
 ## Release 0.5.8 (Oct 7, 2026)
 
   - Remove use of 'imp' module
